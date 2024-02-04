@@ -22,4 +22,4 @@ WebStay Harmony Suites is designed to streamline the complexities of hotel and l
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/webstay-harmony-suites.git
+   git clone https://github.com/abfasb/web1-system.git
