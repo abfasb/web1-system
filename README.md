@@ -23,3 +23,7 @@ WebStay Harmony Suites is designed to streamline the complexities of hotel and l
 1. **Clone the Repository:**
    ```bash
    git clone https://github.com/abfasb/web1-system.git
+
+2. **Remote the Repository:**
+   ```bash
+   git remote add origin https://github.com/abfasb/web1-system.git
