@@ -8,8 +8,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="../assets/config.css">
 </head>
 <body>
-    
+    <h1 class=" bg-slate-500">das</h1>
 </body>
 </html>
