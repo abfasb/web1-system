@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../public/output.css">
 </head>
 <body>
-    <button>ads</button>
-
+    <h1 class=" text-center">hello</h1>
+    <h1 class =" bg-red-500"></h1>
 </body>
 </html>
