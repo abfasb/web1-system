@@ -11,17 +11,13 @@
     <link rel="stylesheet" href="../public/output.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/loopple-public-assets@main/motion-tailwind/motion-tailwind.css" rel="stylesheet">
 </head>
-<body class="flex items-center justify-center h-screen max-w-full bg-black">
-    <div class = " m-0 flex flex-row rounded-md bg-white mt-20">
-        <div class= " w-1/2 flex items-center justify-center">
-            <img src="../assets/img/login.png" alt="Login Page" class= " w-auto">
-        </div>
-        <div class="container flex flex-col mx-auto bg-white rounded-lg pt-12 my-5 w-1/2">
-           <div class="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
-      <div class="flex items-center justify-center w-full lg:p-12">
+<body >
+<div class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/hotel-bg.png');">
+      <div class="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
+      <div class="flex items-center justify-center px-10 w-full lg:p-12">
         <div class="flex items-center xl:p-10">
-          <form class="flex flex-col w-full h-full pb-6 text-center bg-white rounded-3xl">
-            <h3 class="mb-3 text-4xl font-extrabold text-dark-grey-900">Sign In</h3>
+          <form class="flex flex-col w-full h-full pb-6 px-12 text-center bg-white rounded-3xl">
+          <h3 class="mb-3 text-4xl font-extrabold text-dark-grey-900 pt-5">Sign In</h3>
             <p class="mb-4 text-grey-700">Enter your email and password</p>
             <a class="flex items-center justify-center w-full py-4 mb-6 text-sm font-medium transition duration-300 rounded-2xl text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-4 focus:ring-grey-300">
               <img class="h-5 mr-2" src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/logos/logo-google.png" alt="">
@@ -48,13 +44,11 @@
               <a href="javascript:void(0)" class="mr-4 text-sm font-medium text-purple-blue-500">Forget password?</a>
             </div>
             <button class="w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500">Sign In</button>
-            <p class="text-sm leading-relaxed text-grey-900">Not registered yet? <a href="javascript:void(0)" class="font-bold text-grey-700">Create an Account</a></p>
+            <p class="text-sm leading-relaxed text-grey-900">Not registered yet? <a href="./registration.php" class="font-bold text-grey-700">Create an Account</a></p>
           </form>
         </div>
       </div>
     </div>
-        </div>
-    </div>
-    
+    <h1>asdsad</h1>
 </body>
 </html>
