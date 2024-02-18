@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="../public/output.css">
 </head>
 <body>
-    <!-- component -->
-<!-- This is an example component -->
 <div class="max-w-2xl mx-auto bg-white p-16">
 
 <form>
