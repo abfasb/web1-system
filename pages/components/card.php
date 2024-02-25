@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-<div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:shadow-md">
     <a href="#">
         <img class="p-8 rounded-t-lg" src="https://c4.wallpaperflare.com/wallpaper/20/164/15/booking-best-hotels-bangkok-tourism-wallpaper-preview.jpg" alt="product image" />
     </a>
