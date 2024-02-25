@@ -1,4 +1,32 @@
 <?php
+    include '../config/connection.php';
+    
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $fullName = $_POST['Name'];
+        $username = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS);
+        $password = $_POST['Password'];
+
+        if(empty($username) || empty($password) || empty($password)) {
+            $_SESSION['error_message'] = 'Please enter both username and password.';
+        } else if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
+            $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 character';
+        } else {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $queryUser = "INSERT INTO tblUser(Username, Password) VALUES (?, ?)";
+            $statement = mysqli_prepare($connection, $queryUser);
+            mysqli_stmt_bind_param($statement, "ss", $username, $hashedPassword);
+            $queried = mysqli_stmt_execute($statement);
+
+            if($queried) {
+                $_SESSION['success_message'] = 'Registration Successful.';
+                header("Location: /web1-system/pages/login.php");
+                exit();
+            }
+            else {
+                $_SESSION['error_message'] = 'Registration failed. Please try again.';
+            }
+        }
+    }
 
 ?>
 
@@ -21,18 +49,18 @@
         </div>
         <h2 class="text-2xl font-semibold text-center mb-4">Create a new account</h2>
         <p class="text-gray-600 text-center mb-6">Enter your details to register.</p>
-        <form>
+        <form action = "/web1-system/pages/registration.php" method = "POST">
             <div class="mb-4">
                 <label for="fullName" class="block text-gray-700 text-sm font-semibold mb-2">Full Name *</label>
-                <input type="text" id="fullName" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="Matthew Balinton">
+                <input type="text" name = "Name" id="fullName" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="Matthew Balinton">
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email Address *</label>
-                <input type="email" id="email" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="matbalinton@gmail.com">
+                <input type="email" name = "Username" id="email" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="matbalinton@gmail.com">
             </div>
             <div class="mb-6">
                 <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Password *</label>
-                <input type="password" id="password" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="••••••••">
+                <input type="password" name= "Password" id="password" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="••••••••">
                 <p class="text-gray-600 text-xs mt-1">Must contain 1 uppercase letter, 1 number, min. 8 characters.</p>
             </div>
             <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Register</button>
