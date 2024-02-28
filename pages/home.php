@@ -16,7 +16,7 @@
     
 <nav class="bg-white dark:bg-gray-900 fixed w-full z-50 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1">
-    <a href="./home.php" class="flex items-center justify-cente space-x-3 rtl:space-x-reverse">
+    <a href="../views/MainHome.php" class="flex items-center justify-cente space-x-3 rtl:space-x-reverse">
       <img src="../assets/img/logo.png" class=" w-16 object-cover mt-1" alt="Flowbite Logo">
       <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">WebStay</span>
     </a>

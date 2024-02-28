@@ -15,6 +15,7 @@
 
         if (password_verify($password, $result['Password'])) {
           $_SESSION['Username'] = $username;
+          echo '<script>alert("Login successful!");</script>';
           header("Location: /web1-system/views/MainMenu.php");
         }
         else {
@@ -23,7 +24,9 @@
         }
       }
       else {
+        echo '<script> alert("Wrong Username, please try again later."); </script>';
         $_SESSION['error_message'] = 'Wrong Username, please try again later.';
+        
       }
     }
 ?>
@@ -43,7 +46,7 @@
       <div class="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
       <div class="flex items-center justify-center px-10 w-full lg:p-12">
         <div class="flex items-center xl:p-10">
-          <form action = "./login.php" method = "POST" class="flex flex-col w-full h-full pb-6 px-12 text-center bg-white rounded-3xl" autocomplete="off">
+          <div action = "./login.php" method = "POST" class="flex flex-col w-full h-full pb-6 px-12 text-center bg-white rounded-3xl" autocomplete="off">
           <h3 class="mb-3 text-4xl font-extrabold text-dark-grey-900 pt-5">Sign In</h3>
             <p class="mb-4 text-grey-700">Enter your email and password</p>
             <button autocomplete = "off" id="signInWithGoogle" class="flex items-center justify-center w-full py-4 mb-6 text-sm font-medium transition duration-300 rounded-2xl text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-4 focus:ring-grey-300">
@@ -55,6 +58,7 @@
               <p class="mx-4 text-grey-600">or</p>
               <hr class="h-0 border-b border-solid border-grey-500 grow">
             </div>
+            <form action="./login.php" method="post">
             <label for="email" class="mb-2 text-sm text-start text-grey-900">Email*</label>
             <input id="email" type="email" placeholder="matbalinton@gmail.com" name = "Username" class="flex items-center w-full px-5 py-4 mr-2 text-sm font-medium outline-none focus:bg-grey-400 mb-7 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"/>
             <label for="password" class="mb-2 text-sm text-start text-grey-900">Password*</label>
@@ -72,10 +76,12 @@
             </div>
             <input type="submit" value = "Submit" class="w-full px-6 py-5 mb-5 text-sm font-bold leading-none text-white transition duration-300 md:w-96 rounded-2xl hover:bg-purple-blue-600 focus:ring-4 focus:ring-purple-blue-100 bg-purple-blue-500">
             <p class="text-sm leading-relaxed text-grey-900">Not registered yet? <a href="./registration.php" class="font-bold text-grey-700">Create an Account</a></p>
-          </form>
+            </form>
+            
+          </div>
         </div>
       </div>
     </div>
-    <h1>asdsad</h1>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 </html>
