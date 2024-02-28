@@ -10,7 +10,7 @@ const links = document.querySelectorAll('.nav-link');
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     async function attachEventListenersWithDelay() {
-    await delay(5000);
+    await delay(1000);
 
     const startedSign = document.getElementById("get-started-btn");
     const loginSign = document.getElementById("sign-up-btn");
@@ -23,4 +23,5 @@ const links = document.querySelectorAll('.nav-link');
         window.location.href = "../pages/login.php";
     });
 }
+
     attachEventListenersWithDelay();
