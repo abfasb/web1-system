@@ -12,6 +12,6 @@
 </head>
 <body>
     <?php include '../pages/home.php'?>
-    <?php include '../pages/payment.php'?>
+
 </body>
 </html>
