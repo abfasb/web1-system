@@ -27,7 +27,7 @@
     <br>
     <br>
     <div class = " flex flex-row items-center justify-between sm:flex-col" style = "background-color: #F6F3E9">
-        <div class = " bg-red-200 bg-black w-1/2 h-full p-12">
+        <div class = "w-1/2 h-full p-12">
             <h1 class = " ">Hotel For <span class = " text-3xl">Memorable</span></h1>
             <button>Click here</button>
         </div>
