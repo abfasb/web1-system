@@ -17,16 +17,23 @@ const firebaseConfig = {
   const provider = new GoogleAuthProvider();
 
   const googleLogin = document.getElementById("signInWithGoogle");
-  googleLogin.addEventListener('click', () => {
+googleLogin.addEventListener('click', () => {
+  if (!auth.currentUser) {
     signInWithPopup(auth, provider)
-    .then((result) => {
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const user = result.user;
-      console.log(user);
-      window.location.href = "../views/MainMenu.php";
-    }).catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message
-      console.log(errorMessage);
-    });
-  })
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const user = result.user;
+        console.log(user);
+        window.location.href = "../views/MainMenu.php";
+      }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      });
+  } else {
+    console.log("User is already signed in.");
+    window.location.href = "../views/MainMenu.php";
+  }
+});
+
+  

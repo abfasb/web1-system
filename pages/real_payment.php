@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="../public/output.css">
 <body>
 <div class="py-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
-  <!--- more free and premium Tailwind CSS components at https://tailwinduikit.com/ --->
 
   <div class="flex justify-start item-start space-y-2 flex-col">
     <h1 class="text-3xl dark:text-white lg:text-4xl font-semibold leading-7 lg:leading-9 text-gray-800">Order #13432</h1>

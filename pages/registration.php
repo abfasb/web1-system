@@ -73,7 +73,7 @@
             <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Register</button>
             <p class="text-gray-600 text-xs text-center mt-4">
                 By clicking Register, you agree to accept WebStay
-                <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button" class="text-blue-500 hover:underline">Terms and Conditions</butt>.
+                <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button" class="text-blue-500 hover:underline">Terms and Conditions</button>.
             </p>
         </form>
     </div>
