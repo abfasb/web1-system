@@ -1,8 +1,8 @@
 <?php
-    define('host', 'localhost');
-    define('user', 'root');
-    define('password', '');
-    define('database', 'webDb');
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $database = 'webDb';
 
     $connection = mysqli_connect($host, $user, $password, $database) or die('Error: ' .mysqli_error());
 ?>

@@ -1,32 +1,4 @@
 <?php
-    include '../config/connection.php';
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $fullName = $_POST['Name'];
-        $username = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS);
-        $password = $_POST['Password'];
-
-        if(empty($username) || empty($password) || empty($password)) {
-            $_SESSION['error_message'] = 'Please enter both username and password.';
-        } else if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
-            $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 character';
-        } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $queryUser = "INSERT INTO tblUser(Username, Password) VALUES (?, ?)";
-            $statement = mysqli_prepare($connection, $queryUser);
-            mysqli_stmt_bind_param($statement, "ss", $username, $hashedPassword);
-            $queried = mysqli_stmt_execute($statement);
-
-            if($queried) {
-                $_SESSION['success_message'] = 'Registration Successful.';
-                header("Location: /web1-system/pages/login.php");
-                exit();
-            }
-            else {
-                $_SESSION['error_message'] = 'Registration failed. Please try again.';
-            }
-        }
-    }
 
 ?>
 
@@ -36,53 +8,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../public/output.css">
+    <link rel="stylesheet" href="../../public/output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"  rel="stylesheet" />
 </head>
-<body class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/hotel-bg.png');">
-    <?php include'./home.php'?>
-<div>
-    <div class="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full mt-14">
-        <div class="flex justify-center">
-            <span class="inline-block bg-gray-200 rounded-full p-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c4.42 0 8 1.79 8 4v2H4v-2c0-2.21 3.58-4 8-4"/></svg>
-            </span>
-        </div>
-        <h2 class="text-2xl font-semibold text-center mb-4">Create a new account</h2>
-        <p class="text-gray-600 text-center mb-6">Enter your details to register.</p>
-        <?php
-            if (isset($_SESSION['error_message'])) {
-                echo '<div class="text-red-500 text-sm text-center mb-4">' . $_SESSION['error_message'] . '</div>';
-                unset($_SESSION['error_message']);
-            }
-        ?>
-        <form action = "/web1-system/pages/registration.php" method = "POST">
-            <div class="mb-4">
-                <label for="fullName" class="block text-gray-700 text-sm font-semibold mb-2">Full Name *</label>
-                <input type="text" name = "Name" id="fullName" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="Matthew Balinton">
-            </div>
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email Address *</label>
-                <input type="email" name = "Username" id="email" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="matbalinton@gmail.com">
-            </div>
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Password *</label>
-                <input type="password" name= "Password" id="password" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="••••••••">
-                <p class="text-gray-600 text-xs mt-1">Must contain 1 uppercase letter, 1 number, min. 8 characters.</p>
-            </div>
-            <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Register</button>
-            <p class="text-gray-600 text-xs text-center mt-4">
-                By clicking Register, you agree to accept WebStay
-                <button data-modal-target="default-modal" data-modal-toggle="default-modal" type="button" class="text-blue-500 hover:underline">Terms and Conditions</button>.
-            </p>
-        </form>
-    </div>
-</div>
+<body>
+    
+
+<button data-modal-target="default-modal" data-modal-toggle="default-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
+  Toggle modal
+</button>
+
 <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden overflow-scroll fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <div class="relative bg-white rounded-lg shadow">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
                     Terms of Service
                 </h3>
                 <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
@@ -92,7 +34,7 @@
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
-            <div class="p-4 md:p-10 space-y-4">
+            <div class="p-4 md:p-5 space-y-4">
                 <h1>Terms and Conditions of WebStay Harmony Suites</h1>
     <ol>
         <li>
@@ -130,6 +72,7 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>
 </html>

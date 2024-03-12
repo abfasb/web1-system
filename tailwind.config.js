@@ -7,9 +7,15 @@ module.exports = {
     "./pages/**/*.html",
     "./pages/**/*.js",
     "./pages/**/*.php",
+    "./views/**/*.html",
+    "./views/**/*.js",
+    "./views/*.php"
   ],
   theme: {
     extend: {},
+  },
+  colors: {
+    'custom-color': '#F6F3E9',
   },
   plugins: [],
 }
