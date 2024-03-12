@@ -40,7 +40,7 @@
     <link rel="stylesheet" href="../public/output.css">
     <link rel="icon" href="../assets/img/logo.png" type="image/png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Loopple/loopple-public-assets@main/motion-tailwind/motion-tailwind.css" rel="stylesheet">
-    <script src="../scripts/GoogleAuth.js" defer type="module"></script>
+    <script src="../scripts/GoogleAuth.js" type="module" defer></script>
   </head>
 <body >
 <div class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/hotel-bg.png');">
@@ -52,7 +52,7 @@
           <h3 class="mb-3 text-4xl font-extrabold text-dark-grey-900 pt-5">Sign In</h3>
             <p class="mb-4 text-grey-700">Enter your email and password</p>
           </div>
-            <button autocomplete = "off" id="signInWithGoogle" class="flex items-center justify-center w-full py-4 mb-6 text-sm font-medium transition duration-300 rounded-2xl text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-4 focus:ring-grey-300">
+            <button id="signInWithGoogle" class="flex items-center justify-center w-full py-4 mb-6 text-sm font-medium transition duration-300 rounded-2xl text-grey-900 bg-grey-300 hover:bg-grey-400 focus:ring-4 focus:ring-grey-300">
               <img class="h-5 mr-2" src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/logos/logo-google.png" alt="">
               Sign in with Google
             </button>
