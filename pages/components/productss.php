@@ -10,7 +10,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="../public/output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"  rel="stylesheet" />
-</head><!-- Create By Joker Banny -->
+</head>
 <body class="bg-black">
 
 

@@ -12,7 +12,7 @@
             $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 character';
         } else {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $queryUser = "INSERT INTO tblUser(Username, Password) VALUES (?, ?)";
+            $queryUser = "INSERT INTO Users(username, password) VALUES (?, ?)";
             $statement = mysqli_prepare($connection, $queryUser);
             mysqli_stmt_bind_param($statement, "ss", $username, $hashedPassword);
             $queried = mysqli_stmt_execute($statement);

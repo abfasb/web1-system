@@ -4,7 +4,7 @@
       $username = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS);
       $password = $_POST['Password'];
       
-      $query = "Select * FROM tblUser Where Username = ?";
+      $query = "Select * FROM Users Where username = ?";
       $statement = mysqli_prepare($connection, $query);
       mysqli_stmt_bind_param($statement, 's', $username);
       mysqli_stmt_execute($statement);
