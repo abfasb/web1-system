@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../public/output.css">
 </head>
 <body>
-    <?php include '../pages/home.php'?>
+    <?php include './utils/nav.php'?>
     <br>
     <br>
     <br>
@@ -22,12 +22,12 @@
     
     <br>
     <div style = "display: flex; flex-wrap: wrap; justify-content: center; flex-direction: row; gap:1rem; z-index: 100;">
-    <?php include '../pages/components/card.php'?>
-    <?php include '../pages/components/card.php'?>
-    <?php include '../pages/components/card.php'?>
-    <?php include '../pages/components/card.php'?>
-    <?php include '../pages/components/card.php'?>
-    <?php include '../pages/components/card.php'?>
+    <?php include './utils/card.php'?>
+    <?php include './utils/card.php'?>
+    <?php include './utils/card.php'?>
+    <?php include './utils/card.php'?>
+    <?php include './utils/card.php'?>
+    <?php include './utils/card.php'?>
     </div>
     <?php include'../pages/footer.php'?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

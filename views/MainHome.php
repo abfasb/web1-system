@@ -21,7 +21,7 @@
     </style>
 </head> 
 <body style = "height: 300vh ">
-    <?php include '../pages/home.php'?>
+    <?php include './utils/nav.php'?>
     <br>
     <br>
     <br>
@@ -35,7 +35,6 @@
         <img src="../assets/img/home/homebuild.png" alt="Home Image">
         </div>
     </div>
-    <?php include '../pages/payment.php';?>
 
 </body>
 </html>
