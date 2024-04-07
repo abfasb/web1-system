@@ -17,8 +17,8 @@
 <nav class="bg-white dark:bg-gray-900 fixed w-full z-50 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1">
     <a href="../views/MainHome.php" class="flex items-center justify-cente space-x-3 rtl:space-x-reverse">
-      <img src="../assets/img/logooo.png" class=" w-16 object-cover mt-1" alt="Flowbite Logo">
-      <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">WebStay</span>
+      <img src="../assets/img/logoooo.png" class=" w-16 object-cover mt-1" alt="Flowbite Logo">
+      <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">ShopSphere</span>
     </a>
     <div class="flex gap-2 hover:border-blue-700 md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
       <button id="get-started-btn" type="button" class="text-white z-10 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started</button>

@@ -1,6 +1,15 @@
 <?php
+session_start();
 
-    session_start();$storeSession = isset($_SESSION['Username']) ? $_SESSION['Username'] : '';
+/* Check if the user is not logged in
+if (!isset($_SESSION['Username'])) {
+    // Redirect to the login page
+    header("Location: /web1-system/pages/login.php");
+    exit(); // Stop executing the rest of the code
+}
+*/
+
+$storeSession = isset($_SESSION['Username']) ? $_SESSION['Username'] : '';
 ?>
 
 <!DOCTYPE html>

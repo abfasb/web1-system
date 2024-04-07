@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="../public/output.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"  rel="stylesheet" />
 </head>
-<body class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/hotel-bg.png');">
+<body class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/realbg.png');">
     <?php include'./home.php'?>
 <div>
     <div class="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full mt-14">

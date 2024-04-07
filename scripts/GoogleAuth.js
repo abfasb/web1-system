@@ -26,16 +26,17 @@ googleLogin.addEventListener('click', () => {
         .then((result) => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           const user = result.user;
-          console.log(user);
-      window.location.href = "../views/MainMenu.php";
+          const randomKey = Array.from(window.crypto.getRandomValues(new Uint8Array(16))).map(v => v.toString(16).padStart(2, '0')).join('');
+window.location.href = `../views/MainMenu.php?key=${randomKey}`;
+
         }).catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorMessage);
         });
     } else {
-      console.log("User is already signed in.");
-      window.location.href = "../views/MainMenu.php";
+      console.log('hello world');
+
     }
   });
 });
