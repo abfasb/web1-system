@@ -1,5 +1,4 @@
 
-        // start: Sidebar
         const sidebarToggle = document.querySelector('.sidebar-toggle')
         const sidebarOverlay = document.querySelector('.sidebar-overlay')
         const sidebarMenu = document.querySelector('.sidebar-menu')
