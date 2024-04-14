@@ -1,35 +1,41 @@
 <?php
-  include '../config/connection.php';
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-      $username = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS);
-      $password = $_POST['Password'];
-      
-      $query = "Select * FROM Users Where username = ?";
-      $statement = mysqli_prepare($connection, $query);
-      mysqli_stmt_bind_param($statement, 's', $username);
-      mysqli_stmt_execute($statement);
-      $queried = mysqli_stmt_get_result($statement);
+include '../config/connection.php';
 
-      if ($queried && mysqli_num_rows($queried) > 0) {
-        $result = mysqli_fetch_assoc($queried);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = trim(filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS));
+    $password = $_POST['Password'];
 
-        if (password_verify($password, $result['Password'])) {
+    $query = "SELECT * FROM Users WHERE LOWER(username) = LOWER(?)";
+    $statement = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($statement, 's', $username);
+    mysqli_stmt_execute($statement);
+    $queried = mysqli_stmt_get_result($statement);
+
+    if ($queried && mysqli_num_rows($queried) > 0) {
+      $result = mysqli_fetch_assoc($queried);
+  
+      // Echo out the hashed password from the database
+      echo "Hashed Password from Database: " . $result['Password'] . "<br>";
+  
+      if (password_verify($password, $result['Password'])) {
           $_SESSION['Username'] = $username;
           echo '<script>alert("Login successful!");</script>';
           header("Location: /web1-system/views/MainMenu.php");
-        }
-        else {
-          $_SESSION['error_mesage'] = 'Wrong Password';
+          exit; // Ensure that code execution stops after redirection
+      } else {
+          $_SESSION['error_message'] = 'Wrong Password';
           echo '<script> alert("Wrong Password"); </script>';
-        }
       }
-      else {
-        echo '<script> alert("Wrong Username, please try again later."); </script>';
-        $_SESSION['error_message'] = 'Wrong Username, please try again later.';
-        
-      }
-    }
+  } else {
+      echo '<script> alert("Wrong Username, please try again later."); </script>';
+      $_SESSION['error_message'] = 'Wrong Username, please try again later.';
+  }
+  
+}
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -65,7 +71,7 @@
             <label for="email" class=" text-sm text-grey-900 text-start font-bold">Email*</label>
             <input id="email" type="email" placeholder="matbalinton@gmail.com" name = "Username" class="flex items-center w-full px-5 py-4 mr-2 text-sm font-medium outline-none focus:bg-grey-400 mb-7 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"/>
             <label for="password" class="mb-2 text-sm text-start font-bold text-grey-900">Password*</label>
-            <input id="password" name = "Password" type="password" placeholder="Enter a password" class="flex items-center w-full px-5 py-4 mb-5 mr-2 text-sm font-medium outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"/>
+            <input id="password" name="Password" type="password" placeholder="Enter a password" class="flex items-center w-full px-5 py-4 mb-5 mr-2 text-sm font-medium outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"/>
             <div class="flex flex-row justify-between mb-8">
               <label class="relative inline-flex items-center mr-3 cursor-pointer select-none">
                 <input type="checkbox" checked value="" class="sr-only peer">
