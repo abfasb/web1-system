@@ -39,17 +39,16 @@
       <div class="mb-16 lg:my-auto lg:max-w-lg">
         <div class="mb-6 max-w-xl">
           <div>
-            <p class="bg-teal-accent-400 mb-2 inline-block rounded-full bg-lime-300 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-indigo-900">25% off this summer</p>
+            <p class="bg-teal-accent-400 mb-2 inline-block rounded-full bg-lime-300 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-indigo-900 sm:mt-4">25% off this summer</p>
           </div>
           <h2 class="mb-6 max-w-lg text-3xl font-extrabold text-slate-700 sm:text-5xl sm:leading-snug">
-            Discover Fantasy <br />
-            Lands of
-            <span class="rounded- abg-gradient-to-r inline-block bg-sky-400 from-lime-400 to-sky-400 px-2 font-bold text-white">Zurich</span>
+          Shop with Confidence at
+            <span class="rounded- abg-gradient-to-r inline-block bg-sky-400 from-lime-400 to-sky-400 px-2 font-bold text-white">ShopSphere!</span>
           </h2>
-          <p class="text-base text-gray-700 md:text-lg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas ullam rem voluptatem, animi tempora expedita!Lorem ipsum dolor.</p>
+          <p class="text-base text-gray-700 md:text-lg">Explore a curated selection at ShopSphere. MainHome invites discovery, while MainMenu offers personalized deals post-login. Experience seamless shopping!</p>
         </div>
         <div class="flex items-center">
-          <a href="/" class="bg-sky-400a mr-6 inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-lime-400 to-sky-400 px-8 font-medium tracking-wide text-white shadow-lg shadow-sky-300 outline-none transition duration-200 hover:scale-110 hover:bg-sky-500 focus:ring"> Get started </a>
+          <a href="../pages/registration.php" class="bg-sky-400a mr-6 inline-flex h-12 items-center justify-center rounded-full bg-gradient-to-r from-lime-400 to-sky-400 px-8 font-medium tracking-wide text-white shadow-lg shadow-sky-300 outline-none transition duration-200 hover:scale-110 hover:bg-sky-500 focus:ring"> Get started </a>
           <a href="/" class="inline-flex items-center font-semibold text-sky-400 transition-colors duration-200 hover:text-lime-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
@@ -59,9 +58,7 @@
         </div>
       </div>
     </div>
-    <!-- /Left Column -->
 
-    <!-- Right Column -->
     <div class="flex h-full w-full space-x-3 overflow-hidden md:justify-end">
       <!-- Col 2 -->
       <div class="hidden w-56 items-center space-y-3 lg:flex">
@@ -71,13 +68,13 @@
       </div>
       <div class="w-full flex-col space-y-3 rounded-xl py-4 lg:flex lg:w-80">
         <div class="h-40 overflow-hidden rounded-xl bg-green-600/60">
-          <img class="mx-auto h-full w-full object-cover" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80" alt="" />
+          <img class="mx-auto h-full w-full object-cover" src="https://source.unsplash.com/random/1920x1080?e-commerce=1" alt="" />
         </div>
         <div class="h-40 overflow-hidden rounded-xl bg-pink-600/60">
-          <img class="mx-auto h-full w-full object-cover" src="https://images.unsplash.com/photo-1511884642898-4c92249e20b6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="" />
+          <img class="mx-auto h-full w-full object-cover" src="https://source.unsplash.com/random/1920x1080?e-commerce=2" alt="" />
         </div>
         <div class="h-40 overflow-hidden rounded-xl bg-blue-600/60">
-          <img class="mx-auto h-full w-full object-cover" src="https://images.unsplash.com/photo-1434725039720-aaad6dd32dfe?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1342&q=80" alt="" />
+          <img class="mx-auto h-full w-full object-cover" src="https://source.unsplash.com/random/1920x1080?e-commerce=3" alt="" />
         </div>
       </div>
     </div>
@@ -100,15 +97,15 @@
         <div class="h-full w-full bg-blue-900 p-6">
           <div class="z-10 flex flex-col justify-between">
             <h1 class="text-4xl text-white sm:text-8xl">#1</h1>
-            <h6 class="mt-12 text-xl text-white sm:text-3xl">Marketing Studio in the Bay Area.</h6>
+            <h6 class="mt-12 text-xl text-white sm:text-3xl">Shopping Destination for Eco-Conscious Shoppers.</h6>
           </div>
         </div>
       </div>
       <div class="mb-4 w-full px-2 lg:w-2/5">
         <div class="h-full w-full bg-yellow-400 p-6">
           <div class="z-10 flex flex-col justify-between">
-            <h1 class="text-4xl text-blue-900 sm:text-8xl">FDA</h1>
-            <h6 class="mt-12 text-xl text-blue-900 sm:text-3xl">Approved by FDA and 25 other organizations.</h6>
+            <h1 class="text-4xl text-blue-900 sm:text-8xl">Trusted by Thousands</h1>
+            <h6 class="mt-12 text-xl text-blue-900 sm:text-3xl">Join the Community of Satisfied Shoppers.</h6>
           </div>
         </div>
       </div>
@@ -116,15 +113,15 @@
         <div class="h-full w-full bg-indigo-600 p-6">
           <div class="absolute z-0 opacity-0 hover:opacity-50" style="mix-blend-mode:multiply"></div>
           <div class="z-10 flex flex-col justify-between">
-            <h1 class="text-4xl text-white sm:text-8xl">70+</h1>
-            <h6 class="mt-12 text-xl text-white sm:text-3xl">Awards</h6>
+            <h1 class="text-4xl text-white sm:text-8xl">100+</h1>
+            <h6 class="mt-12 text-xl text-white sm:text-3xl">Products</h6>
           </div>
         </div>
       </div>
       <div class="mb-4 w-full px-2 lg:w-1/3">
         <div class="h-full w-full bg-blue-400 p-6">
           <div class="z-10 flex flex-col justify-between">
-            <h1 class="text-4xl text-white sm:text-8xl">12k</h1>
+            <h1 class="text-4xl text-white sm:text-8xl">100</h1>
             <h6 class="mt-12 text-xl text-white sm:text-3xl">New Users Every Month</h6>
           </div>
         </div>
@@ -132,8 +129,8 @@
       <div class="mb-4 w-full px-2 lg:w-1/3">
         <div class="h-full w-full bg-red-200 p-6">
           <div class="z-10 flex flex-col justify-between">
-            <h1 class="text-4xl text-blue-900 sm:text-8xl">23</h1>
-            <h6 class="mt-12 text-xl text-blue-900 sm:text-3xl">Fortune 500 Clients</h6>
+            <h1 class="text-4xl text-blue-900 sm:text-8xl">50</h1>
+            <h6 class="mt-12 text-xl text-blue-900 sm:text-3xl">Trusted Clients</h6>
           </div>
         </div>
       </div>
@@ -258,7 +255,6 @@
 			  };
 			}
 </script>
-
 
 </body>
 </html>

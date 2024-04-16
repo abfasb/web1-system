@@ -18,7 +18,7 @@
         class="container flex flex-col flex-wrap px-5 py-24 mx-auto md:items-center lg:items-start md:flex-row md:flex-no-wrap">
         <div class="flex-shrink-0 w-64 mx-auto text-center md:mx-0 md:text-left">
             <a class="flex items-center justify-center font-medium text-gray-900 title-font md:justify-start">
-                <img src="../assets/img/logo.png" alt="WebStay Logo" class = " w-20 h-auto">
+                <img src="../assets/img/logoooo.png" alt="WebStay Logo" class = " w-20 h-auto">
             </a>
             <p class="mt-2 text-sm text-gray-500">Design, Code and Ship!</p>
             <div class="mt-4">

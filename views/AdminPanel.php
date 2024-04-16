@@ -1331,9 +1331,10 @@ video {
 <body class="text-gray-800 font-inter">
     <div class="fixed left-0 top-0 w-64 h-full bg-[#f8f4f3] p-4 z-50 sidebar-menu transition-transform">
         <a href="#" class="flex items-center pb-4 border-b border-b-gray-800">
-
-            <h2 class="font-bold text-2xl ml-12">Web <span class="bg-[#f84525] text-white px-2 rounded-md">Stay</span></h2>
-        </a>
+        <h2 class="font-bold text-2xl ml-12"  style="margin-left: 30px;">
+            Shop <span  class="bg-[#f84525] text-white px-2 rounded-md">Sphere</span>
+        </h2>
+    </a>
         <ul class="mt-4">
             <span class="text-gray-400 font-bold">ADMIN</span>
             <li class="mb-1 group">
@@ -1363,11 +1364,11 @@ video {
                     <span class="text-sm">Activities</span>
                 </a>
             </li>
-            <span class="text-gray-400 font-bold">BLOG</span>
+            <span class="text-gray-400 font-bold">Seller</span>
             <li class="mb-1 group">
                 <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
                     <i class='bx bxl-blogger mr-3 text-lg' ></i>                 
-                    <span class="text-sm">Post</span>
+                    <span class="text-sm">Products</span>
                     <i class="ri-arrow-right-s-line ml-auto group-[.selected]:rotate-90"></i>
                 </a>
                 <ul class="pl-7 mt-2 hidden group-[.selected]:block">
@@ -1574,9 +1575,8 @@ video {
                         </li>
                         <li>
                             <form method="POST" action="">
-                                <a role="menuitem" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-[#f84525] hover:bg-gray-50 cursor-pointer"
-                                    onclick="event.preventDefault();
-                                    this.closest('form').submit();">
+                                <a href = "./MainMenu.php" role="menuitem" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-[#f84525] hover:bg-gray-50 cursor-pointer"
+                                    >
                                     Log Out
                                 </a>
                             </form>

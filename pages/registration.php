@@ -5,20 +5,20 @@
         $fullName = $_POST['Name'];
         $username = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS);
         $password = $_POST['Password'];
-
-        if(empty($username) || empty($password) || empty($password)) {
+    
+        if(empty($username) || empty($password) || empty($fullName)) {
             $_SESSION['error_message'] = 'Please enter both username and password.';
         } else if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
-            $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 character';
+            $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 characters.';
         } else {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             $queryUser = "INSERT INTO Users(username, password) VALUES (?, ?)";
             $statement = mysqli_prepare($connection, $queryUser);
             mysqli_stmt_bind_param($statement, "ss", $username, $hashedPassword);
             $queried = mysqli_stmt_execute($statement);
-
+    
             if($queried) {
-                $_SESSION['success_message'] = 'Registration Successful.';
+                echo "<script> alert('Registered Succesfully!') </script>";
                 header("Location: /web1-system/pages/login.php");
                 exit();
             }
@@ -27,6 +27,7 @@
             }
         }
     }
+    
 
 ?>
 
