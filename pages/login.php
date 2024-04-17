@@ -18,11 +18,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   if ($queried && mysqli_num_rows($queried) > 0) {
       $result = mysqli_fetch_assoc($queried);
 
-      if (password_verify($password, $result['Password'])) {
+      if (password_verify($password, $result['password'])) {
           $_SESSION['Username'] = $username;
           echo '<script>alert("Login successful!");</script>';
           header("Location: /web1-system/views/MainMenu.php");
-          $_SESSION['username'] = $_POST['Username'];
           exit; // Ensure that code execution stops after redirection
       } else {
           $_SESSION['error_message'] = 'Wrong Password';

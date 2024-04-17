@@ -1,14 +1,8 @@
 <?php
 session_start();
 
-$storeSession = isset($_SESSION['Username']) ? $_SESSION['Username'] : '';
 
-/*if (!isset($_SESSION['username'])) {
-    header("Location: /web1-system/views/login.php");
-    exit();
-}*/
-
-$userInitial = strtoupper(substr($_SESSION['username'], 0, 1));
+$userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 
 ?>
 
@@ -32,10 +26,10 @@ $userInitial = strtoupper(substr($_SESSION['username'], 0, 1));
   <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
       <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
         <span class="sr-only">Open user menu</span>
-        <h1 class = " text-white p-4 bg-gray-400 text-lg" style = "border-radius: 50%;">t</h1>
+        <h1 class = " text-white p-4 bg-gray-400 text-lg" style = "border-radius: 50%;"><?php echo $userInitial ?></h1>
       </button>
       <!-- Dropdown menu -->
-      <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
+      <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 z-50" id="user-dropdown">
         <div class="px-4 py-3">
           <span class="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
           <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>

@@ -1,38 +1,15 @@
 <?php
 
-include '../config/connection.php';
-
-
-session_start(); // Start the session
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
-  $email = $_POST["email"];
-  $token = bin2hex(random_bytes(32)); // Generate a random token
-  $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token expires in 1 hour
-
-
-  $query = "INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)";
-  $statement = mysqli_prepare($connection, $query);
-  mysqli_stmt_bind_param($statement, "sss", $email, $token, $expires_at);
-  mysqli_stmt_execute($statement);
-
-  $reset_link = "http://localhost/web1-system/pages/new_password.php?token=$token";
-  $email_subject = "Password Reset";
-  $email_body = "Click the following link to reset your password: $reset_link";
-  mail($email, $email_subject, $email_body);
-
-  $_SESSION['email_sent'] = true; // Set a session variable to indicate email sent
-  header("Location: /web1-system/pages/login.php");
-  exit();
-}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forget Password</title>
+    <title>New Password</title>
     <link rel="stylesheet" href="../public/output.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -48,8 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
                 d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
           </div>
-          <h1 class="block text-2xl font-bold text-gray-800">Forgot password?</h1>
-          <p class="mt-2 text-sm text-gray-600">Don't worry we'll send you reset instructions.</p>
+          <h1 class="block text-2xl font-bold text-gray-800">Type your new password</h1>
         </div>
 
         <div class="mt-6">
@@ -88,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
         Remember your password?
         <a class="font-medium text-blue-600 decoration-2 hover:underline" href="./login.php"> Sign in here </a>
       </span>
-      <a class="pl-3 text-sm text-gray-600 decoration-2 hover:text-blue-600 hover:underline" href="#"
+      <a class="pl-3 text-sm text-gray-600 decoration-2 hover:text-blue-600 hover:underline" href="./meet_the_team.php"
         target="_blank"> Contact Support </a>
     </p>
   </div>
