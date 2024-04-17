@@ -1,4 +1,4 @@
-# WebStay Harmony Suites
+# ShopSphere Your Digital Management: Streamline Online
 
 Welcome to WebStay Harmony Suites, your go-to solution for a sophisticated and user-friendly web-based hotel reservation system. Elevate your property management and guest experience with our intuitive platform.
 
