@@ -34,7 +34,6 @@
 </style>
 <div class="flex min-h-screen w-screen">
   <div class="relative my-auto mx-auto flex flex-col px-4 sm:max-w-xl md:max-w-screen-xl md:flex-row">
-    <!-- Left Column -->
     <div class="mx-auto flex w-full max-w-xl lg:max-w-screen-xl">
       <div class="mb-16 lg:my-auto lg:max-w-lg">
         <div class="mb-6 max-w-xl">

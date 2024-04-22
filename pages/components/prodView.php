@@ -16,70 +16,6 @@
 
 <div class="fixed inset-0 bg-opacity-25"></div>
 
-<div class="fixed inset-0 z-40 flex">
-  <div class="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl">
-    <div class="flex px-4 pb-2 pt-5">
-      <button type="button" class="-m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400">
-        <span class="sr-only">Close menu</span>
-        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Links -->
-    <div class="mt-2">
-      <div class="border-b border-gray-200">
-        <div class="-mb-px flex space-x-8 px-4" aria-orientation="horizontal" role="tablist">
-          <button id="tabs-1-tab-1" class="border-transparent text-gray-900 flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium" aria-controls="tabs-1-panel-1" role="tab" type="button">Women</button>
-          <button id="tabs-1-tab-2" class="border-transparent text-gray-900 flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium" aria-controls="tabs-1-panel-2" role="tab" type="button">Men</button>
-        </div>
-      </div>
-
-      <!-- 'Women' tab panel, show/hide based on tab state. -->
-    
-            <div>
-              <p id="mobile-brand-heading" class="font-medium text-gray-900">Brands</p>
-              <ul role="list" aria-labelledby="mobile-brand-heading" class="mt-6 space-y-6">
-                <li class="flex">
-                  <a href="#" class="text-gray-500">Significant Other</a>
-                </li>
-                <li class="flex">
-                  <a href="#" class="text-gray-500">My Way</a>
-                </li>
-                <li class="flex">
-                  <a href="#" class="text-gray-500">Counterfeit</a>
-                </li>
-                <li class="flex">
-                  <a href="#" class="text-gray-500">Re-Arranged</a>
-                </li>
-                <li class="flex">
-                  <a href="#" class="text-gray-500">Full Nelson</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="space-y-6 border-t border-gray-200 px-4 py-6">
-      <div class="flow-root">
-        <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Company</a>
-      </div>
-      <div class="flow-root">
-        <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Stores</a>
-      </div>
-    </div>
-
-    <div class="space-y-6 border-t border-gray-200 px-4 py-6">
-      <div class="flow-root">
-        <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Create an account</a>
-      </div>
-      <div class="flow-root">
-        <a href="#" class="-m-2 block p-2 font-medium text-gray-900">Sign in</a>
-      </div>
-    </div>
 
     <div class="space-y-6 border-t border-gray-200 px-4 py-6">
       <!-- Currency selector -->
@@ -430,7 +366,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                   </svg>
                   <span class="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">0</span>
-                  <span class="sr-only">items in cart, view bag</span>
                 </a>
               </div>
             </div>

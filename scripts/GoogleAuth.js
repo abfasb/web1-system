@@ -27,7 +27,7 @@ googleLogin.addEventListener('click', () => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           const user = result.user;
           const randomKey = Array.from(window.crypto.getRandomValues(new Uint8Array(16))).map(v => v.toString(16).padStart(2, '0')).join('');
-window.location.href = `../views/MainMenu.php?key=${randomKey}`;
+          window.location.href = `../views/MainMenu.php`;
 
         }).catch((error) => {
           const errorCode = error.code;
