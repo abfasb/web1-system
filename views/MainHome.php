@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="../public/output.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,900&display=swap" rel="stylesheet" />
     <style>
         .scrolls::-webkit-scrollbar {
           width: 7px;
@@ -20,18 +21,17 @@
             border-radius: 2px;
             background-color: #f82c0d;
          }
+         * {
+  font-family: 'Source Sans Pro';
+  }
     </style>
 </head> 
 <body style = "height: 300vh; overflow-x: hidden; ">
     <?php include '../pages/home.php'?>
     <br>
     <br>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,900&display=swap" rel="stylesheet" />
-<style>
-  * {
-  font-family: 'Source Sans Pro';
-  }
-</style>
+
+    
 <div class="flex min-h-screen w-screen">
   <div class="relative my-auto mx-auto flex flex-col px-4 sm:max-w-xl md:max-w-screen-xl md:flex-row">
     <div class="mx-auto flex w-full max-w-xl lg:max-w-screen-xl">
@@ -57,7 +57,6 @@
         </div>
       </div>
     </div>
-
     <div class="flex h-full w-full space-x-3 overflow-hidden md:justify-end">
       <!-- Col 2 -->
       <div class="hidden w-56 items-center space-y-3 lg:flex">
