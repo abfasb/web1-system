@@ -35,34 +35,34 @@
                 </button>
             </div>
             <div class="p-4 md:p-5 space-y-4">
-                <h1>Terms and Conditions of WebStay Harmony Suites</h1>
+                <h1>Terms and Conditions of Digital Marketplace: Explore and Shop Online System</h1>
     <ol>
         <li>
-            <strong>Acceptance of Terms:</strong> By accessing or using the WebStay Harmony Suites platform, you agree to be bound by these Terms and Conditions, our Privacy Policy, and any other guidelines or rules applicable to specific services offered by WebStay Harmony Suites.
+            <strong>Acceptance of Terms:</strong> By accessing or using the Digital Marketplace: Explore and Shop Online System platform, you agree to be bound by these Terms and Conditions, our Privacy Policy, and any other guidelines or rules applicable to specific services offered by Digital Marketplace: Explore and Shop Online System.
         </li>
         <li>
-            <strong>Reservation and Payment:</strong> When making a reservation through WebStay Harmony Suites, you agree to provide accurate and complete information. Payment for reservations is required in advance and is subject to the cancellation policy of the property.
+            <strong>Reservation and Payment:</strong> When making a reservation through Digital Marketplace: Explore and Shop Online System, you agree to provide accurate and complete information. Payment for reservations is required in advance and is subject to the cancellation policy of the seller.
         </li>
         <li>
-            <strong>Cancellation and Refund:</strong> Cancellation policies vary by property and are outlined at the time of booking. Refunds, if applicable, will be processed according to the property's cancellation policy.
+            <strong>Cancellation and Refund:</strong> Cancellation policies vary by seller and are outlined at the time of booking. Refunds, if applicable, will be processed according to the seller's cancellation policy.
         </li>
         <li>
-            <strong>Guest Conduct:</strong> Guests are expected to conduct themselves in a respectful manner towards staff and other guests. Any behavior deemed unacceptable by the property may result in immediate eviction without refund.
+            <strong>Customer Conduct:</strong> Customers are expected to conduct themselves in a respectful manner towards sellers and other customers. Any behavior deemed unacceptable by the seller may result in account suspension or termination.
         </li>
         <li>
-            <strong>Use of Facilities:</strong> Guests are responsible for any damages caused to the property or its facilities during their stay. Use of facilities such as swimming pools, gyms, and spas is at the guest's own risk.
+            <strong>Use of Services:</strong> Customers are responsible for any damages caused to the seller's products or services during their use. Use of services is at the customer's own risk.
         </li>
         <li>
-            <strong>Privacy:</strong> WebStay Harmony Suites respects your privacy and will only use your personal information in accordance with our Privacy Policy. By using our platform, you consent to the collection and use of your information as outlined in the Privacy Policy.
+            <strong>Privacy:</strong> Digital Marketplace: Explore and Shop Online System respects your privacy and will only use your personal information in accordance with our Privacy Policy. By using our platform, you consent to the collection and use of your information as outlined in the Privacy Policy.
         </li>
         <li>
-            <strong>Limitation of Liability:</strong> WebStay Harmony Suites is not liable for any loss, damage, or injury incurred during your stay, unless caused by our negligence. Our liability is limited to the amount paid for the reservation.
+            <strong>Limitation of Liability:</strong> Digital Marketplace: Explore and Shop Online System is not liable for any loss, damage, or injury incurred during your use of the platform, unless caused by our negligence. Our liability is limited to the amount paid for the transaction.
         </li>
         <li>
-            <strong>Governing Law:</strong> These Terms and Conditions are governed by the laws of the jurisdiction in which the property is located. Any disputes arising from these Terms and Conditions will be resolved in accordance with the laws of that jurisdiction.
+            <strong>Governing Law:</strong> These Terms and Conditions are governed by the laws of the jurisdiction in which Digital Marketplace: Explore and Shop Online System operates. Any disputes arising from these Terms and Conditions will be resolved in accordance with the laws of that jurisdiction.
         </li>
     </ol>
-    <p>By using WebStay Harmony Suites, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree to these Terms and Conditions, please do not use our platform.</p>
+    <p>By using Digital Marketplace: Explore and Shop Online System, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree to these Terms and Conditions, please do not use our platform.</p>
             </div>
             <!-- Modal footer -->
             <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">

@@ -80,7 +80,6 @@
   </div>
 </div>
 
-
     <div class="w-screen bg-white sm:px-4 xl:px-12">
   <div class="z-10 mx-auto w-full px-6 py-12 sm:px-8 sm:py-16 lg:px-10 xl:px-16">
     <div class="mb-12">
@@ -136,6 +135,8 @@
   </div>
 </div>
 
+
+
 <script src="https://cdn.jsdelivr.net/npm/tailwindcss-cdn@3.4.1/tailwindcss.js"></script>
 <script src="//unpkg.com/alpinejs" defer></script>
 <div x-data="swipeCards()" class= "scrolls" x-init="
@@ -185,6 +186,7 @@
 		</template>
 	</div>
 </div>
+<?php include '../pages/footer.php'?>
 <script>
 	function swipeCards() {
 			  return {

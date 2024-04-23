@@ -12,7 +12,7 @@
 </head>
     
   <body class="bg-gray-800 text-white">
-    <nav class="bg-gray-900 p-4 mb-6">
+    <nav class="bg-gray-900 p-4 mb-6 sticky top-0">
       <div
         class="container max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 items-center"
       >

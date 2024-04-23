@@ -10,7 +10,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="../public/output.css">
 </head>
-<body class=" mt-0 bg-black w-full">
+<body class=" mt-0 w-full">
 <div class="flex items-end w-full min-h-screen bg-white mt-0">
 
 <footer class="w-full text-gray-700 bg-gray-100 body-font">
