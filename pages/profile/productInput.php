@@ -48,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $row = $result->fetch_assoc();
     $categoryId = $row["category_id"];
   } else {
-    // Insert new category
     $sql = "INSERT INTO Categories (category_name) VALUES ('$categoryName')";
     if ($conn->query($sql) === TRUE) {
       $categoryId = $conn->insert_id;
@@ -62,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $sql = "INSERT INTO Products (product_name, description, price, category_id, images) VALUES ('$productName', '$productDetails', $price, $categoryId, '" . json_encode($images) . "')";
 
   if ($conn->query($sql) === TRUE) {
-    echo "New record created successfully";
+    echo '<script> alert ("New record created successfully") </script>';
   } else {
     echo "Error: " . $sql . "<br>" . $conn->error;
   }
@@ -98,8 +97,21 @@ $conn->close();
             </div>
             <div class="col-span-6 sm:col-span-3">
                 <label for="category" class="text-sm font-medium text-gray-900 block mb-2">Category</label>
-                <input type="text" name="category" id="category" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Electronics" required="">
+                <select name="category" id="category" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" required="">
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Books">Books</option>
+                    <option value="Home & Kitchen">Home & Kitchen</option>
+                    <option value="Sports & Outdoors">Sports & Outdoors</option>
+                    <option value="Health & Beauty">Health & Beauty</option>
+                    <option value="Toys & Games">Toys & Games</option>
+                    <option value="Automotive">Automotive</option>
+                    <option value="Tools & Home Improvement">Tools & Home Improvement</option>
+                    <option value="Grocery & Gourmet Food">Grocery & Gourmet Food</option>
+                </select>
             </div>
+
             <div class="col-span-6 sm:col-span-3">
                 <label for="brand" class="text-sm font-medium text-gray-900 block mb-2">Brand</label>
                 <input type="text" name="brand" id="brand" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Apple" required="">

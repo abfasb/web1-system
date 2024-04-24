@@ -15,7 +15,7 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css"  rel="stylesheet" />
     <link rel="stylesheet" href="../public/output.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./utils/MainMenuFooter/style.css">
+    <link rel="stylesheet" href="./utils/MainMenuFooter/style.css">
 </head>
 <body>
     
@@ -28,7 +28,9 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
   <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
       <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
         <span class="sr-only">Open user menu</span>
-        <h1 class = " text-white p-4 bg-gray-400 text-lg" style = "border-radius: 50%;"><?php echo $userInitial ?></h1>
+        <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+    <span class="font-medium text-gray-600 dark:text-gray-300">JL</span>
+</div>
       </button>
       <!-- Dropdown menu -->
       <div class="hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 z-50" id="user-dropdown">
@@ -70,7 +72,7 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
         <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Shop</a>
       </li>
       <li>
-        <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Collections</a>
+        <a href="./MainCollection.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Collections</a>
       </li>
       <li>
         <a href="../pages/meet_the_team.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
