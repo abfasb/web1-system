@@ -1,6 +1,8 @@
 <?php
 include '../config/connection.php';
 
+session_start();
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = trim(filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS));
   $password = $_POST['Password'];
@@ -21,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (password_verify($password, $result['password'])) {
           $_SESSION['Username'] = $username;
           echo '<script>alert("Login successful!");</script>';
+          $_SESSION['userId'] = $result['user_id'];
           header("Location: /web1-system/views/MainMenu.php");
           exit; // Ensure that code execution stops after redirection
       } else {
@@ -33,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 }
 ?>
-
 
 
 
