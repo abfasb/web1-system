@@ -9,6 +9,7 @@
         .blue-link {
             color: blue !important;
         }
+        
     </style>
     <script src="../scripts/nav.js"></script>
 </head>

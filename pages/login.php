@@ -4,16 +4,30 @@ include '../config/connection.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  $username = trim(filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS));
+  $email = trim(filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_EMAIL));
   $password = $_POST['Password'];
-  if (($username === 'reymelrey.mislang@gmail.com' || $username === 'matbalinton@gmail.com' || $username == 'gwynethvaleriebrucal@gmail.com') && $password === '12345678') {
-      header("Location: /web1-system/views/AdminPanel.php");
+  if (($email === 'reymelrey.mislang@gmail.com' || $email === 'matbalinton@gmail.com' || $email == 'gwynethvaleriebrucal@gmail.com' || $email == 'calica.eman@gmail.com') && $password === '12345678') {
+      $getName; 
+    if ($email == 'reymelrey.mislang@gmail.com') {
+      $getName = "Reymel Mislang";
+    }
+    else if ($email == 'matbalinton@gmail.com') {
+      $getName = "Matthew Balinton";
+    }
+    else if ($email == 'gwynethvaleriebrucal@gmail.com') {
+      $getName = "Valerie Brucal";
+    }
+    else if ($email == 'calica.eman@gmail.com') {
+      $getName = "Emmanuel Calica";
+    }
+    $_SESSION['AdminName'] = $getName;
+    header("Location: /web1-system/views/AdminPanel.php");
       exit;
   }
 
-  $query = "SELECT * FROM Users WHERE username = ?";
+  $query = "SELECT * FROM Users WHERE email = ?";
   $statement = mysqli_prepare($connection, $query);
-  mysqli_stmt_bind_param($statement, 's', $username);
+  mysqli_stmt_bind_param($statement, 's', $email);
   mysqli_stmt_execute($statement);
   $queried = mysqli_stmt_get_result($statement);
 
@@ -21,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $result = mysqli_fetch_assoc($queried);
 
       if (password_verify($password, $result['password'])) {
-          $_SESSION['Username'] = $username;
+          $_SESSION['Username'] = $result['username'];
+          $_SESSION['Email'] = $email;
           echo '<script>alert("Login successful!");</script>';
           $_SESSION['userId'] = $result['user_id'];
           header("Location: /web1-system/views/MainMenu.php");
@@ -31,12 +46,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           echo '<script> alert("Wrong Password"); </script>';
       }
   } else {
-      echo '<script> alert("Wrong Username, please try again later."); </script>';
-      $_SESSION['error_message'] = 'Wrong Username, please try again later.';
+      echo '<script> alert("Wrong Email, please try again later."); </script>';
+      $_SESSION['error_message'] = 'Wrong Email, please try again later.';
   }
 }
 ?>
-
 
 
 <!DOCTYPE html>

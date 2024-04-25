@@ -2,19 +2,21 @@
     include '../config/connection.php';
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $fullName = $_POST['Name'];
-        $username = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_SPECIAL_CHARS);
+        $fullName = $_POST['fullName'];
+        $email = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_EMAIL);
         $password = $_POST['Password'];
     
-        if(empty($username) || empty($password) || empty($fullName)) {
-            $_SESSION['error_message'] = 'Please enter both username and password.';
+        if(empty($email) || empty($password) || empty($fullName)) {
+            $_SESSION['error_message'] = 'Please enter both email and password.';
+        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $_SESSION['error_message'] = 'Invalid email format.';
         } else if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
             $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 characters.';
         } else {
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $queryUser = "INSERT INTO Users(username, password) VALUES (?, ?)";
+            $queryUser = "INSERT INTO Users(username, email, password) VALUES (?, ?, ?)";
             $statement = mysqli_prepare($connection, $queryUser);
-            mysqli_stmt_bind_param($statement, "ss", $username, $hashedPassword);
+            mysqli_stmt_bind_param($statement, "sss", $fullName, $email, $hashedPassword);
             $queried = mysqli_stmt_execute($statement);
     
             if($queried) {
@@ -27,8 +29,6 @@
             }
         }
     }
-    
-
 ?>
 
 <!DOCTYPE html>
@@ -60,7 +60,7 @@
         <form action = "/web1-system/pages/registration.php" method = "POST">
             <div class="mb-4">
                 <label for="fullName" class="block text-gray-700 text-sm font-semibold mb-2">Full Name *</label>
-                <input type="text" name = "Name" id="fullName" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="Matthew Balinton">
+                <input type="text" name = "fullName" id="fullName" class="form-input w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-blue-500" required placeholder="Matthew Balinton">
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email Address *</label>

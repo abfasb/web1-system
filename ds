@@ -1,0 +1,288 @@
+[33mcommit 0de6c6624375372ae241890fe46a96a0b6e032de[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mMainHome[m[33m, [m[1;31morigin/MainHome[m[33m)[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Apr 24 20:46:40 2024 +0800
+
+    Still no comment
+
+[33mcommit aee1d35b5509e9f3f9e9add6944c51d785550aab[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Apr 24 18:31:12 2024 +0800
+
+    No comment
+
+[33mcommit a0bfac995ff3089ad9f25479e8755cf3d015fc9a[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Apr 23 22:23:52 2024 +0800
+
+    Add the seller panel
+
+[33mcommit 0e875d0a7ccba7f6e5abc3a7d91f83ef9bf10f29[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Apr 23 20:40:45 2024 +0800
+
+    Just cleaning up and staying up to date
+
+[33mcommit 1da3a13dfd1703fb8935597aada77b53a45e3c26[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Mon Apr 22 21:48:09 2024 +0800
+
+    Still stuck in error
+
+[33mcommit fb8bf3e180b4a046eb49d49adfbd41bab0ba8485[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Apr 17 18:44:23 2024 +0800
+
+    Try some feature
+
+[33mcommit 5d691fb63c88461748f0ccb78497dda145dea5de[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Apr 17 18:27:14 2024 +0800
+
+    Fixed the navigation bug
+
+[33mcommit 6fe9bcc36f0b9905f1d697d98893c43d7f053539[m[33m ([m[1;32mhome[m[33m)[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Apr 17 18:16:31 2024 +0800
+
+    Add new feature for the new password that links into forget_password.
+
+[33mcommit e24b0cbbd897203bc772c3064d0cdd0841b4a106[m[33m ([m[1;31morigin/home[m[33m)[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Apr 16 21:12:33 2024 +0800
+
+    Fixing bugs
+
+[33mcommit 1af49cd4e0fd64b00d3a2b2238a8745803b8cbc3[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Apr 14 22:05:26 2024 +0800
+
+    Still fixing bug and developing resetting password via email
+
+[33mcommit 4469d5796fab223e0065bf4e96fcd051901038d5[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Mon Apr 8 21:13:06 2024 +0800
+
+    Add some features
+
+[33mcommit b18612633c36f43a56fc6d2c15db6ac48a1540b6[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Apr 7 21:26:27 2024 +0800
+
+    Add cart and some backend. Also change the background bg from hotel into an e-commerce
+
+[33mcommit 00a473a054ef39d22d02ec423dff3954d6eb33c8[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sat Apr 6 21:15:12 2024 +0800
+
+    Add some progress
+
+[33mcommit ce278d471dd7338e1a4fa25cd1deaab66e2f89fd[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Fri Mar 22 20:37:00 2024 +0800
+
+    Fix cart
+
+[33mcommit d8b25a276430a2f08ac90f936f9573f26a1fa90a[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Thu Mar 21 09:55:49 2024 +0800
+
+    Bug is still taking over
+
+[33mcommit a944a8ecbf34924340ec76e1426273a4d2809899[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Mar 19 21:04:06 2024 +0800
+
+    Still making progress
+
+[33mcommit 63ea978419d32927414357fc3da660e5547172fc[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Mar 19 20:32:14 2024 +0800
+
+    Firebase resolved
+
+[33mcommit 06cd714a0dd3bdb8318961afdb11d97b03c44877[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Mar 17 10:37:34 2024 +0800
+
+    Filter out something
+
+[33mcommit f52d50902fb816cddcc7b81123d5eeffa651f3d3[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sat Mar 16 21:40:32 2024 +0800
+
+    making aesthetic design using tailwind
+
+[33mcommit c4dded1021546b84b0dee4d9c0530a1c58c86180[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sat Mar 16 20:54:22 2024 +0800
+
+    Make a product cart
+
+[33mcommit 7249d0e298781e56ee991013e71f58f6931cbac9[m
+Merge: e3081c4 296067e
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Mar 12 10:03:45 2024 +0800
+
+    Merge branch 'main' into home
+
+[33mcommit e3081c481913063772bf95da4f06343c2eee1e5e[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Tue Mar 12 10:03:25 2024 +0800
+
+    Changing system in the backend
+
+[33mcommit cbca96d6df7cde693269b3c39ed77d4b095a152e[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Fri Mar 8 08:37:33 2024 +0800
+
+    Saket na sa ulo HUHHUHUHUH
+
+[33mcommit fe9ef1b0698174db21331c3dd705add607c00ef5[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Fri Mar 8 08:08:18 2024 +0800
+
+    Resolve firebase auth
+
+[33mcommit 4c703e458e7a3972eb65653250296cb24acd17bc[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Mar 6 21:09:01 2024 +0800
+
+    Fixing the navbar of the admin panel.
+
+[33mcommit ef2318cded6211961fd4488cf8d6c2754947b626[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Mar 3 21:04:27 2024 +0800
+
+    Masakit na ulo ko
+
+[33mcommit 9f269ca16533e47c0bf8ec1e63812426e94da627[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Mar 3 18:29:04 2024 +0800
+
+    Finishing admin panel UI/UX
+
+[33mcommit 17e7a3078d35ec01afe957c2096115542dc67ad3[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Mar 3 13:59:23 2024 +0800
+
+    Fixing errors and bugs
+
+[33mcommit 6ff4fa6e4fc762abb03e117f1566d6ec97e1f694[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Mar 3 13:23:07 2024 +0800
+
+    Make utils folder
+
+[33mcommit 7b817eb8d96f1175cf1ef0db400264073052a870[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Feb 28 22:08:16 2024 +0800
+
+    Resolved firebase auth
+
+[33mcommit 8e28f10b06508dd3d86409cdeb4038a76b2f45d6[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Wed Feb 28 21:43:40 2024 +0800
+
+    Add footer in the main menu
+
+[33mcommit 5aa9c43675b1da532cf3cc9f37a1594160336ca4[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 25 18:11:22 2024 +0800
+
+    Add Modal
+
+[33mcommit 72668b8138415a91ee9788a15785e47633ffe523[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 25 15:33:03 2024 +0800
+
+    Firebase done.
+
+[33mcommit ca6bf25b7d7c36e4dad6a594459ea2ac82a97a04[m[33m ([m[1;31morigin/login[m[33m, [m[1;32mlogin[m[33m)[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 25 11:17:22 2024 +0800
+
+    Registration and Login Completed
+
+[33mcommit 05a2d045a6ba920d7db02ae55571a544bd90f41d[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 18 20:41:14 2024 +0800
+
+    Make an firebase Auth
+
+[33mcommit 751dbabe73d3d31b27a6529eafcc5260a9fe93f9[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sat Feb 17 13:12:01 2024 +0800
+
+    Reg Resolved
+
+[33mcommit 5ab29775eb5fbea44a6f68a6e231012086950dc4[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 11 13:14:54 2024 +0800
+
+    Add auth controller
+
+[33mcommit 296067e821c05c6321ecc63f8dc2bb4062979286[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 2f5ccd9 5fd0924
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 11 11:41:26 2024 +0800
+
+    Merge branch 'main' of https://github.com/abfasb/web1-system
+
+[33mcommit 2f5ccd9ad314cbba4b891d1e3bea33c5c77bfa83[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 11 11:38:17 2024 +0800
+
+    Add login and registration and at the same time meet our team
+
+[33mcommit 5fd092448dc40f19fb7764cfaa2ed28c33c3bf8b[m
+Merge: f43d27b e050e4a
+Author: mtthw <113967536+abfasb@users.noreply.github.com>
+Date:   Sat Feb 10 18:34:14 2024 +0800
+
+    Merge pull request #1 from abfasb/login
+    
+    Login
+
+[33mcommit e050e4a8b1df10782c8573c18810cec4611cf2ae[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sat Feb 10 18:28:42 2024 +0800
+
+    Tailwind resolved
+
+[33mcommit c25e2c3ebbeef4d748940fd6700f5c31c0b8d1ae[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sat Feb 10 17:53:18 2024 +0800
+
+    Fix error in tailwind
+
+[33mcommit 431b4b42ee0207670cefac023fb946fb8aff86f8[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Fri Feb 9 20:49:59 2024 +0800
+
+    Add tailwind
+
+[33mcommit 2bea3013333161c27f01c99fc0628aba00f2b2f5[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Fri Feb 9 20:25:11 2024 +0800
+
+    Add home again
+
+[33mcommit 76f3603e3ca98da05df70f5ec4e990098e740500[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Fri Feb 9 10:29:07 2024 +0800
+
+    Add homepage
+
+[33mcommit 161d9360b8244834c687aa0882d967615368e03a[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 4 20:29:42 2024 +0800
+
+    Commit changes
+
+[33mcommit f43d27b46868eada5950c90af0574071891395b4[m
+Author: mtthw <matbalinton@gmail.com>
+Date:   Sun Feb 4 14:53:33 2024 +0800
+
+    Add Login
+
+[33mcommit 45a8ecba363b7a94f

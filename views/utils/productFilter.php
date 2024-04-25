@@ -12,11 +12,10 @@
 </head>
     
   <body class="bg-gray-800 text-white">
-    <nav class="bg-gray-900 p-4 mb-6 sticky top-0">
+    <nav class="bg-gray-900 p-4 mt-14">
       <div
         class="container max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 items-center"
       >
-        <!-- Search area -->
         <div class="relative w-full">
           <input
             type="text"
@@ -101,7 +100,13 @@
         class="w-full max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6 place-content-center p-4"
       ></div>
     </main>
-    <script>
+    
+    <?php include 'MainProductFilter.php' ?>
+</body>
+</html>
+
+
+<script>
         const products = [
   {
     name: 'Sony Playstation 5',
@@ -285,6 +290,3 @@ function filterProducts() {
 }
 
     </script>
-
-</body>
-</html>

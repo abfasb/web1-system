@@ -3,6 +3,8 @@ session_start();
 
 
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
+$userName =  $_SESSION['Username'];
+$emailAddress = $_SESSION['Email']
 
 ?>
 
@@ -29,14 +31,14 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
       <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
         <span class="sr-only">Open user menu</span>
         <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-    <span class="font-medium text-gray-600 dark:text-gray-300">JL</span>
+    <span class="font-medium text-gray-600 dark:text-gray-300"><?php echo $userInitial ?></span>
 </div>
       </button>
       <!-- Dropdown menu -->
       <div class="hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 z-50" id="user-dropdown">
         <div class="px-4 py-3 z-50">
-          <span class="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
-          <span class="block text-sm  text-gray-500 truncate dark:text-gray-400">name@flowbite.com</span>
+          <span class="block text-sm text-gray-900 dark:text-white"><?php echo $userName ?></span>
+          <span class="block text-sm  text-gray-500 truncate dark:text-gray-400"><?php echo $emailAddress ?></span>
         </div>
         <ul class="py-2 z-50" aria-labelledby="user-menu-button">
           <li>
@@ -81,6 +83,7 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
   </div>
   </div>
 </nav>
+
     <br>
     <?php include './utils/productFilter.php' ?>
     <br>
@@ -212,6 +215,7 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
         if (xhr.readyState == 4 && xhr.status == 200) {
             console.log(xhr.responseText);
             alert("Terms accepted successfully!");
+            window.location.href = "./AdminPanel.php"
         }
     };
     xhr.open("POST", "../controllers/updateUserToSeller.php", true);

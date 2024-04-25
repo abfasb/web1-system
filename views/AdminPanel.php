@@ -1,3 +1,12 @@
+<?php
+  session_start();
+
+  $adminName = $_SESSION['AdminName'];
+  $sellerName =  $_SESSION['SellerName'];
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,15 +40,6 @@
   --tw-content: '';
 }
 
-/*
-1. Use a consistent sensible line-height in all browsers.
-2. Prevent adjustments of font size after orientation changes in iOS.
-3. Use a more readable tab size.
-4. Use the user's configured `sans` font-family by default.
-5. Use the user's configured `sans` font-feature-settings by default.
-6. Use the user's configured `sans` font-variation-settings by default.
-*/
-
 html {
   line-height: 1.5;
   /* 1 */
@@ -58,10 +58,6 @@ html {
   /* 6 */
 }
 
-/*
-1. Remove the margin in all browsers.
-2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
-*/
 
 body {
   margin: 0;
@@ -70,11 +66,6 @@ body {
   /* 2 */
 }
 
-/*
-1. Add the correct height in Firefox.
-2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
-3. Ensure horizontal rules are visible by default.
-*/
 
 hr {
   height: 0;
@@ -85,18 +76,13 @@ hr {
   /* 3 */
 }
 
-/*
-Add the correct text decoration in Chrome, Edge, and Safari.
-*/
 
 abbr:where([title]) {
   -webkit-text-decoration: underline dotted;
           text-decoration: underline dotted;
 }
 
-/*
-Remove the default font size and weight for headings.
-*/
+
 
 h1,
 h2,
@@ -149,10 +135,6 @@ small {
   font-size: 80%;
 }
 
-/*
-Prevent `sub` and `sup` elements from affecting the line height in all browsers.
-*/
-
 sub,
 sup {
   font-size: 75%;
@@ -169,12 +151,6 @@ sup {
   top: -0.5em;
 }
 
-/*
-1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
-2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
-3. Remove gaps between table borders by default.
-*/
-
 table {
   text-indent: 0;
   /* 1 */
@@ -183,12 +159,6 @@ table {
   border-collapse: collapse;
   /* 3 */
 }
-
-/*
-1. Change the font styles in all browsers.
-2. Remove the margin in Firefox and Safari.
-3. Remove default padding in all browsers.
-*/
 
 button,
 input,
@@ -215,19 +185,12 @@ textarea {
   /* 3 */
 }
 
-/*
-Remove the inheritance of text transform in Edge and Firefox.
-*/
-
 button,
 select {
   text-transform: none;
 }
 
-/*
-1. Correct the inability to style clickable types in iOS and Safari.
-2. Remove default button styles.
-*/
+
 
 button,
 [type='button'],
@@ -241,43 +204,31 @@ button,
   /* 2 */
 }
 
-/*
-Use the modern Firefox focus style for all focusable elements.
-*/
+
 
 :-moz-focusring {
   outline: auto;
 }
 
-/*
-Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
-*/
+
 
 :-moz-ui-invalid {
   box-shadow: none;
 }
 
-/*
-Add the correct vertical alignment in Chrome and Firefox.
-*/
+
 
 progress {
   vertical-align: baseline;
 }
 
-/*
-Correct the cursor style of increment and decrement buttons in Safari.
-*/
+
 
 ::-webkit-inner-spin-button,
 ::-webkit-outer-spin-button {
   height: auto;
 }
 
-/*
-1. Correct the odd appearance in Chrome and Safari.
-2. Correct the outline style in Safari.
-*/
 
 [type='search'] {
   -webkit-appearance: textfield;
@@ -294,10 +245,6 @@ Remove the inner padding in Chrome and Safari on macOS.
   -webkit-appearance: none;
 }
 
-/*
-1. Correct the inability to style clickable types in iOS and Safari.
-2. Change font properties to `inherit` in Safari.
-*/
 
 ::-webkit-file-upload-button {
   -webkit-appearance: button;
@@ -306,17 +253,11 @@ Remove the inner padding in Chrome and Safari on macOS.
   /* 2 */
 }
 
-/*
-Add the correct display in Chrome and Safari.
-*/
 
 summary {
   display: list-item;
 }
 
-/*
-Removes the default spacing and border for appropriate elements.
-*/
 
 blockquote,
 dl,
@@ -351,26 +292,16 @@ menu {
   padding: 0;
 }
 
-/*
-Reset default styling for dialogs.
-*/
 
 dialog {
   padding: 0;
 }
 
-/*
-Prevent resizing textareas horizontally by default.
-*/
 
 textarea {
   resize: vertical;
 }
 
-/*
-1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
-2. Set the default placeholder color to the user's configured gray 400 color.
-*/
 
 input::-moz-placeholder, textarea::-moz-placeholder {
   opacity: 1;
@@ -404,11 +335,6 @@ Make sure disabled buttons don't get the pointer cursor.
   cursor: default;
 }
 
-/*
-1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
-2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
-   This can trigger a poorly considered lint error in some tools but is included by design.
-*/
 
 img,
 svg,
@@ -424,9 +350,6 @@ object {
   /* 2 */
 }
 
-/*
-Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
-*/
 
 img,
 video {
@@ -434,7 +357,6 @@ video {
   height: auto;
 }
 
-/* Make elements with the HTML hidden attribute stay hidden by default */
 
 [hidden] {
   display: none;
@@ -1328,6 +1250,13 @@ video {
 }
     </style>
 </head>
+
+
+
+
+
+
+
 <body class="text-gray-800 font-inter">
     <div class="fixed left-0 top-0 w-64 h-full bg-[#f8f4f3] p-4 z-50 sidebar-menu transition-transform">
         <a href="#" class="flex items-center pb-4 border-b border-b-gray-800">
@@ -1562,7 +1491,7 @@ video {
                             </div>
                         </div>
                         <div class="p-2 md:block text-left">
-                            <h2 class="text-sm font-semibold text-gray-800">Matt Balinton</h2>
+                            <h2 class="text-sm font-semibold text-gray-800"><?php echo $adminName ?></h2>
                             <p class="text-xs text-gray-500">Administrator</p>
                         </div>                
                     </button>
@@ -2049,7 +1978,6 @@ video {
                 </div>
             </div>
         </div>
-      <!-- End Content -->
     </main>
 
     <script src="https://unpkg.com/@popperjs/core@2"></script>
