@@ -14,7 +14,7 @@
 <body class="">
 
 <?php include './home.php'?>
-<?php include '../pages/components/productComponent.php' ?>
+<?php include '../views/MainCollection.php' ?>
   
 </body>
 </html>

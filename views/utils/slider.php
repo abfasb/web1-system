@@ -177,6 +177,7 @@
     </style>
 </head>
 <body>
+  <?php include '../../pages/home.php' ?>
     <main>
         <ul class='slider'>
           <li class='item' style="background-image: url('https://t4.ftcdn.net/jpg/06/22/39/91/360_F_622399137_jlEDsEN0pUMZA6jMKShRoq2po69QBQXj.jpg')">
