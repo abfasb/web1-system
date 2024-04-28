@@ -119,13 +119,12 @@ while ($row = mysqli_fetch_assoc($result)) {
                 // Use the first image as the product image
                 $product_image = '../../pages/profile/uploads/' . $images[0]; // Assuming the first image is the main product image
                 ?>
-                <img class="object-cover object-center w-full" src="<?php echo $product_image; ?>" alt="<?php echo $product['product_name']; ?>">
+                <img class="object-cover object-center w-full p-2 rounded-lg" src="<?php echo $product_image; ?>" alt="<?php echo $product['product_name']; ?>">
                 <div class="p-4">
                     <h3 class="text-lg font-semibold text-gray-900"><?php echo $product['product_name']; ?></h3>
-                    <p class="text-sm text-gray-700 mt-1"><?php echo $product['category_name']; ?></p>
                     <div class="flex items-center justify-between mt-2">
                         <span class="text-gray-900 font-bold">$<?php echo number_format($product['price'], 2); ?></span>
-                        <button class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded focus:outline-none focus:bg-blue-600">Add to Cart</button>
+                        <button class="px- py-1 bg-blue-500 text-white text-xs font-semibold rounded focus:outline-none focus:bg-blue-600">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -134,6 +133,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
     </main>
+
+    
     
 
 </body>
