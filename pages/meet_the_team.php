@@ -12,7 +12,7 @@
 </head>
 <body>
 <link rel="stylesheet" href="https://cdn.materialdesignicons.com/6.5.95/css/materialdesignicons.min.css">
-<?php include './home.php' ?>
+<?php include './home.php'?>
 <div class="flex items-center justify-center min-h-screen bg-white pt-32">
     <div class="flex flex-col">
         <div class="flex flex-col mt-0">

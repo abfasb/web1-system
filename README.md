@@ -1,4 +1,4 @@
-# ShopSphere: Your Digital Marketplace
+
 
 Welcome to ShopSphere, your premier destination for online shopping. Discover a world of products at your fingertips and shop with ease from the comfort of your home.
 
