@@ -1,4 +1,19 @@
 <?php
+// Assuming you have already connected to your database
+include '../../config/connection.php';
+// Fetch products from the database
+$sql = "SELECT Products.product_id, Products.product_name, Products.description, Products.price, Categories.category_name, Products.images
+        FROM Products
+        INNER JOIN Categories ON Products.category_id = Categories.category_id";
+$result = mysqli_query($connection, $sql);
+
+// Initialize an array to store product data
+$products = [];
+
+// Fetch each row from the result set and store it in the products array
+while ($row = mysqli_fetch_assoc($result)) {
+    $products[] = $row;
+}
 
 ?>
 
@@ -69,7 +84,7 @@
         </span>
       </div>
     </nav>
-
+  
     <main class="flex flex-col md:flex-row container mx-auto max-w-6xl">
       <div class="space-y-4 p-2 w-full md:max-w-[10rem]">
         <h2 class="text-2xl">Filters</h2>
@@ -95,13 +110,32 @@
       </div>
 
       <!-- Products wrapper -->
-      <div
-        id="products-wrapper"
-        class="w-full max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6 place-content-center p-4"
-      ></div>
+      <div id="products-wrapper" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <?php foreach ($products as $product): ?>
+            <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                <?php
+                // Decode the JSON string into an array of image URLs
+                $images = json_decode($product['images'], true);
+                // Use the first image as the product image
+                $product_image = '../../pages/profile/uploads/' . $images[0]; // Assuming the first image is the main product image
+                ?>
+                <img class="object-cover object-center w-full" src="<?php echo $product_image; ?>" alt="<?php echo $product['product_name']; ?>">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900"><?php echo $product['product_name']; ?></h3>
+                    <p class="text-sm text-gray-700 mt-1"><?php echo $product['category_name']; ?></p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-gray-900 font-bold">$<?php echo number_format($product['price'], 2); ?></span>
+                        <button class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded focus:outline-none focus:bg-blue-600">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+
     </main>
     
-    <?php include 'MainProductFilter.php' ?>
+
 </body>
 </html>
 
@@ -210,30 +244,25 @@ searchInput.addEventListener('input', filterProducts);
 // Create product element
 function createProductElement(product) {
   const productElement = document.createElement('div');
+  productElement.className = 'bg-white rounded-lg overflow-hidden shadow-md';
 
-  productElement.className = 'item space-y-2';
-
-  productElement.innerHTML = `<div
-  class="bg-gray-100 flex justify-center relative overflow-hidden group cursor-pointer border rounded-xl"
->
-  <img
-    src="${product.url}"
-    alt="${product.name}"
-    class="w-full h-full object-cover"
-  />
-  <button class="status bg-black text-white absolute bottom-0 left-0 right-0 text-center py-2 translate-y-full transition group-hover:translate-y-0"
-    >Add To Cart</button
-  >
-</div>
-<p class="text-xl">${product.name}</p>
-<strong>$${product.price.toLocaleString()}</strong>`;
-
-  productElement
-    .querySelector('.status')
-    .addEventListener('click', updateCart);
+  productElement.innerHTML = `
+    <img class="object-cover object-center w-full" src="${product.url}" alt="${product.name}">
+    <div class="p-4">
+      <h3 class="text-lg font-semibold text-gray-900">${product.name}</h3>
+      <p class="text-sm text-gray-700 mt-1">${product.category}</p>
+      <div class="flex items-center justify-between mt-2">
+        <span class="text-gray-900 font-bold">$${product.price.toFixed(2)}</span>
+        <button class="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded focus:outline-none focus:bg-blue-600">Add to Cart</button>
+      </div>
+    </div>
+  `;
 
   return productElement;
 }
+
+
+
 
 // Toggle add/remove from cart
 function updateCart(e) {

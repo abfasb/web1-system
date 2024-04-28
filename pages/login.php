@@ -20,7 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     else if ($email == 'calica.eman@gmail.com') {
       $getName = "Emmanuel Calica";
     }
-    $_SESSION['AdminName'] = $getName;
+    $_SESSION['Username'] = $getName;
+    $_SESSION['Role'] = "Administrator";
     header("Location: /web1-system/views/AdminPanel.php");
       exit;
   }
@@ -35,11 +36,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $result = mysqli_fetch_assoc($queried);
 
       if (password_verify($password, $result['password'])) {
-          $_SESSION['Username'] = $result['username'];
-          $_SESSION['Email'] = $email;
-          echo '<script>alert("Login successful!");</script>';
-          $_SESSION['userId'] = $result['user_id'];
-          header("Location: /web1-system/views/MainMenu.php");
+          if ($result['role'] == 'seller') {
+            $_SESSION['Username'] = $result['username'];
+            $_SESSION['Email'] = $email;
+            echo '<script>alert("Login successful!");</script>';
+            $_SESSION['userId'] = $result['user_id'];
+            $getRole = "Seller";
+            $_SESSION['Role'] = $getRole;
+            header("Location: /web1-system/views/AdminPanel.php");
+          } else {
+            $_SESSION['Username'] = $result['username'];
+            $_SESSION['Email'] = $email;
+            echo '<script>alert("Login successful!");</script>';
+            $_SESSION['userId'] = $result['user_id'];
+            $getRole = "Administrator";
+            $_SESSION['Role'] = $getRole;
+            header("Location: /web1-system/views/MainMenu.php");
+          }
+          
           exit; // Ensure that code execution stops after redirection
       } else {
           $_SESSION['error_message'] = 'Wrong Password';
