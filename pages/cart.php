@@ -48,22 +48,35 @@
     <p class="text-xl font-medium">Order Summary</p>
     <p class="text-gray-400">Check your items. And select a suitable shipping method.</p>
     <div class="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
-      <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-        <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/flagged/photo-1556637640-2c80d3201be8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
-        <div class="flex w-full flex-col px-4 py-4">
-          <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
-          <span class="float-right text-gray-400">42EU - 8.5US</span>
-          <p class="text-lg font-bold">$138.99</p>
-        </div>
-      </div>
-      <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-        <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
-        <div class="flex w-full flex-col px-4 py-4">
-          <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
-          <span class="float-right text-gray-400">42EU - 8.5US</span>
-          <p class="mt-auto text-lg font-bold">$238.99</p>
-        </div>
-      </div>
+    <div class="flex flex-col rounded-lg bg-white sm:flex-row">
+  <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/flagged/photo-1556637640-2c80d3201be8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
+  <div class="flex w-full flex-col px-4 py-4">
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
+      <button class="text-red-500">Remove</button>
+    </div>
+    <span class="float-right text-gray-400">42EU - 8.5US</span>
+    <div class="flex items-center mt-auto">
+      <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="1">
+      <p class="text-lg font-bold">$138.99</p>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col rounded-lg bg-white sm:flex-row">
+  <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
+  <div class="flex w-full flex-col px-4 py-4">
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
+      <button class="text-red-500">Remove</button>
+    </div>
+    <span class="float-right text-gray-400">42EU - 8.5US</span>
+    <div class="flex items-center mt-auto">
+      <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="1">
+      <p class="text-lg font-bold">$238.99</p>
+    </div>
+  </div>
+</div>
+
     </div>
 
     <p class="mt-8 text-lg font-medium">Shipping Methods</p>
