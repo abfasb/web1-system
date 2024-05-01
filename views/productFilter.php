@@ -1,18 +1,10 @@
 <?php
 // Assuming you have already connected to your database
 include '../config/connection.php';
-// Fetch products from the database
-$sql = "SELECT Products.product_id, Products.product_name, Products.description, Products.price, Categories.category_name, Products.images
-        FROM Products
-        INNER JOIN Categories ON Products.category_id = Categories.category_id";
-$result = mysqli_query($connection, $sql);
+include '../model/ProductModel.php';
 
-$products = [];
-
-while ($row = mysqli_fetch_assoc($result)) {
-    $products[] = $row;
-}
-
+$productModel = new ProductModel($connection);
+$products = $productModel->getAllProducts();
 ?>
 
 <!DOCTYPE html>
@@ -24,116 +16,8 @@ while ($row = mysqli_fetch_assoc($result)) {
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
   <body class=" text-white bg-gray-900">
-    <nav class="bg-gray-900 p-4">
-      <div
-        class="container max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 items-center"
-      >
-        <div class="relative w-full">
-          <input
-            type="text"
-            id="search"
-            class="bg-gray-700 rounded-full p-2 pl-10 transition focus:w-full"
-            placeholder="Search products..."
-          />
-          <svg
-            class="absolute left-2 top-1/2 -translate-y-1/2"
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-            <path d="M21 21l-6 -6" />
-          </svg>
-        </div>
-
-        <!-- Cart icon -->
-        <span class="relative text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            #
-            height="24"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            fill="none"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M6.331 8h11.339a2 2 0 0 1 1.977 2.304l-1.255 8.152a3 3 0 0 1 -2.966 2.544h-6.852a3 3 0 0 1 -2.965 -2.544l-1.255 -8.152a2 2 0 0 1 1.977 -2.304z"
-            />
-            <path d="M9 11v-5a3 3 0 0 1 6 0v5" />
-          </svg>
-          <small
-            id="cart-count"
-            class="bg-red-500 text-xs text-white w-4 h-4 absolute -top-2 -right-2 rounded-full"
-            >0</small
-          >
-        </span>
-      </div>
-    </nav>
-  
-    <main class="flex flex-col md:flex-row container mx-auto max-w-6xl">
-      <div class="space-y-4 p-2 w-full md:max-w-[10rem] pr-7">
-        <h2 class="text-2xl">Filters</h2>
-        <h3 class="text-xl mb-2">Category</h3>
-        <div id="filters-container" class="text-xl space-y-2">
-          <div>
-            <input type="checkbox" class="check" id="cameras" />
-            <label for="cameras">Cameras</label>
-          </div>
-          <div>
-            <input type="checkbox" class="check" id="smartphones" />
-            <label for="smartphones">Smartphones</label>
-          </div>
-          <div>
-            <input type="checkbox" class="check" id="games" />
-            <label for="games">Games</label>
-          </div>
-          <div>
-            <input type="checkbox" class="check" id="televisions" />
-            <label for="televisions">Televisions</label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Products wrapper -->
-      <div id="products-wrapper" class="grid ml-2 m-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <?php foreach ($products as $product): ?>
-            <div class="bg-white rounded-lg overflow-hidden shadow-md">
-                <?php
-                // Decode the JSON string into an array of image URLs
-                $images = json_decode($product['images'], true);
-                // Use the first image as the product image
-                $product_image = '../pages/profile/uploads/' . $images[0]; // Assuming the first image is the main product image
-                ?>
-                <img class="object-cover object-center w-full p-2 rounded-lg" src="<?php echo $product_image; ?>" alt="<?php echo $product['product_name']; ?>">
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-900"><?php echo $product['product_name']; ?></h3>
-                    <div class="flex items-center justify-between mt-2">
-                        <span class="text-gray-900 font-bold">$<?php echo number_format($product['price'], 2); ?></span>
-                        <button class="px- py-1 bg-blue-500 text-white text-xs font-semibold rounded focus:outline-none focus:bg-blue-600 p-4">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-
-
-    </main>
-
-    
-    <header class="bg-white">
-  <div class="container mx-auto px-4 py-8 flex items-center">
+  <header class="bg-white">
+  <div class="container mx-auto px-4 py-4 flex items-center">
 
     <!-- logo -->
     <div class="mr-auto md:w-48 flex-shrink-0">
@@ -187,6 +71,58 @@ while ($row = mysqli_fetch_assoc($result)) {
   
   <hr>
 </header>
+  
+    <main class="flex flex-col md:flex-row container mx-auto max-w-6xl">
+      <div class="space-y-4 p-2 w-full md:max-w-[10rem] pr-7">
+        <h2 class="text-2xl">Filters</h2>
+        <h3 class="text-xl mb-2">Category</h3>
+        <div id="filters-container" class="text-xl space-y-2">
+          <div>
+            <input type="checkbox" class="check" id="cameras" />
+            <label for="cameras">Cameras</label>
+          </div>
+          <div>
+            <input type="checkbox" class="check" id="smartphones" />
+            <label for="smartphones">Smartphones</label>
+          </div>
+          <div>
+            <input type="checkbox" class="check" id="games" />
+            <label for="games">Games</label>
+          </div>
+          <div>
+            <input type="checkbox" class="check" id="televisions" />
+            <label for="televisions">Televisions</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products wrapper -->
+      <div id="products-wrapper" class="grid ml-2 m-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <?php foreach ($products as $product): ?>
+            <div class="bg-white rounded-lg overflow-hidden shadow-md">
+                <?php
+                // Decode the JSON string into an array of image URLs
+                $images = json_decode($product['images'], true);
+                // Use the first image as the product image
+                $product_image = '../pages/profile/uploads/' . $images[0]; // Assuming the first image is the main product image
+                ?>
+                <img class="object-cover object-center w-full p-2 rounded-lg" src="<?php echo $product_image; ?>" alt="<?php echo $product['product_name']; ?>">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900"><?php echo $product['product_name']; ?></h3>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-gray-900 font-bold">$<?php echo number_format($product['price'], 2); ?></span>
+                        <button class="px- py-1 bg-blue-500 text-white text-xs font-semibold rounded focus:outline-none focus:bg-blue-600 p-4">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+
+    </main>
+
+
+
 
 </body>
 </html>
