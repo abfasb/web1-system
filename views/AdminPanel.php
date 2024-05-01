@@ -1257,6 +1257,12 @@ video {
 
 
 
+
+
+
+
+
+
 <body class="text-gray-800 font-inter">
     <div class="fixed left-0 top-0 w-64 h-full bg-[#f8f4f3] p-4 z-50 sidebar-menu transition-transform">
         <a href="#" class="flex items-center pb-4 border-b border-b-gray-800">

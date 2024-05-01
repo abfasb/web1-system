@@ -4,7 +4,7 @@ session_start();
 
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
-$emailAddress = $_SESSION['Email']
+$emailAddress = $_SESSION['Email'];
 
 ?>
 
@@ -85,7 +85,8 @@ $emailAddress = $_SESSION['Email']
 </nav>
 
     <br>
-    <?php include './utils/productFilter.php' ?>
+    <br>
+    <?php include './productFilter.php' ?>
     <br>
     <?php include '../pages/payment.php'?>
     <br>
