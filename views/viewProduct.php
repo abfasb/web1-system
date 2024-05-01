@@ -1,5 +1,21 @@
 <?php
-    
+
+include '../config/connection.php';
+// Check if product_id is provided in the URL
+if (isset($_GET['product_id'])) {
+    // Get the product ID from the URL
+    $product_id = $_GET['product_id'];
+
+
+    // Prepare a query to fetch product details based on product_id
+    $query = "SELECT * FROM Products WHERE product_id = ?";
+
+    $stmt = mysqli_prepare($connection, $query);
+    mysqli_stmt_bind_param($stmt, "i", $product_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    if (mysqli_num_rows($result) > 0) {
+        while ($product = mysqli_fetch_assoc($result)) {
 ?>
 
 <!DOCTYPE html>
@@ -45,7 +61,7 @@
       </div>
 
       <div class="lg:col-span-2 lg:row-span-2 lg:row-end-2">
-        <h1 class="sm: text-2xl font-bold text-gray-900 sm:text-3xl">Afro-Brazillian Coffee</h1>
+        <h1 class="sm: text-2xl font-bold text-gray-900 sm:text-3xl"><?php echo $product['product_name'] ?></h1>
 
         <div class="mt-5 flex items-center">
           <div class="flex items-center">
@@ -105,7 +121,7 @@
 
         <div class="mt-10 flex flex-col items-center justify-between space-y-4 border-t border-b py-4 sm:flex-row sm:space-y-0">
           <div class="flex items-end">
-            <h1 class="text-3xl font-bold">$60.50</h1>
+            <h1 class="text-3xl font-bold">₱<?php echo $product['price'] ?></h1>
             <span class="text-base">/month</span>
           </div>
 
@@ -114,6 +130,10 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
             Add to cart
+          </button>
+
+          <button type = "button" class = "p-4 border rounded-md px-8">
+            Wishlist
           </button>
         </div>
 
@@ -147,8 +167,8 @@
         </div>
 
         <div class="mt-8 flow-root sm:mt-12">
-          <h1 class="text-3xl font-bold">Delivered To Your Door</h1>
-          <p class="mt-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia accusantium nesciunt fuga.</p>
+          <h1 class="text-3xl font-bold"><?php echo $product['description'] ?></h1>
+          <p class="mt-4"><?php echo $product['description'] ?></p>
           <h1 class="mt-8 text-3xl font-bold">From the Fine Farms of Brazil</h1>
           <p class="mt-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio numquam enim facere.</p>
           <p class="mt-4">Amet consectetur adipisicing elit. Optio numquam enim facere. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Dolore rerum nostrum eius facere, ad neque.</p>
@@ -158,7 +178,23 @@
   </div>
 </section>
 
+<?php
+        }
+    } else {
+        // Product not found
+        echo "<p>Product not found</p>";
+    }
 
+    // Close the statement
+    mysqli_stmt_close($stmt);
+
+    // Close the connection
+    mysqli_close($connection);
+} else {
+    // Product ID not provided in URL
+    echo "<p>Product ID not provided</p>";
+}
+?>
 </body>
 </html>
 

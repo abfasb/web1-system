@@ -180,7 +180,7 @@ $categories = $productModel->getSortedCategories();
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 m-14 products-container">
     <?php foreach ($products as $product): ?>
         <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 product-card" data-category-id="<?php echo $product['category_id'] ?>">
-            <a href="#">
+            <a href="../viewProduct.php?product_id=<?php echo $product['product_id']; ?>">
                 <?php
                 // Decode the JSON string into an array of image URLs
                 $images = json_decode($product['images'], true);
