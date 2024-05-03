@@ -226,60 +226,49 @@
 
     <main>
         <ul class='slider'>
-          <li class='item' style="background-image: url('https://t4.ftcdn.net/jpg/06/22/39/91/360_F_622399137_jlEDsEN0pUMZA6jMKShRoq2po69QBQXj.jpg')">
-            <div class='content'>
-              <h2 class='title'>"Lossless Youths"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://itseeze.com/_webedit/cached-images/2761-0-0-1250-10000-7500-1344.png')">
-            <div class='content'>
-              <h2 class='title'>"Estrange Bond"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://t3.ftcdn.net/jpg/06/55/48/22/360_F_655482254_1k1yrQACCvforJsBqcLgQgJAuoPSzg3X.jpg')">
-            <div class='content'>
-              <h2 class='title'>"The Gate Keeper"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://www.octaneai.com/hubfs/octaneai_shoppingcart_quiz_digital.png')">
-            <div class='content'>
-              <h2 class='title'>"Last Trace Of Us"</h2>
-              <p class='description'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore fuga voluptatum, iure corporis inventore praesentium nisi. Id laboriosam ipsam enim.
-              </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://www.intelligentcio.com/apac/wp-content/uploads/sites/44/2023/09/AdobeStock_581856925-1.jpg')">
-            <div class='content'>
-              <h2 class='title'>"Urban Decay"</h2>
-              <p class='description'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore fuga voluptatum, iure corporis inventore praesentium nisi. Id laboriosam ipsam enim.
-              </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://img.freepik.com/premium-vector/ecommerce-online-shopping-marketing-concept-vector-stock-illustration_618588-583.jpg')">
-            <div class='content'>
-              <h2 class='title'>"The Migration"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
+        <li class='item' style="background-image: url('https://t4.ftcdn.net/jpg/06/22/39/91/360_F_622399137_jlEDsEN0pUMZA6jMKShRoq2po69QBQXj.jpg')">
+    <div class='content'>
+        <h2 class='title'>"ShopSphere Essentials"</h2>
+        <p class='description'>Contact us for inquiries about our ShopSphere Essentials collection, featuring must-have products for every shopper.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://itseeze.com/_webedit/cached-images/2761-0-0-1250-10000-7500-1344.png')">
+    <div class='content'>
+        <h2 class='title'>"Fashion Forward"</h2>
+        <p class='description'>For questions about our Fashion Forward line, designed to keep you on-trend all year round.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://t3.ftcdn.net/jpg/06/55/48/22/360_F_655482254_1k1yrQACCvforJsBqcLgQgJAuoPSzg3X.jpg')">
+    <div class='content'>
+        <h2 class='title'>"Tech Innovations"</h2>
+        <p class='description'>Contact us regarding our Tech Innovations collection, featuring the latest gadgets and electronics.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://www.octaneai.com/hubfs/octaneai_shoppingcart_quiz_digital.png')">
+    <div class='content'>
+        <h2 class='title'>"Home Essentials"</h2>
+        <p class='description'>Questions about our Home Essentials range? Get in touch!</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://www.intelligentcio.com/apac/wp-content/uploads/sites/44/2023/09/AdobeStock_581856925-1.jpg')">
+    <div class='content'>
+        <h2 class='title'>"Outdoor Adventures"</h2>
+        <p class='description'>Reach out to us for inquiries related to our Outdoor Adventures collection, perfect for explorers and nature lovers.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://img.freepik.com/premium-vector/ecommerce-online-shopping-marketing-concept-vector-stock-illustration_618588-583.jpg')">
+    <div class='content'>
+        <h2 class='title'>"Sports & Fitness"</h2>
+        <p class='description'>Contact us for questions about our Sports & Fitness line, designed to help you stay active and healthy.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+
         </ul>
         <nav class='nav'>
           <ion-icon class='btn prev' name="arrow-back-outline"></ion-icon>
