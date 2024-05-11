@@ -25,10 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $price = $_POST["price"];
   $productDetails = $_POST["product-details"];
   $images = [];
-  $sizes = $_POST["sizes"];
-  $colors = $_POST["colors"];
-  $weights = $_POST["weights"];
-  $attributes = json_encode(["sizes" => $sizes, "colors" => $colors, "weights" => $weights]);
+  $colors = isset($_POST["colors"]) ? explode(",", $_POST["colors"]) : [];
+$sizes = isset($_POST["sizes"]) ? explode(",", $_POST["sizes"]) : [];
+$weights = isset($_POST["weights"]) ? explode(",", $_POST["weights"]) : [];
+
+$attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => $weights]);
   // Handle multiple file uploads
   foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
     $file_name = $_FILES["images"]["name"][$key];
@@ -133,14 +134,21 @@ $conn->close();
             </div>
         </div>
         <div class="flex space-x-4 items-center justify-center gap-4 my-4">
-  <div class="col-span-full">
-    <label for="sizes" class="text-sm font-medium text-gray-900 block mb-2">Sizes (Optional)</label><input type="text" name="sizes" id="sizes" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter sizes">
-  </div><div class="col-span-full">
-    <label for="colors" class="text-sm font-medium text-gray-900 block mb-2">Colors (Optional)</label><input type="text" name="colors" id="colors" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter colors">
-  </div><div class="col-span-full">
-    <label for="weights" class="text-sm font-medium text-gray-900 block mb-2">Weights (Optional)</label><input type="text" name="weights" id="weights" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter weights">
-  </div>
+<div class="col-span-full">
+  <label for="colors" class="text-sm font-medium text-gray-900 block mb-2">Colors (Optional, separate multiple colors with commas)</label>
+  <input type="text" name="colors" id="colors" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter colors">
 </div>
+<div class="col-span-full">
+  <label for="sizes" class="text-sm font-medium text-gray-900 block mb-2">Sizes (Optional, separate multiple sizes with commas)</label>
+  <input type="text" name="sizes" id="sizes" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter sizes">
+</div>
+<div class="col-span-full">
+  <label for="weights" class="text-sm font-medium text-gray-900 block mb-2">Weights (Optional, separate multiple weights with commas)</label>
+  <input type="text" name="weights" id="weights" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter weights">
+</div>
+</div>
+
+
 
 
         <div class="p-6 border-t border-gray-200 rounded-b">
