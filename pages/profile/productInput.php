@@ -25,7 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $price = $_POST["price"];
   $productDetails = $_POST["product-details"];
   $images = [];
-
+  $sizes = $_POST["sizes"];
+  $colors = $_POST["colors"];
+  $weights = $_POST["weights"];
+  $attributes = json_encode(["sizes" => $sizes, "colors" => $colors, "weights" => $weights]);
   // Handle multiple file uploads
   foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
     $file_name = $_FILES["images"]["name"][$key];
@@ -58,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   // Insert product into database
-  $sql = "INSERT INTO Products (product_name, description, price, category_id, images) VALUES ('$productName', '$productDetails', $price, $categoryId, '" . json_encode($images) . "')";
+  $sql = "INSERT INTO Products (product_name, description, price, category_id, images, attributes) VALUES ('$productName', '$productDetails', $price, $categoryId, '" . json_encode($images) . "', '$attributes')";
 
   if ($conn->query($sql) === TRUE) {
     echo '<script> alert ("New record created successfully") </script>';
@@ -129,6 +132,17 @@ $conn->close();
                 <input type="file" name="images[]" id="images" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" multiple required="">
             </div>
         </div>
+        <div class="flex space-x-4 items-center justify-center gap-4 my-4">
+  <div class="col-span-full">
+    <label for="sizes" class="text-sm font-medium text-gray-900 block mb-2">Sizes (Optional)</label><input type="text" name="sizes" id="sizes" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter sizes">
+  </div><div class="col-span-full">
+    <label for="colors" class="text-sm font-medium text-gray-900 block mb-2">Colors (Optional)</label><input type="text" name="colors" id="colors" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter colors">
+  </div><div class="col-span-full">
+    <label for="weights" class="text-sm font-medium text-gray-900 block mb-2">Weights (Optional)</label><input type="text" name="weights" id="weights" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter weights">
+  </div>
+</div>
+
+
         <div class="p-6 border-t border-gray-200 rounded-b">
         <button class="text-white bg-black w-1/2 mx-72 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Save</button>
 
