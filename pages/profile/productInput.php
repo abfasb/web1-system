@@ -25,9 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $price = $_POST["price"];
   $productDetails = $_POST["product-details"];
   $images = [];
-  $colors = isset($_POST["colors"]) ? explode(",", $_POST["colors"]) : [];
-$sizes = isset($_POST["sizes"]) ? explode(",", $_POST["sizes"]) : [];
-$weights = isset($_POST["weights"]) ? explode(",", $_POST["weights"]) : [];
+  $colors = isset($_POST["colors"]) ? explode(", ", $_POST["colors"]) : [];
+$sizes = isset($_POST["sizes"]) ? explode(", ", $_POST["sizes"]) : [];
+$weights = isset($_POST["weights"]) ? explode(", WW", $_POST["weights"]) : [];
 
 $attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => $weights]);
   // Handle multiple file uploads
@@ -63,7 +63,9 @@ $attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => 
 
   // Insert product into database
   $sql = "INSERT INTO Products (product_name, description, price, category_id, images, attributes) VALUES ('$productName', '$productDetails', $price, $categoryId, '" . json_encode($images) . "', '$attributes')";
-
+  var_dump($colors);
+  var_dump($sizes);
+  
   if ($conn->query($sql) === TRUE) {
     echo '<script> alert ("New record created successfully") </script>';
   } else {

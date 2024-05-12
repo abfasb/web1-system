@@ -16,6 +16,11 @@ if (isset($_GET['product_id'])) {
     $result = mysqli_stmt_get_result($stmt);
     if (mysqli_num_rows($result) > 0) {
         while ($product = mysqli_fetch_assoc($result)) {
+          $productAttributes = isset($product['attributes']) ? json_decode(trim($product['attributes']), true) : [];
+          $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
+          $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
+            $productImages = json_decode($product['images'], true);
+                 
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +29,6 @@ if (isset($_GET['product_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../../public/output.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -45,17 +49,14 @@ if (isset($_GET['product_id'])) {
           </div>
 
           <div class="mt-2 w-full lg:order-1 lg:w-32 lg:flex-shrink-0">
-            <div class="flex flex-row items-start lg:flex-col">
-              <button type="button" class="flex-0 aspect-square mb-3 h-20 overflow-hidden rounded-lg border-2 border-gray-900 text-center">
-                <img class="h-full w-full object-cover" src="https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />
-              </button>
-              <button type="button" class="flex-0 aspect-square mb-3 h-20 overflow-hidden rounded-lg border-2 border-transparent text-center">
-                <img class="h-full w-full object-cover" src="/https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />
-              </button>
-              <button type="button" class="flex-0 aspect-square mb-3 h-20 overflow-hidden rounded-lg border-2 border-transparent text-center">
-                <img class="h-full w-full object-cover" src="/https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />
-              </button>
-            </div>
+          <div class="flex flex-row items-start lg:flex-col">
+  <?php foreach ($productImages as $image) : ?>
+    <button type="button" onclick="toggleImage('<?php echo $image; ?>')" class="flex-0 aspect-square mb-3 h-20 overflow-hidden rounded-lg border-2 border-gray-900 text-center">
+      <img class="h-full w-full object-cover" src="<?php echo $image; ?>" alt="Error" />
+    </button>
+  <?php endforeach; ?>
+</div>
+
           </div>
         </div>
       </div>
@@ -84,40 +85,30 @@ if (isset($_GET['product_id'])) {
           <p class="ml-2 text-sm font-medium text-gray-500">1,209 Reviews</p>
         </div>
 
-        <h2 class="mt-8 text-base text-gray-900">Coffee Type</h2>
-        <div class="mt-3 flex select-none flex-wrap items-center gap-1">
-          <label class="">
-            <input type="radio" name="type" value="Powder" class="peer sr-only" checked />
-            <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold">Powder</p>
-          </label>
-          <label class="">
-            <input type="radio" name="type" value="Whole Bean" class="peer sr-only" />
-            <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold">Whole Bean</p>
-          </label>
-          <label class="">
-            <input type="radio" name="type" value="Groud" class="peer sr-only" />
-            <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold">Groud</p>
-          </label>
-        </div>
+        <h2 class="mt-8 text-base text-gray-900">Color</h2>
+<div class="mt-3 flex select-none flex-wrap items-center gap-1">
+    <?php if (!is_null($productColors)) : ?>
+        <?php foreach ($productColors as $color) : ?>
+            <label class="">
+                <input type="radio" name="color" value="<?php echo $color; ?>" class="peer sr-only" />
+                <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold"><?php echo $color; ?></p>
+            </label>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
 
-        <h2 class="mt-8 text-base text-gray-900">Choose Payment Method</h2>
-        <div class="mt-3 flex select-none flex-wrap items-center gap-1">
-          <label class="">
-            <input type="radio" name="subscription" value="4 Months" class="peer sr-only" />
-            <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold">Gcash</p>
-            <span class="mt-1 block text-center text-xs">$80/mo</span>
-          </label>
-          <label class="">
-            <input type="radio" name="subscription" value="8 Months" class="peer sr-only" checked />
-            <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold">Cash On Delivery</p>
-            <span class="mt-1 block text-center text-xs">$60/mo</span>
-          </label>
-          <label class="">
-            <input type="radio" name="subscription" value="12 Months" class="peer sr-only" />
-            <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold">Paypal</p>
-            <span class="mt-1 block text-center text-xs">$40/mo</span>
-          </label>
-        </div>
+<h2 class="mt-8 text-base text-gray-900">Size</h2>
+<div class="mt-3 flex select-none flex-wrap items-center gap-1">
+    <?php if (!is_null($productSizes)) : ?>
+        <?php foreach ($productSizes as $size) : ?>
+            <label class="">
+                <input type="radio" name="size" value="<?php echo $size; ?>" class="peer sr-only" />
+                <p class="peer-checked:bg-black peer-checked:text-white rounded-lg border border-black px-6 py-2 font-bold"><?php echo $size; ?></p>
+            </label>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+
 
         <div class="mt-10 flex flex-col items-center justify-between space-y-4 border-t border-b py-4 sm:flex-row sm:space-y-0">
           <div class="flex items-end">
@@ -132,9 +123,13 @@ if (isset($_GET['product_id'])) {
             Add to cart
           </button>
 
-          <button type = "button" class = "p-4 border rounded-md px-8">
-            Wishlist
-          </button>
+          <button type="button" class="flex items-center p-4 border rounded-md px-8">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18l-1.422-1.307C4.01 13.26 1 10.127 1 6.5 1 4.015 3.015 2 5.5 2c1.477 0 2.844.86 3.5 2.208C9.156 2.86 10.523 2 12 2c2.485 0 4.5 2.015 4.5 4.5 0 3.627-3.01 6.76-7.578 10.193L10 18z" clip-rule="evenodd" />
+    </svg>
+    Wishlist
+</button>
+
         </div>
 
         <ul class="mt-8 space-y-2">
