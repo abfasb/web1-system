@@ -205,8 +205,16 @@ if (isset($_GET['product_id'])) {
     }
 
     function addToCart(productId) {
-    var colors = document.querySelector('input[name="color"]:checked').value;
-    var sizes = document.querySelector('input[name="size"]:checked').value;
+      var colorsInput = document.querySelector('input[name="color"]:checked');
+    var sizesInput = document.querySelector('input[name="size"]:checked');
+
+    if (!colorsInput || !sizesInput) {
+        alert('Please select a color and size');
+        return;
+    }
+
+    var colors = colorsInput.value;
+    var sizes = sizesInput.value;
 
     console.log('Product ID:', productId);
     console.log('Selected Color:', colors);
