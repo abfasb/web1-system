@@ -20,6 +20,7 @@ if (isset($_GET['product_id'])) {
           $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
           $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
             $productImages = json_decode($product['images'], true);
+            var_dump($productImages);
                  
 ?>
 
@@ -31,9 +32,14 @@ if (isset($_GET['product_id'])) {
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+     .active-image {
+        border: 2px solid black;
+    }
+    </style>
 </head>
 <body>
-<?php include '../pages/home.php' ?>
+<?php include '../pages/homeSigned.php' ?>
 
 <section class="py-12 sm:py-16"> 
   <div class="container mx-auto px-4">
@@ -44,17 +50,18 @@ if (isset($_GET['product_id'])) {
         <div class="lg:flex lg:items-start">
           <div class="lg:order-2 lg:ml-5">
             <div class="max-w-xl overflow-hidden rounded-lg">
-              <img class="h-full w-full max-w-full object-cover" src="https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />
-            </div>
+            <img id="largeImage" class="h-full w-full max-w-full object-cover" src="https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />  
+          </div>
           </div>
 
           <div class="mt-2 w-full lg:order-1 lg:w-32 lg:flex-shrink-0">
           <div class="flex flex-row items-start lg:flex-col">
-  <?php foreach ($productImages as $image) : ?>
-    <button type="button" onclick="toggleImage('<?php echo $image; ?>')" class="flex-0 aspect-square mb-3 h-20 overflow-hidden rounded-lg border-2 border-gray-900 text-center">
-      <img class="h-full w-full object-cover" src="<?php echo $image; ?>" alt="Error" />
-    </button>
-  <?php endforeach; ?>
+          <?php foreach ($productImages as $index => $image) : ?>
+          <button type="button" onclick="toggleImage(this, '<?php echo $image; ?>')" class="flex-0 aspect-square mb-3 h-20 overflow-hidden rounded-lg border-2 <?php echo $index === 0 ? 'border-black' : ''; ?> text-center">
+            <img class="h-full w-full object-cover" src="../pages/profile/uploads/<?php echo $image; ?>" alt="Error" />
+          </button>
+      <?php endforeach; ?>
+
 </div>
 
           </div>
@@ -116,7 +123,7 @@ if (isset($_GET['product_id'])) {
             <span class="text-base">/month</span>
           </div>
 
-          <button type="button" class="inline-flex items-center justify-center rounded-md border-2 border-transparent bg-gray-900 bg-none px-12 py-3 text-center text-base font-bold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800">
+          <button type="button" onclick="addToCart(<?php echo $product['product_id']; ?>)" class="inline-flex items-center justify-center rounded-md border-2 border-transparent bg-gray-900 bg-none px-12 py-3 text-center text-base font-bold text-white transition-all duration-200 ease-in-out focus:shadow hover:bg-gray-800">
             <svg xmlns="http://www.w3.org/2000/svg" class="shrink-0 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
@@ -176,20 +183,53 @@ if (isset($_GET['product_id'])) {
 <?php
         }
     } else {
-        // Product not found
         echo "<p>Product not found</p>";
     }
 
-    // Close the statement
     mysqli_stmt_close($stmt);
 
-    // Close the connection
     mysqli_close($connection);
 } else {
-    // Product ID not provided in URL
     echo "<p>Product ID not provided</p>";
 }
 ?>
+<script>
+  function toggleImage(button, image) {
+    document.querySelectorAll('.flex-0').forEach(btn => {
+        btn.classList.remove('border-black');
+    });
+
+    button.classList.add('border-black');
+
+    document.querySelector('.max-w-xl img').src = '../pages/profile/uploads/' + image;
+    }
+
+    function addToCart(productId) {
+    var colors = document.querySelector('input[name="color"]:checked').value;
+    var sizes = document.querySelector('input[name="size"]:checked').value;
+
+    console.log('Product ID:', productId);
+    console.log('Selected Color:', colors);
+    console.log('Selected Size:', sizes);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '../controllers/addToCart.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        console.log('Response:', xhr.responseText);
+        if (xhr.status === 200 && xhr.responseText === 'success') {
+            // Cart updated successfully
+            alert('Product added to cart');
+        } else {
+            alert('Error adding product to cart');
+        }
+    };
+    xhr.send('product_id=' + encodeURIComponent(productId) + '&colors=' + encodeURIComponent(colors) + '&sizes=' + encodeURIComponent(sizes));
+}
+
+
+
+</script>
 </body>
 </html>
 
