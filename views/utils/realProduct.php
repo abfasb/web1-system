@@ -2,9 +2,14 @@
 include '../../config/connection.php';
 include '../../model/ProductModel.php';
 
+session_start();
+
 $productModel = new ProductModel($connection);
 $products = $productModel->getAllProducts();
 $categories = $productModel->getSortedCategories();
+
+
+
 
 ?>
 
