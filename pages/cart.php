@@ -22,7 +22,7 @@ $emailAddress = $_SESSION['Email'];
 <nav class="bg-black text-black border-gray-200 dark:bg-gray-900" style = "position: fixed; top: 0; width: 100%;">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
   <a href="./MainHome.php" class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img src="../../assets/img/logoooo.png" class="h-8" alt="ShopSphere Logo" />
+      <img src="../assets/img/logoooo.png" class="h-8" alt="ShopSphere Logo" />
       <span class="self-center text-white text-2xl font-semibold whitespace-nowrap dark:text-white">ShopSphere</span>
   </a>
   <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
@@ -85,7 +85,7 @@ $emailAddress = $_SESSION['Email'];
 
 
 
-<div class="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
+<div class="grid mt-[90px] sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
   <div class="px-4 pt-8">
     <p class="text-xl font-medium">Order Summary</p>
     <p class="text-gray-400">Check your items. And select a suitable shipping method.</p>
