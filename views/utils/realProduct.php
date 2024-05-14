@@ -240,7 +240,6 @@ $categories = $productModel->getSortedCategories();
                         </div>
                     </div>
                 </div>
-                <!-- Repeat product card for each product -->
             </div>
         </div>
     </div>

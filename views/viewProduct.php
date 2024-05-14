@@ -202,7 +202,7 @@ if (isset($_GET['product_id'])) {
             Add to cart
           </button>
 
-          <button type="button" class="flex items-center p-4 border rounded-md px-8">
+          <button type="button" onclick="addToWishlist(<?php echo $product['product_id']; ?>)" class="flex items-center p-4 border rounded-md px-8">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 18l-1.422-1.307C4.01 13.26 1 10.127 1 6.5 1 4.015 3.015 2 5.5 2c1.477 0 2.844.86 3.5 2.208C9.156 2.86 10.523 2 12 2c2.485 0 4.5 2.015 4.5 4.5 0 3.627-3.01 6.76-7.578 10.193L10 18z" clip-rule="evenodd" />
     </svg>
@@ -266,8 +266,7 @@ if (isset($_GET['product_id'])) {
 }
 ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   function toggleImage(button, image) {
     document.querySelectorAll('.flex-0').forEach(btn => {
@@ -310,6 +309,19 @@ if (isset($_GET['product_id'])) {
     xhr.send('product_id=' + encodeURIComponent(productId) + '&colors=' + encodeURIComponent(colors) + '&sizes=' + encodeURIComponent(sizes));
 }
 
+function addToWishlist(product_id) {
+    $.ajax({
+        url: '../controllers/add_to_wishlist.php',
+        type: 'POST',
+        data: { product_id: product_id },
+        success: function(response) {
+            alert('Product added to wishlist!');
+        },
+        error: function(xhr, status, error) {
+            alert('Failed to add product to wishlist.');
+        }
+    });
+}
 
 
 </script>

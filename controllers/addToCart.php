@@ -4,6 +4,8 @@ include '../config/connection.php';
 
 session_start();
 
+$user_id = $_SESSION['user_id'];
+
 // Check if product_id is provided and if color and size are selected
 if (isset($_POST['product_id']) && isset($_POST['colors']) && isset($_POST['sizes'])) {
     $product_id = $_POST['product_id'];
