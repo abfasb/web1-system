@@ -1257,6 +1257,12 @@ video {
 
 
 
+
+
+
+
+
+
 <body class="text-gray-800 font-inter">
     <div class="fixed left-0 top-0 w-64 h-full bg-[#f8f4f3] p-4 z-50 sidebar-menu transition-transform">
         <a href="#" class="flex items-center pb-4 border-b border-b-gray-800">
@@ -1267,7 +1273,7 @@ video {
         <ul class="mt-4">
             <span class="text-gray-400 font-bold">ADMIN</span>
             <li class="mb-1 group">
-                <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                <a href="" class="flex font-semibold items-center py-2 px-4 bg-gray-950 text-gray-100 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
                     <i class="ri-home-2-line mr-3 text-lg"></i>
                     <span class="text-sm">Dashboard</span>
                 </a>

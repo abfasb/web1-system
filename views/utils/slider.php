@@ -9,7 +9,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     
     <style>
@@ -174,66 +173,102 @@
       &:nth-child(6) { left: calc(50% + 420px); opacity: 0; }
     }
   }
+  .nav-link {
+  color: white !important; /* Important to override any other conflicting styles */
+}
     </style>
 </head>
 <body>
-  <?php include '../../pages/home.php' ?>
+
+
+<nav class="bg-black text-white dark:bg-gray-900 fixed w-full z-50 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-1">
+    <a href="../views/MainHome.php" class="flex items-center justify-cente space-x-3 rtl:space-x-reverse">
+      <img src="../../assets/img/logoooo.png" class=" w-16 object-cover mt-1" alt="ShopSphere Logo">
+      <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">ShopSphere</span>
+    </a>
+    <div class="flex gap-4 hover:border-blue-700 md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+      <button id="get-started-btn" type="button" class="text-white z-10 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started</button>
+      <button id="sign-up-btn" type="button" class="text-white z-10 border-blue-700 rounded-md p-3 gap-1">Sign In</button>
+      <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-sticky" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+        </svg>
+      </button>
+      <div class="flow-roo flex items-center h-full justify-center pt-3 ml-4">
+        <a href="./cart.php" class="group -m-2 flex items-center p-2">
+          <svg class="h-6 w-6 flex-shrink-0 text-gray-100 group-hover:text-blue-700" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+          </svg>
+          <span class="ml-2 text-sm font-medium text-white group-hover:text-blue-700">0</span>
+        </a>
+      </div>
+    </div>
+    <div class="items-center text-white p-4 justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
+      <ul class="bg-black text-white flex flex-col p-4 md:p-0 mt-4 font-medium rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 ">
+        <li >
+          <a href="../MainHome.php" class="nav-link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 active">Home</a>
+        </li>
+        <li>
+          <a href="../../pages/meet_the_team.php" class="nav-link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 active" aria-current="page">About</a>
+        </li>
+        <li>
+          <a href="../../pages/products.php" class="nav-link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 active">Products</a>
+        </li>
+        <li>
+          <a href="./slider.php" class="nav-link block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 active">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
     <main>
         <ul class='slider'>
-          <li class='item' style="background-image: url('https://t4.ftcdn.net/jpg/06/22/39/91/360_F_622399137_jlEDsEN0pUMZA6jMKShRoq2po69QBQXj.jpg')">
-            <div class='content'>
-              <h2 class='title'>"Lossless Youths"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://itseeze.com/_webedit/cached-images/2761-0-0-1250-10000-7500-1344.png')">
-            <div class='content'>
-              <h2 class='title'>"Estrange Bond"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://t3.ftcdn.net/jpg/06/55/48/22/360_F_655482254_1k1yrQACCvforJsBqcLgQgJAuoPSzg3X.jpg')">
-            <div class='content'>
-              <h2 class='title'>"The Gate Keeper"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://www.octaneai.com/hubfs/octaneai_shoppingcart_quiz_digital.png')">
-            <div class='content'>
-              <h2 class='title'>"Last Trace Of Us"</h2>
-              <p class='description'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore fuga voluptatum, iure corporis inventore praesentium nisi. Id laboriosam ipsam enim.
-              </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://www.intelligentcio.com/apac/wp-content/uploads/sites/44/2023/09/AdobeStock_581856925-1.jpg')">
-            <div class='content'>
-              <h2 class='title'>"Urban Decay"</h2>
-              <p class='description'>
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tempore fuga voluptatum, iure corporis inventore praesentium nisi. Id laboriosam ipsam enim.
-              </p>
-              <button>Read More</button>
-            </div>
-          </li>
-          <li class='item' style="background-image: url('https://img.freepik.com/premium-vector/ecommerce-online-shopping-marketing-concept-vector-stock-illustration_618588-583.jpg')">
-            <div class='content'>
-              <h2 class='title'>"The Migration"</h2>
-              <p class='description'> Lorem ipsum, dolor sit amet consectetur
-              adipisicing elit. Tempore fuga voluptatum, iure corporis inventore
-              praesentium nisi. Id laboriosam ipsam enim.  </p>
-              <button>Read More</button>
-            </div>
-          </li>
+        <li class='item' style="background-image: url('https://t4.ftcdn.net/jpg/06/22/39/91/360_F_622399137_jlEDsEN0pUMZA6jMKShRoq2po69QBQXj.jpg')">
+    <div class='content'>
+        <h2 class='title'>"ShopSphere Essentials"</h2>
+        <p class='description'>Contact us for inquiries about our ShopSphere Essentials collection, featuring must-have products for every shopper.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://itseeze.com/_webedit/cached-images/2761-0-0-1250-10000-7500-1344.png')">
+    <div class='content'>
+        <h2 class='title'>"Fashion Forward"</h2>
+        <p class='description'>For questions about our Fashion Forward line, designed to keep you on-trend all year round.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://t3.ftcdn.net/jpg/06/55/48/22/360_F_655482254_1k1yrQACCvforJsBqcLgQgJAuoPSzg3X.jpg')">
+    <div class='content'>
+        <h2 class='title'>"Tech Innovations"</h2>
+        <p class='description'>Contact us regarding our Tech Innovations collection, featuring the latest gadgets and electronics.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://www.octaneai.com/hubfs/octaneai_shoppingcart_quiz_digital.png')">
+    <div class='content'>
+        <h2 class='title'>"Home Essentials"</h2>
+        <p class='description'>Questions about our Home Essentials range? Get in touch!</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://www.intelligentcio.com/apac/wp-content/uploads/sites/44/2023/09/AdobeStock_581856925-1.jpg')">
+    <div class='content'>
+        <h2 class='title'>"Outdoor Adventures"</h2>
+        <p class='description'>Reach out to us for inquiries related to our Outdoor Adventures collection, perfect for explorers and nature lovers.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+<li class='item' style="background-image: url('https://img.freepik.com/premium-vector/ecommerce-online-shopping-marketing-concept-vector-stock-illustration_618588-583.jpg')">
+    <div class='content'>
+        <h2 class='title'>"Sports & Fitness"</h2>
+        <p class='description'>Contact us for questions about our Sports & Fitness line, designed to help you stay active and healthy.</p>
+        <button>Contact Us</button>
+    </div>
+</li>
+
         </ul>
         <nav class='nav'>
           <ion-icon class='btn prev' name="arrow-back-outline"></ion-icon>

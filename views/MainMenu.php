@@ -4,8 +4,11 @@ session_start();
 
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
-$emailAddress = $_SESSION['Email']
+$emailAddress = $_SESSION['Email'];
 
+if (!isset($userName)) {
+  header("Location: ../pages/login.php");
+}
 ?>
 
 <!DOCTYPE html>
@@ -74,7 +77,7 @@ $emailAddress = $_SESSION['Email']
         <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Shop</a>
       </li>
       <li>
-        <a href="./MainCollection.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Collections</a>
+        <a href="./utils/realProduct.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Collections</a>
       </li>
       <li>
         <a href="../pages/meet_the_team.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
@@ -85,7 +88,8 @@ $emailAddress = $_SESSION['Email']
 </nav>
 
     <br>
-    <?php include './utils/productFilter.php' ?>
+    <br>
+    <?php include './productFilter.php' ?>
     <br>
     <?php include '../pages/payment.php'?>
     <br>

@@ -1,4 +1,10 @@
 <?php
+session_start();
+
+
+$userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
+$userName =  $_SESSION['Username'];
+$emailAddress = $_SESSION['Email'];
 
 ?>
 
@@ -13,59 +19,107 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-  <?php include './home.php' ?>
-<div class="flex flex-col items-center border-b bg-white py-4 sm:flex-row sm:px-10 lg:px-20 xl:px-32">
-  <a href="#" class="text-2xl font-bold text-gray-800">sneekpeeks</a>
-  <div class="mt-4 py-2 text-xs sm:mt-0 sm:ml-auto sm:text-base">
-    <div class="relative">
-      <ul class="relative flex w-full items-center justify-between space-x-2 sm:space-x-4">
-        <li class="flex items-center space-x-3 text-left sm:space-x-4">
-          <a class="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-200 text-xs font-semibold text-emerald-700" href="#"
-            ><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></a>
-          <span class="font-semibold text-gray-900">Shop</span>
-        </li>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-        <li class="flex items-center space-x-3 text-left sm:space-x-4">
-          <a class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-xs font-semibold text-white ring ring-gray-600 ring-offset-2" href="#">2</a>
-          <span class="font-semibold text-gray-900">Shipping</span>
-        </li>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-        <li class="flex items-center space-x-3 text-left sm:space-x-4">
-          <a class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-400 text-xs font-semibold text-white" href="#">3</a>
-          <span class="font-semibold text-gray-500">Payment</span>
-        </li>
-      </ul>
-    </div>
-  </div>
+<nav class="bg-black text-black border-gray-200 dark:bg-gray-900" style = "position: fixed; top: 0; width: 100%;">
+  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+  <a href="./MainHome.php" class="flex items-center space-x-3 rtl:space-x-reverse">
+      <img src="../../assets/img/logoooo.png" class="h-8" alt="ShopSphere Logo" />
+      <span class="self-center text-white text-2xl font-semibold whitespace-nowrap dark:text-white">ShopSphere</span>
+  </a>
+  <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+      <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+        <span class="sr-only">Open user menu</span>
+        <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+    <span class="font-medium text-gray-600 dark:text-gray-300"><?php echo $userInitial ?></span>
 </div>
+      </button>
+      <!-- Dropdown menu -->
+      <div class="hidden my-4 text-base list-none text-black bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 z-50" id="user-dropdown">
+        <div class="px-4 py-3 z-50">
+          <span class="block text-sm text-gray-900 dark:text-white"><?php echo $userName ?></span>
+          <span class="block text-sm  text-gray-500 truncate dark:text-gray-400"><?php echo $emailAddress ?></span>
+        </div>
+        <ul class="py-2 z-50" aria-labelledby="user-menu-button">
+          <li>
+            <a href="#" class="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</a>
+          </li>
+          <li>
+          <button data-modal-target="default-modal" data-modal-toggle="default-modal" class="block px-4 items-start py-2 w-full text-sm text-start text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white btn-align-start">Be a Seller</button>
+          </li>
+          <li>
+            <a href="#" class="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</a>
+          </li>
+          <li>
+            <a href="#" class="block px-4 py-2 text-sm text-black hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
+          </li>
+        </ul>
+      </div>
+      <button data-collapse-toggle="navbar-user" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-user" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+        </svg>
+    </button>
+  </div>
+  <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
+    <ul class=" bg-black flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-black dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 nav-link">
+      <li>
+        <a href="../MainMenu.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+      </li>
+      <li>
+        <a href="../MainHome.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
+      </li>
+      <li>
+        <a href="#" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Shop</a>
+      </li>
+      <li>
+        <a href="./realProduct.php" class="block py-2 px-3 text-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">Collections</a>
+      </li>
+      <li>
+        <a href="../../pages/meet_the_team.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
+      </li>
+    </ul>
+  </div>
+  </div>
+</nav>
+
+
+
+
 <div class="grid sm:px-10 lg:grid-cols-2 lg:px-20 xl:px-32">
   <div class="px-4 pt-8">
     <p class="text-xl font-medium">Order Summary</p>
     <p class="text-gray-400">Check your items. And select a suitable shipping method.</p>
     <div class="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
-      <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-        <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/flagged/photo-1556637640-2c80d3201be8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
-        <div class="flex w-full flex-col px-4 py-4">
-          <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
-          <span class="float-right text-gray-400">42EU - 8.5US</span>
-          <p class="text-lg font-bold">$138.99</p>
-        </div>
-      </div>
-      <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-        <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
-        <div class="flex w-full flex-col px-4 py-4">
-          <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
-          <span class="float-right text-gray-400">42EU - 8.5US</span>
-          <p class="mt-auto text-lg font-bold">$238.99</p>
-        </div>
-      </div>
+    <div class="flex flex-col rounded-lg bg-white sm:flex-row">
+  <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/flagged/photo-1556637640-2c80d3201be8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
+  <div class="flex w-full flex-col px-4 py-4">
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
+      <button class="text-red-500">Remove</button>
     </div>
+    <span class="float-right text-gray-400">42EU - 8.5US</span>
+    <div class="flex items-center mt-auto">
+      <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="1">
+      <p class="text-lg font-bold">$138.99</p>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col rounded-lg bg-white sm:flex-row">
+  <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
+  <div class="flex w-full flex-col px-4 py-4">
+    <div class="flex justify-between items-center mb-2">
+      <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
+      <button class="text-red-500">Remove</button>
+    </div>
+    <span class="float-right text-gray-400">42EU - 8.5US</span>
+    <div class="flex items-center mt-auto">
+      <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="1">
+      <p class="text-lg font-bold">$238.99</p>
+    </div>
+  </div>
+</div>
 
+    </div>
     <p class="mt-8 text-lg font-medium">Shipping Methods</p>
     <form class="mt-5 grid gap-6">
       <div class="relative">

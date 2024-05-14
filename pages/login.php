@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['userId'] = $result['user_id'];
             $getRole = "Administrator";
             $_SESSION['Role'] = $getRole;
+            $_SESSION['user_id'] = $result['user_id'];
             header("Location: /web1-system/views/MainMenu.php");
           }
           

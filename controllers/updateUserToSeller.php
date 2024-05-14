@@ -9,6 +9,8 @@ if (!isset($_SESSION['userId']) || empty($_SESSION['userId'])) {
 }
 
 $userId = $_SESSION['userId'];
+$roleUser = "Seller";
+$_SESSION['Role'] = $roleUser;
 $query = "UPDATE Users SET role = 'seller' WHERE user_id = ?";
 $statement = mysqli_prepare($connection, $query);
 mysqli_stmt_bind_param($statement, 'i', $userId);
