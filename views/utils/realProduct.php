@@ -34,7 +34,7 @@ $categories = $productModel->getSortedCategories();
         flex-direction: column;
         border: 1px solid #e2e8f0;
         border-radius: 0.5rem;
-        overflow: hidden; /* Prevent overflow content from protruding */
+        overflow: hidden;
     }
 
     .product-image {
@@ -44,7 +44,7 @@ $categories = $productModel->getSortedCategories();
 
     .product-details {
         padding: 1rem;
-        background-color: #f8fafc; /* Add a background color for the details */
+        background-color: #f8fafc;
     }
 
     .product-name {
@@ -56,7 +56,7 @@ $categories = $productModel->getSortedCategories();
     .product-price {
         font-size: 1.5rem;
         font-weight: bold;
-        margin-top: auto; /* Push the price to the bottom */
+        margin-top: auto;
     }
     </style>
 </head>
@@ -126,10 +126,8 @@ $categories = $productModel->getSortedCategories();
 </nav>
 
 <div class="container mt-4 mx-auto flex flex-col lg:flex-row">
-        <!-- Sidebar for filters -->
         <div class="w-full lg:w-1/4 bg-gray-100 p-4">
             <h2 class="text-lg font-bold mb-4">Filters</h2>
-            <!-- Category filter -->
             <div class="mb-6">
                 <h3 class="font-semibold mb-2">Category</h3>
                 <select class="w-full border rounded px-3 py-2">
@@ -139,7 +137,6 @@ $categories = $productModel->getSortedCategories();
                     <option>Category 3</option>
                 </select>
             </div>
-            <!-- Price range filter -->
             <div class="mb-6">
                 <h3 class="font-semibold mb-2">Price Range</h3>
                 <div class="flex items-center">
@@ -149,7 +146,6 @@ $categories = $productModel->getSortedCategories();
                     <input type="text" id="price-max" class="w-1/2 border rounded px-3 py-2" placeholder="Max">
                 </div>
             </div>
-            <!-- Brand filter -->
             <div class="mb-6">
                 <h3 class="font-semibold mb-2">Brand</h3>
                 <div class="flex flex-col">

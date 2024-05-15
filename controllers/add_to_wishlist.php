@@ -5,7 +5,6 @@ session_start();
 if (isset($_POST['product_id'])) {
     $product_id = $_POST['product_id'];
     $user_id = $_SESSION['user_id']; 
-    // Insert into wishlist table
     $query = "INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)";
     $stmt = mysqli_prepare($connection, $query);
     mysqli_stmt_bind_param($stmt, "ii", $user_id, $product_id);

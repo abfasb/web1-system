@@ -1,10 +1,25 @@
 <?php
+
+include '../config/connection.php';
 session_start();
 
 
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
+
+if (!isset($userName)) {
+  header("Location: ../pages/login.php");
+}
+
+$user_id = $_SESSION['user_id'];
+$query = "SELECT p.product_id, p.product_name, p.price, c.quantity, p.images, c.attributes FROM Cart c
+          INNER JOIN Products p ON c.product_id = p.product_id
+          WHERE c.user_id = ?";
+$stmt = $connection->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
 ?>
 
@@ -104,20 +119,30 @@ $emailAddress = $_SESSION['Email'];
     </div>
   </div>
 </div>
-<div class="flex flex-col rounded-lg bg-white sm:flex-row">
-  <img class="m-2 h-24 w-28 rounded-md border object-cover object-center" src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OHx8c25lYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60" alt="" />
-  <div class="flex w-full flex-col px-4 py-4">
-    <div class="flex justify-between items-center mb-2">
-      <span class="font-semibold">Nike Air Max Pro 8888 - Super Light</span>
-      <button class="text-red-500">Remove</button>
-    </div>
-    <span class="float-right text-gray-400">42EU - 8.5US</span>
-    <div class="flex items-center mt-auto">
-      <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="1">
-      <p class="text-lg font-bold">$238.99</p>
-    </div>
-  </div>
-</div>
+<?php while ($row = $result->fetch_assoc()) { ?>
+  <?php
+       $productAttributes = isset($row['attributes']) ? json_decode(trim($row['attributes']), true) : [];
+       $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
+       $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
+       $productImages = json_decode($row['images'], true);
+
+    ?>
+                <div class="flex flex-col rounded-lg bg-white sm:flex-row">
+                    <img class="m-2 h-[96px] w-[140px] rounded-md border object-cover object-center" src="../pages/profile/uploads/<?php echo $productImages[0]; ?>" alt="Error" />
+                    <div class="flex w-full flex-col px-4 py-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold"><?php echo $row['product_name']; ?></span>
+                            <button class="text-red-500 remove-btn">Remove</button>
+                        </div>
+                        <span class="float-right text-gray-400"><?php echo $productSizes. " - " . $productColors ?></span>
+                        <div class="flex items-center mt-auto">
+                            <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="<?php echo $row['quantity']; ?>">
+                            <p class="text-lg font-bold">$<?php echo $row['price']; ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+
 
     </div>
     <p class="mt-8 text-lg font-medium">Shipping Methods</p>
@@ -146,6 +171,8 @@ $emailAddress = $_SESSION['Email'];
       </div>
     </form>
   </div>
+  
+
   <div class="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
     <p class="text-xl font-medium">Payment Details</p>
     <p class="text-gray-400">Complete your order by providing your payment details.</p>
@@ -187,7 +214,7 @@ $emailAddress = $_SESSION['Email'];
         <div class="relative flex-shrink-0 sm:w-7/12">
           <input type="text" id="billing-address" name="billing-address" class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500" placeholder="Street Address" />
           <div class="pointer-events-none absolute inset-y-0 left-0 inline-flex items-center px-3">
-            <img class="h-4 w-4 object-contain" src="https://flagpack.xyz/_nuxt/4c829b6c0131de7162790d2f897a90fd.svg" alt="" />
+            <img class="h-4 w-4 object-contain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Flag_of_the_Philippines.svg/1280px-Flag_of_the_Philippines.svg.png" alt="Flag" />
           </div>
         </div>
         <select type="text" name="billing-state" class="w-full rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500">
@@ -196,8 +223,29 @@ $emailAddress = $_SESSION['Email'];
         <input type="text" name="billing-zip" class="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500" placeholder="ZIP" />
       </div>
 
+      <div class="flex items-center mt-3 mb-3">
+        <hr class="h-0 border-b border-solid border-gray-500 flex-grow">
+        <p class="mx-4 text-gray-600">or</p>
+        <hr class="h-0 border-b border-solid border-gray-500 flex-grow">
+      </div>
+      <!-- Cash on Delivery -->
+      <div class="flex items-center mt-6">
+  <input type="checkbox" id="cash-on-delivery" name="cash-on-delivery" class="peer opacity-0 h-0 absolute" />
+  <label for="cash-on-delivery" class="flex cursor-pointer select-none rounded-lg border border-gray-300 p-4 w-full relative">
+    <div class="ml-5">
+      <span class="mt-2 font-semibold">Cash on Delivery</span>
+      <p class="text-gray-500 text-sm leading-6">Pay with cash upon delivery</p>
+    </div>
+    <span class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 absolute right-4 top-1/2 transform -translate-y-1/2 box-content block h-3 w-3 rounded-full border-2 border-gray-300 bg-white"></span>
+  </label>
+</div>
+
+
+      <!-- OR Logo and Divider -->
+
+
       <!-- Total -->
-      <div class="mt-6 border-t border-b py-2">
+      <div class="border-t border-b py-2">
         <div class="flex items-center justify-between">
           <p class="text-sm font-medium text-gray-900">Subtotal</p>
           <p class="font-semibold text-gray-900">$399.00</p>
@@ -207,7 +255,7 @@ $emailAddress = $_SESSION['Email'];
           <p class="font-semibold text-gray-900">$8.00</p>
         </div>
       </div>
-      <div class="mt-6 flex items-center justify-between">
+      <div class="flex items-center justify-between">
         <p class="text-sm font-medium text-gray-900">Total</p>
         <p class="text-2xl font-semibold text-gray-900">$408.00</p>
       </div>
@@ -215,6 +263,7 @@ $emailAddress = $_SESSION['Email'];
     <button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
   </div>
 </div>
+
 
 </body>
 </html>
