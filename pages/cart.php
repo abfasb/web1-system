@@ -29,7 +29,6 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../../public/output.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -78,16 +77,16 @@ $result = $stmt->get_result();
   <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
     <ul class=" bg-black flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-black dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 nav-link">
       <li>
-        <a href="../MainMenu.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
+        <a href="../views/MainMenu.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
       </li>
       <li>
-        <a href="../MainHome.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
+        <a href="../views/MainHome.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
       </li>
       <li>
         <a href="#" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Shop</a>
       </li>
       <li>
-        <a href="./realProduct.php" class="block py-2 px-3 text-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">Collections</a>
+        <a href="../views/utils/realProduct.php" class="block py-2 px-3 text-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">Collections</a>
       </li>
       <li>
         <a href="../../pages/meet_the_team.php" class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
@@ -132,7 +131,7 @@ $result = $stmt->get_result();
                     <div class="flex w-full flex-col px-4 py-4">
                         <div class="flex justify-between items-center mb-2">
                             <span class="font-semibold"><?php echo $row['product_name']; ?></span>
-                            <button class="text-red-500 remove-btn">Remove</button>
+                            <button class="text-red-500 remove-btn" data-product-id="<?php echo $row['product_id']; ?>">Remove</button>
                         </div>
                         <span class="float-right text-gray-400"><?php echo $productSizes. " - " . $productColors ?></span>
                         <div class="flex items-center mt-auto">
@@ -151,7 +150,7 @@ $result = $stmt->get_result();
         <input class="peer hidden" id="radio_1" type="radio" name="radio" checked />
         <span class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
         <label class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" for="radio_1">
-          <img class="w-14 object-contain" src="/images/naorrAeygcJzX0SyNI4Y0.png" alt="" />
+          <img class="w-14 object-contain" src="https://www.vhv.rs/dpng/d/502-5026733_vector-logo-j-t-png-j-t-express.png" alt="Logo" />
           <div class="ml-5">
             <span class="mt-2 font-semibold">J&T Express</span>
             <p class="text-slate-500 text-sm leading-6">Delivery: 2-4 Days</p>
@@ -162,7 +161,7 @@ $result = $stmt->get_result();
         <input class="peer hidden" id="radio_2" type="radio" name="radio" checked />
         <span class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
         <label class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" for="radio_2">
-          <img class="w-14 object-contain" src="/images/oG8xsl3xsOkwkMsrLGKM4.png" alt="" />
+          <img class="w-14 object-contain" src="https://seeklogo.com/images/N/ninja-van-logo-DE7BA0B07C-seeklogo.com.png" alt="Logo 2" />
           <div class="ml-5">
             <span class="mt-2 font-semibold">Ninja Van</span>
             <p class="text-slate-500 text-sm leading-6">Delivery: 3-5 Days</p>
@@ -229,16 +228,21 @@ $result = $stmt->get_result();
         <hr class="h-0 border-b border-solid border-gray-500 flex-grow">
       </div>
       <!-- Cash on Delivery -->
-      <div class="flex items-center mt-6">
-  <input type="checkbox" id="cash-on-delivery" name="cash-on-delivery" class="peer opacity-0 h-0 absolute" />
-  <label for="cash-on-delivery" class="flex cursor-pointer select-none rounded-lg border border-gray-300 p-4 w-full relative">
+      <div class="relative">
+  <input type="checkbox" id="cash-on-delivery" name="cash-on-delivery" class="peer hidden" />
+  <span class="peer-checked:border-red-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
+  <label for="cash-on-delivery" class="peer-checked:border-2 peer-checked:border-red-700 peer-checked:bg-red-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4 w-full">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-2c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm0 10c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM4 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8-8-3.59-8-8z"/>
+    </svg>
     <div class="ml-5">
       <span class="mt-2 font-semibold">Cash on Delivery</span>
       <p class="text-gray-500 text-sm leading-6">Pay with cash upon delivery</p>
     </div>
-    <span class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 absolute right-4 top-1/2 transform -translate-y-1/2 box-content block h-3 w-3 rounded-full border-2 border-gray-300 bg-white"></span>
   </label>
 </div>
+
 
 
       <!-- OR Logo and Divider -->
@@ -264,6 +268,68 @@ $result = $stmt->get_result();
   </div>
 </div>
 
+<div id="confirmation-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-1/4 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Remove Product</h3>
+            <div class="mt-2">
+                <p class="text-sm text-gray-500">Are you sure you want to remove this product from your cart?</p>
+            </div>
+            <div class="mt-4">
+                <button id="confirm-remove" class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-red-700">Remove</button>
+                <button id="cancel-remove" class="px-4 py-2 mt-2 bg-gray-600 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-700">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const removeButtons = document.querySelectorAll('.remove-btn');
+    const modal = document.getElementById('confirmation-modal');
+    const confirmButton = document.getElementById('confirm-remove');
+    const cancelButton = document.getElementById('cancel-remove');
+    let productIdToRemove = null;
+
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            productIdToRemove = this.getAttribute('data-product-id');
+            modal.classList.remove('hidden');
+        });
+    });
+
+    confirmButton.addEventListener('click', function() {
+        if (productIdToRemove) {
+            // Make an AJAX call to remove the product from the cart
+            fetch(`../controllers/remove_from_cart.php?product_id=${productIdToRemove}&_=${new Date().getTime()}`, {
+                  method: 'GET',
+              })
+
+            .then(response => response.text())
+            .then(data => {
+                if (data === 'success') {
+                    const productElement = document.getElementById(`product-${productIdToRemove}`);
+                    if (productElement) {
+                    alert('Deleted Successfully!');
+                        productElement.remove();
+                    }
+                    modal.classList.add('hidden');
+                    location.reload(); 
+                } else {
+                    alert('Failed to remove product from cart.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+
+    cancelButton.addEventListener('click', function() {
+        modal.classList.add('hidden');
+    });
+});
+
+</script>
 
 </body>
 </html>
