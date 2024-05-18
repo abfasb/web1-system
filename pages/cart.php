@@ -14,6 +14,25 @@ if (!isset($_SESSION['Username'], $_SESSION['Email'], $_SESSION['user_id'])) {
   exit();
 }
 
+$provinces = [
+  "Abra", "Agusan del Norte", "Agusan del Sur", "Aklan", "Albay", "Antique", "Apayao", "Aurora", "Basilan", "Bataan",
+  "Batanes", "Batangas", "Benguet", "Biliran", "Bohol", "Bukidnon", "Bulacan", "Cagayan", "Camarines Norte", "Camarines Sur",
+  "Camiguin", "Capiz", "Catanduanes", "Cavite", "Cebu", "Cotabato", "Davao de Oro", "Davao del Norte", "Davao del Sur",
+  "Davao Occidental", "Davao Oriental", "Dinagat Islands", "Eastern Samar", "Guimaras", "Ifugao", "Ilocos Norte", "Ilocos Sur",
+  "Iloilo", "Isabela", "Kalinga", "La Union", "Laguna", "Lanao del Norte", "Lanao del Sur", "Leyte", "Maguindanao del Norte",
+  "Maguindanao del Sur", "Marinduque", "Masbate", "Metro Manila", "Misamis Occidental", "Misamis Oriental", "Mountain Province",
+  "Negros Occidental", "Negros Oriental", "Northern Samar", "Nueva Ecija", "Nueva Vizcaya", "Occidental Mindoro", "Oriental Mindoro",
+  "Palawan", "Pampanga", "Pangasinan", "Quezon", "Quirino", "Rizal", "Romblon", "Samar", "Sarangani", "Siquijor", "Sorsogon",
+  "South Cotabato", "Southern Leyte", "Sultan Kudarat", "Sulu", "Surigao del Norte", "Surigao del Sur", "Tarlac", "Tawi-Tawi",
+  "Zambales", "Zamboanga del Norte", "Zamboanga del Sur", "Zamboanga Sibugay"
+];
+
+// Generate the select dropdown options
+$options = "";
+foreach ($provinces as $province) {
+  $options .= "<option value=\"$province\">$province</option>";
+}
+
 $user_id = $_SESSION['user_id'];
 $query = "SELECT p.product_id, p.product_name, p.price, c.quantity, p.images, c.attributes FROM Cart c
           INNER JOIN Products p ON c.product_id = p.product_id
@@ -50,6 +69,78 @@ if ($result = $connection->query($wishlistQuery)) {
   $wishlistCount = $result->fetch_assoc()['wishlist_count'];
   $result->free();
 }
+
+
+// Assuming $paymentMethod is determined earlier in your code
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
+if (isset($_POST['cash-on-delivery'])) {
+  $paymentMethod = "cash_on_delivery";
+  $address = isset($_POST['address']) ? $_POST['address'] : '';
+  $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
+
+  // Insert order without payment details
+  $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, address, shipping_method) 
+              VALUES ('$user_id', NOW(), '$total', '$paymentMethod', '$address', '$shippingMethod')";
+  mysqli_query($connection, $orderSql);
+  $orderId = mysqli_insert_id($connection);
+
+  foreach ($cart_items as $item) {
+      $productId = $item['product_id'];
+      $quantity = $item['quantity'];
+      $unitPrice = $item['price'];
+
+      $orderItemSql = "INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) 
+      VALUES ('$orderId', '$productId', '$quantity', '$unitPrice')";
+      mysqli_query($connection, $orderItemSql);
+  }
+
+  echo '<script>alert("Your order was successfully processed with Cash On Delivery.");</script>';
+
+} else {
+  $email = isset($_POST['email']) ? $_POST['email'] : '';
+  $cardHolder = isset($_POST['card_holder']) ? $_POST['card_holder'] : '';
+  $cardNumber = isset($_POST['card_no']) ? $_POST['card_no'] : '';
+  $expiryDate = isset($_POST['credit-expiry']) ? $_POST['credit-expiry'] : '';
+  $cvc = isset($_POST['credit-cvc']) ? $_POST['credit-cvc'] : '';
+  $billingAddress = isset($_POST['billing-address']) ? $_POST['billing-address'] : '';
+  $billingState = isset($_POST['billing-state']) ? $_POST['billing-state'] : '';
+  $billingZip = isset($_POST['billing-zip']) ? $_POST['billing-zip'] : '';
+  $paymentMethod = "credit_card";
+  $address = isset($_POST['address']) ? $_POST['address'] : '';
+  $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
+
+  $paymentSql = "INSERT INTO Payment_Details (email, card_holder, card_number, expiry_date, cvc, billing_address, billing_state, billing_zip) 
+          VALUES ('$email', '$cardHolder', '$cardNumber', '$expiryDate', '$cvc', '$billingAddress', '$billingState', '$billingZip')";
+  if (mysqli_query($connection, $paymentSql)) {
+      $paymentId = mysqli_insert_id($connection);
+    $paymentMethod = "credit_card";
+
+      // Insert order without payment details
+      $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, payment_id, address, shipping_method) 
+                  VALUES ('$user_id', NOW(), '$total', '$paymentMethod', '$paymentId', '$address', '$shippingMethod')";
+      mysqli_query($connection, $orderSql);
+      $orderId = mysqli_insert_id($connection);
+
+      foreach ($cart_items as $item) {
+          $productId = $item['product_id'];
+          $quantity = $item['quantity'];
+          $unitPrice = $item['price'];
+
+          $orderItemSql = "INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) 
+          VALUES ('$orderId', '$productId', '$quantity', '$unitPrice')";
+          mysqli_query($connection, $orderItemSql);
+      }
+
+      echo '<script>alert("Your order was successfully processed with Credit Card payment.");</script>';
+
+  } else {
+      echo "Error inserting payment details: " . mysqli_error($connection);
+  }
+}
+}
+
+
 
 ?>
 
@@ -192,11 +283,11 @@ if ($result = $connection->query($wishlistQuery)) {
 
     </div>
     <p class="mt-8 text-lg font-medium">Shipping Methods</p>
-    <form class="mt-5 grid gap-6">
+    <form class="mt-5 grid gap-6" action="<?php echo $_SERVER["PHP_SELF"] ?>" method="POST">
       <div class="relative">
-        <input class="peer hidden" id="radio_1" type="radio" name="radio" checked />
+        <input class="peer hidden" type="radio" id="shipping_jt" name="shipping_method" value="J&T Express" checked />
         <span class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-        <label class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" for="radio_1">
+        <label class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" for="shipping_jt">
           <img class="w-14 object-contain" src="https://www.vhv.rs/dpng/d/502-5026733_vector-logo-j-t-png-j-t-express.png" alt="Logo" />
           <div class="ml-5">
             <span class="mt-2 font-semibold">J&T Express</span>
@@ -205,9 +296,9 @@ if ($result = $connection->query($wishlistQuery)) {
         </label>
       </div>
       <div class="relative">
-        <input class="peer hidden" id="radio_2" type="radio" name="radio" checked />
+        <input class="peer hidden" type="radio" id="shipping_ninja" name="shipping_method" value="Ninja Van"  />
         <span class="peer-checked:border-gray-700 absolute right-4 top-1/2 box-content block h-3 w-3 -translate-y-1/2 rounded-full border-8 border-gray-300 bg-white"></span>
-        <label class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" for="radio_2">
+        <label class="peer-checked:border-2 peer-checked:border-gray-700 peer-checked:bg-gray-50 flex cursor-pointer select-none rounded-lg border border-gray-300 p-4" for="shipping_ninja">
           <img class="w-14 object-contain" src="https://seeklogo.com/images/N/ninja-van-logo-DE7BA0B07C-seeklogo.com.png" alt="Logo 2" />
           <div class="ml-5">
             <span class="mt-2 font-semibold">Ninja Van</span>
@@ -218,9 +309,9 @@ if ($result = $connection->query($wishlistQuery)) {
     </form>
     <div class="mt-2 p-6 bg-gray-50 rounded-lg shadow-lg mb-4">
   <p class="text-lg font-medium text-gray-900">Delivery Address</p>
-  <form class="mt-5 grid gap-6">
+  <form class="mt-5 grid gap-6" action = "<?php echo $_SERVER["PHP_SELF"] ?>" method = "POST">
     <div class="relative">
-      <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+      <label for="address"  class="block text-sm font-medium text-gray-700">Address</label>
       <input type="text" id="address" name="address" class="mt-1 block w-full rounded-lg border-gray-300 p-4 shadow-sm focus:border-gray-700 focus:ring focus:ring-gray-700 focus:ring-opacity-50" placeholder="Street address, P.O. box, etc.">
       <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-1/2 right-4 transform -translate-y-1/2 h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h4l3 3l4-4l5 5v6H3v-10zM3 10V7a3 3 0 013-3h3m-6 6h4" />
@@ -229,14 +320,12 @@ if ($result = $connection->query($wishlistQuery)) {
   </form>
 </div>
 
-
   </div>
   
-
   <div class="mt-10 bg-gray-50 px-4 pt-8 lg:mt-0">
     <p class="text-xl font-medium">Payment Details</p>
     <p class="text-gray-400">Complete your order by providing your payment details.</p>
-    <div class="">
+    <form class="" action = "<?php echo $_SERVER["PHP_SELF"] ?>" method = "POST" >
       <label for="email" class="mt-4 mb-2 block text-sm font-medium">Email</label>
       <div class="relative">
         <input type="text" id="email" name="email" class="w-full rounded-md border border-gray-200 px-4 py-3 pl-11 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500" placeholder="your.email@gmail.com" />
@@ -279,6 +368,7 @@ if ($result = $connection->query($wishlistQuery)) {
         </div>
         <select type="text" name="billing-state" class="w-full rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none focus:z-10 focus:border-blue-500 focus:ring-blue-500">
           <option value="State">State</option>
+          <?php echo $options ?>
         </select>
         <input type="text" name="billing-zip" class="flex-shrink-0 rounded-md border border-gray-200 px-4 py-3 text-sm shadow-sm outline-none sm:w-1/6 focus:z-10 focus:border-blue-500 focus:ring-blue-500" placeholder="ZIP" />
       </div>
@@ -304,9 +394,8 @@ if ($result = $connection->query($wishlistQuery)) {
   </label>
 </div>
 
-      <!-- OR Logo and Divider -->
 
-      <!-- Total -->
+
       <div class="border-t border-b py-2" id="cart-details">
         <div class="flex items-center justify-between">
             <p class="text-sm font-medium text-gray-900">Subtotal</p>
@@ -320,7 +409,7 @@ if ($result = $connection->query($wishlistQuery)) {
             <p class="text-sm font-medium text-gray-900">Total</p>
             <p id="total" class="text-2xl font-semibold text-gray-900">₱<?php echo number_format($total, 2); ?></p>
         </div>
-        <button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
+        <button name="place_order" class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
     </div>
 
 <div id="confirmation-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">

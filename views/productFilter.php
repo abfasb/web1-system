@@ -5,6 +5,7 @@ include '../model/ProductModel.php';
 
 $productModel = new ProductModel($connection);
 $products = $productModel->getAllProducts();
+
 ?>
 
 <!DOCTYPE html>
