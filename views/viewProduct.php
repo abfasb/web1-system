@@ -27,7 +27,6 @@ if (isset($_GET['product_id'])) {
           $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
           $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
             $productImages = json_decode($product['images'], true);
-            var_dump($productImages);
                  
 ?>
 
@@ -161,7 +160,7 @@ if (isset($_GET['product_id'])) {
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" class=""></path>
             </svg>
           </div>
-          <p class="ml-2 text-sm font-medium text-gray-500">1,209 Reviews</p>
+          <p class="ml-2 text-sm font-medium text-gray-500">48 Reviews</p>
         </div>
 
         <h2 class="mt-8 text-base text-gray-900">Color</h2>
@@ -235,7 +234,7 @@ if (isset($_GET['product_id'])) {
 
             <a href="#" title="" class="inline-flex items-center border-b-2 border-transparent py-4 text-sm font-medium text-gray-600">
               Reviews
-              <span class="ml-2 block rounded-full bg-gray-500 px-2 py-px text-xs font-bold text-gray-100"> 1,209 </span>
+              <span class="ml-2 block rounded-full bg-gray-500 px-2 py-px text-xs font-bold text-gray-100"> 48 </span>
             </a>
           </nav>
         </div>
@@ -266,6 +265,7 @@ if (isset($_GET['product_id'])) {
 }
 ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   function toggleImage(button, image) {

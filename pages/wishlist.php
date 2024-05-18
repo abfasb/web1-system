@@ -122,7 +122,7 @@ $connection->close();
                         <p class="text-gray-600 mb-4"><?php echo $item['description']; ?></p>
                         <div class="flex items-center justify-between mb-4">
                             <span class="text-lg font-bold text-gray-900">$<?php echo number_format($item['price'], 2); ?></span>
-                            <a href="../viewProduct.php?product_id=<?php echo $item['product_id']; ?>" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Product</a>
+                            <a href="../views/viewProduct.php?product_id=<?php echo $item['product_id']; ?>" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">View Product</a>
                         </div>
                     </div>
                 </div>

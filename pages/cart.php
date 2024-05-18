@@ -8,8 +8,10 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
 
-if (!isset($userName)) {
+
+if (!isset($_SESSION['Username'], $_SESSION['Email'], $_SESSION['user_id'])) {
   header("Location: ../pages/login.php");
+  exit();
 }
 
 $user_id = $_SESSION['user_id'];
@@ -20,6 +22,15 @@ $stmt = $connection->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+$subtotal = 0;
+while ($row = $result->fetch_assoc()) {
+    $subtotal += $row['price'] * $row['quantity'];
+}
+
+$shipping = 8.00; // Assuming a flat shipping rate
+$total = $subtotal + $shipping;
+
 
 ?>
 
@@ -243,29 +254,28 @@ $result = $stmt->get_result();
   </label>
 </div>
 
-
-
       <!-- OR Logo and Divider -->
 
-
       <!-- Total -->
-      <div class="border-t border-b py-2">
-        <div class="flex items-center justify-between">
-          <p class="text-sm font-medium text-gray-900">Subtotal</p>
-          <p class="font-semibold text-gray-900">$399.00</p>
-        </div>
-        <div class="flex items-center justify-between">
-          <p class="text-sm font-medium text-gray-900">Shipping</p>
-          <p class="font-semibold text-gray-900">$8.00</p>
-        </div>
-      </div>
-      <div class="flex items-center justify-between">
-        <p class="text-sm font-medium text-gray-900">Total</p>
-        <p class="text-2xl font-semibold text-gray-900">$408.00</p>
-      </div>
+      <div class="border-t border-b py-2" id="cart-details">
+    <!-- Subtotal -->
+    <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-gray-900">Subtotal</p>
+        <p id="subtotal" class="font-semibold text-gray-900">₱<?php echo number_format($subtotal, 2); ?></p>
     </div>
-    <button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
-  </div>
+    <!-- Shipping -->
+    <div class="flex items-center justify-between">
+        <p class="text-sm font-medium text-gray-900">Shipping</p>
+        <p id="shipping" class="font-semibold text-gray-900">₱<?php echo number_format($shipping, 2); ?></p>
+    </div>
+</div>
+<!-- Total -->
+<div class="flex items-center justify-between">
+    <p class="text-sm font-medium text-gray-900">Total</p>
+    <p id="total" class="text-2xl font-semibold text-gray-900">₱<?php echo number_format($total, 2); ?></p>
+</div>
+<!-- Place Order Button -->
+<button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
 </div>
 
 <div id="confirmation-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
@@ -301,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     confirmButton.addEventListener('click', function() {
         if (productIdToRemove) {
-            // Make an AJAX call to remove the product from the cart
             fetch(`../controllers/remove_from_cart.php?product_id=${productIdToRemove}&_=${new Date().getTime()}`, {
                   method: 'GET',
               })
@@ -329,6 +338,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+        // Update subtotal, shipping, and total based on the values from PHP
+        document.getElementById('subtotal').innerText = '₱<?php echo number_format($subtotal, 2); ?>';
+        document.getElementById('shipping').innerText = '₱<?php echo number_format($shipping, 2); ?>';
+        document.getElementById('total').innerText = '₱<?php echo number_format($total, 2); ?>';
+    });
 </script>
 
 </body>
