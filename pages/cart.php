@@ -23,14 +23,33 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
+
 $subtotal = 0;
+$cart_items = [];
 while ($row = $result->fetch_assoc()) {
     $subtotal += $row['price'] * $row['quantity'];
+    $cart_items[] = $row;
 }
 
-$shipping = 8.00; // Assuming a flat shipping rate
+$shipping = 8.00;
 $total = $subtotal + $shipping;
 
+$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = $user_id";
+$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = $user_id";
+
+$cartCount = 0;
+$wishlistCount = 0;
+
+// Execute the queries
+if ($result = $connection->query($cartQuery)) {
+  $cartCount = $result->fetch_assoc()['cart_count'];
+  $result->free();
+}
+
+if ($result = $connection->query($wishlistQuery)) {
+  $wishlistCount = $result->fetch_assoc()['wishlist_count'];
+  $result->free();
+}
 
 ?>
 
@@ -51,6 +70,24 @@ $total = $subtotal + $shipping;
       <span class="self-center text-white text-2xl font-semibold whitespace-nowrap dark:text-white">ShopSphere</span>
   </a>
   <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+  <ul class="ml-4 xl:w-48 absolute right-0 ">
+                <li class="ml-2 lg:ml-4 relative inline-block">
+                    <a class="" href="../pages/wishlist.php">
+                        <div class="absolute -top-1 right-0 z-10 bg-yellow-400 text-xs font-bold px-1 py-0.5 rounded-sm"><?php echo $wishlistCount ?></div>
+                        <svg class="h-9 lg:h-10 p-2 text-white" aria-hidden="true" focusable="false" data-prefix="far" data-icon="heart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-heart fa-w-16 fa-9x">
+                            <path fill="currentColor" d="M458.4 64.3C400.6 15.7 311.3 23 256 79.3 200.7 23 111.4 15.6 53.6 64.3-21.6 127.6-10.6 230.8 43 285.5l175.4 178.7c10 10.2 23.4 15.9 37.6 15.9 14.3 0 27.6-5.6 37.6-15.8L469 285.6c53.5-54.7 64.7-157.9-10.6-221.3zm-23.6 187.5L259.4 430.5c-2.4 2.4-4.4 2.4-6.8 0L77.2 251.8c-36.5-37.2-43.9-107.6 7.3-150.7 38.9-32.7 98.9-27.8 136.5 10.5l35 35.7 35-35.7c37.8-38.5 97.8-43.2 136.5-10.6 51.1 43.1 43.5 113.9 7.3 150.8z"></path>
+                        </svg>
+                    </a>
+                </li>
+                <li class="ml-2 lg:ml-4 relative inline-block">
+                    <a class="" href="../pages/cart.php">
+                        <div class="absolute -top-1 right-0 z-10 bg-yellow-400 text-blue-700 text-xs font-bold px-1 py-0.5 rounded-sm"><?php echo $cartCount ?></div>
+                        <svg class="h-9 lg:h-10 p-2 text-blue-700" aria-hidden="true" focusable="false" data-prefix="far" data-icon="shopping-cart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-shopping-cart fa-w-18 fa-9x">
+                            <path fill="currentColor" d="M551.991 64H144.28l-8.726-44.608C133.35 8.128 123.478 0 112 0H12C5.373 0 0 5.373 0 12v24c0 6.627 5.373 12 12 12h80.24l69.594 355.701C150.796 415.201 144 430.802 144 448c0 35.346 28.654 64 64 64s64-28.654 64-64a63.681 63.681 0 0 0-8.583-32h145.167a63.681 63.681 0 0 0-8.583 32c0 35.346 28.654 64 64 64 35.346 0 64-28.654 64-64 0-18.136-7.556-34.496-19.676-46.142l1.035-4.757c3.254-14.96-8.142-29.101-23.452-29.101H203.76l-9.39-48h312.405c11.29 0 21.054-7.869 23.452-18.902l45.216-208C578.695 78.139 567.299 64 551.991 64zM208 472c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm256 0c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm23.438-200H184.98l-31.31-160h368.548l-34.78 160z"></path>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
       <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
         <span class="sr-only">Open user menu</span>
         <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
@@ -129,29 +166,28 @@ $total = $subtotal + $shipping;
     </div>
   </div>
 </div>
-<?php while ($row = $result->fetch_assoc()) { ?>
-  <?php
+<?php foreach ($cart_items as $row) { ?>
+    <?php
        $productAttributes = isset($row['attributes']) ? json_decode(trim($row['attributes']), true) : [];
        $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
        $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
        $productImages = json_decode($row['images'], true);
-
     ?>
-                <div class="flex flex-col rounded-lg bg-white sm:flex-row">
-                    <img class="m-2 h-[96px] w-[140px] rounded-md border object-cover object-center" src="../pages/profile/uploads/<?php echo $productImages[0]; ?>" alt="Error" />
-                    <div class="flex w-full flex-col px-4 py-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-semibold"><?php echo $row['product_name']; ?></span>
-                            <button class="text-red-500 remove-btn" data-product-id="<?php echo $row['product_id']; ?>">Remove</button>
-                        </div>
-                        <span class="float-right text-gray-400"><?php echo $productSizes. " - " . $productColors ?></span>
-                        <div class="flex items-center mt-auto">
-                            <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="<?php echo $row['quantity']; ?>">
-                            <p class="text-lg font-bold">$<?php echo $row['price']; ?></p>
-                        </div>
-                    </div>
-                </div>
-            <?php } ?>
+    <div class="flex flex-col rounded-lg bg-white sm:flex-row">
+        <img class="m-2 h-[96px] w-[140px] rounded-md border object-cover object-center" src="../pages/profile/uploads/<?php echo $productImages[0]; ?>" alt="Error" />
+        <div class="flex w-full flex-col px-4 py-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="font-semibold"><?php echo $row['product_name']; ?></span>
+                <button class="text-red-500 remove-btn" data-product-id="<?php echo $row['product_id']; ?>">Remove</button>
+            </div>
+            <span class="float-right text-gray-400"><?php echo $productSizes. " - " . $productColors ?></span>
+            <div class="flex items-center mt-auto">
+                <input type="number" min="1" max="10" class="w-20 px-2 py-1 border rounded-md mr-2" value="<?php echo $row['quantity']; ?>">
+                <p class="text-lg font-bold">$<?php echo $row['price']; ?></p>
+            </div>
+        </div>
+    </div>
+<?php } ?>
 
 
     </div>
@@ -180,6 +216,20 @@ $total = $subtotal + $shipping;
         </label>
       </div>
     </form>
+    <div class="mt-2 p-6 bg-gray-50 rounded-lg shadow-lg mb-4">
+  <p class="text-lg font-medium text-gray-900">Delivery Address</p>
+  <form class="mt-5 grid gap-6">
+    <div class="relative">
+      <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+      <input type="text" id="address" name="address" class="mt-1 block w-full rounded-lg border-gray-300 p-4 shadow-sm focus:border-gray-700 focus:ring focus:ring-gray-700 focus:ring-opacity-50" placeholder="Street address, P.O. box, etc.">
+      <svg xmlns="http://www.w3.org/2000/svg" class="absolute top-1/2 right-4 transform -translate-y-1/2 h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h4l3 3l4-4l5 5v6H3v-10zM3 10V7a3 3 0 013-3h3m-6 6h4" />
+      </svg>
+    </div>
+  </form>
+</div>
+
+
   </div>
   
 
@@ -258,25 +308,20 @@ $total = $subtotal + $shipping;
 
       <!-- Total -->
       <div class="border-t border-b py-2" id="cart-details">
-    <!-- Subtotal -->
-    <div class="flex items-center justify-between">
-        <p class="text-sm font-medium text-gray-900">Subtotal</p>
-        <p id="subtotal" class="font-semibold text-gray-900">₱<?php echo number_format($subtotal, 2); ?></p>
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-gray-900">Subtotal</p>
+            <p id="subtotal" class="font-semibold text-gray-900">₱<?php echo number_format($subtotal, 2); ?></p>
+        </div>
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-gray-900">Shipping</p>
+            <p id="shipping" class="font-semibold text-gray-900">₱<?php echo number_format($shipping, 2); ?></p>
+        </div>
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-gray-900">Total</p>
+            <p id="total" class="text-2xl font-semibold text-gray-900">₱<?php echo number_format($total, 2); ?></p>
+        </div>
+        <button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
     </div>
-    <!-- Shipping -->
-    <div class="flex items-center justify-between">
-        <p class="text-sm font-medium text-gray-900">Shipping</p>
-        <p id="shipping" class="font-semibold text-gray-900">₱<?php echo number_format($shipping, 2); ?></p>
-    </div>
-</div>
-<!-- Total -->
-<div class="flex items-center justify-between">
-    <p class="text-sm font-medium text-gray-900">Total</p>
-    <p id="total" class="text-2xl font-semibold text-gray-900">₱<?php echo number_format($total, 2); ?></p>
-</div>
-<!-- Place Order Button -->
-<button class="mt-4 mb-8 w-full rounded-md bg-gray-900 px-6 py-3 font-medium text-white">Place Order</button>
-</div>
 
 <div id="confirmation-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
     <div class="relative top-1/4 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
@@ -344,6 +389,55 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('shipping').innerText = '₱<?php echo number_format($shipping, 2); ?>';
         document.getElementById('total').innerText = '₱<?php echo number_format($total, 2); ?>';
     });
+
+    
+
+    function disableCreditCardFields() {
+    document.getElementById("card-holder").disabled = true;
+    document.getElementById("card-no").disabled = true;
+    document.getElementsByName("credit-expiry")[0].disabled = true;
+    document.getElementsByName("credit-cvc")[0].disabled = true;
+    document.getElementById("billing-address").disabled = true;
+    document.getElementsByName("billing-state")[0].disabled = true;
+    document.getElementsByName("billing-zip")[0].disabled = true;
+    
+  }
+  const emailInput = document.getElementById('email');
+
+  // Function to enable credit card fields
+  function enableCreditCardFields() {
+    document.getElementById("card-holder").disabled = false;
+    document.getElementById("card-no").disabled = false;
+    document.getElementsByName("credit-expiry")[0].disabled = false;
+    document.getElementsByName("credit-cvc")[0].disabled = false;
+    document.getElementById("billing-address").disabled = false;
+    document.getElementsByName("billing-state")[0].disabled = false;
+    document.getElementsByName("billing-zip")[0].disabled = false;
+  }
+
+  // Event listener for cash on delivery checkbox
+  document.getElementById("cash-on-delivery").addEventListener("change", function() {
+    if (this.checked) {
+      disableCreditCardFields();
+      emailInput.disabled = true;
+    } else {
+      enableCreditCardFields();
+      emailInput.disabled = false;
+    }
+  });
+
+  // Function to initialize form state based on checkbox state
+  function initializeFormState() {
+    var cashOnDeliveryCheckbox = document.getElementById("cash-on-delivery");
+    if (cashOnDeliveryCheckbox.checked) {
+      disableCreditCardFields();
+    } else {
+      enableCreditCardFields();
+    }
+  }
+
+  // Call initializeFormState() when the page loads
+  window.onload = initializeFormState;
 </script>
 
 </body>
