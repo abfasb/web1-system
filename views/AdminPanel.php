@@ -1,8 +1,23 @@
 <?php
+include '../config/connection.php';
   session_start();
 
   $userName = $_SESSION['Username'];
   $roleType = $_SESSION['Role'];
+
+$userQuery = $connection->query("SELECT COUNT(*) AS user_count FROM Users");
+$userCount = $userQuery->fetch(PDO::FETCH_ASSOC)['user_count'];
+
+$sellerQuery = $connection->query("SELECT COUNT(*) AS seller_count FROM Users WHERE role = 'seller'");
+$sellerCount = $sellerQuery->fetch(PDO::FETCH_ASSOC)['seller_count'];
+
+$adminQuery = $connection->query("SELECT COUNT(*) AS admin_count FROM Users WHERE role = 'administrator'");
+$adminCount = $adminQuery->fetch(PDO::FETCH_ASSOC)['admin_count'];
+
+$total = $userCount + $sellerCount + $adminCount;
+$userPercentage = ($userCount / $total) * 100;
+$sellerPercentage = ($sellerCount / $total) * 100;
+$adminPercentage = (3 / $total) * 100;
   
 ?>
 
@@ -1474,7 +1489,7 @@ video {
                     <div class="flex justify-between mb-6">
                         <div>
                             <div class="flex items-center mb-1">
-                                <div class="text-2xl font-semibold">2</div>
+                                <div class="text-2xl font-semibold"><?php echo $userCount ?></div>
                             </div>
                             <div class="text-sm font-medium text-gray-400">Users</div>
                         </div>
@@ -1500,10 +1515,10 @@ video {
                     <div class="flex justify-between mb-4">
                         <div>
                             <div class="flex items-center mb-1">
-                                <div class="text-2xl font-semibold">100</div>
+                                <div class="text-2xl font-semibold"><?php echo $sellerCount ?></div>
                                 <div class="p-1 rounded bg-emerald-500/10 text-emerald-500 text-[12px] font-semibold leading-none ml-2">+30%</div>
                             </div>
-                            <div class="text-sm font-medium text-gray-400">Companies</div>
+                            <div class="text-sm font-medium text-gray-400">Sellers</div>
                         </div>
                          <div class="dropdown">
                             <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600"><i class="ri-more-fill"></i></button>
@@ -1525,8 +1540,8 @@ video {
                 <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
                     <div class="flex justify-between mb-6">
                         <div>
-                            <div class="text-2xl font-semibold mb-1">100</div>
-                            <div class="text-sm font-medium text-gray-400">Blogs</div>
+                            <div class="text-2xl font-semibold mb-1">3</div>
+                            <div class="text-sm font-medium text-gray-400">Admin</div>
                         </div>
                          <div class="dropdown">
                             <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600"><i class="ri-more-fill"></i></button>
@@ -1555,74 +1570,60 @@ video {
                         </div>
                       </div>
                       <div class="block w-full overflow-x-auto">
-                        <table class="items-center w-full bg-transparent border-collapse">
-                          <thead>
-                            <tr>
-                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Role</th>
-                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Amount</th>
-                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left min-w-140-px"></th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Administrator</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">1</td>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                <div class="flex items-center">
-                                  <span class="mr-2">70%</span>
-                                  <div class="relative w-full">
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
-                                      <div style="width: 70%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">6</td>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                <div class="flex items-center">
-                                  <span class="mr-2">40%</span>
-                                  <div class="relative w-full">
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
-                                      <div style="width: 40%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">5</td>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                <div class="flex items-center">
-                                  <span class="mr-2">45%</span>
-                                  <div class="relative w-full">
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-pink-200">
-                                      <div style="width: 45%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-pink-500"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">4</td>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                <div class="flex items-center">
-                                  <span class="mr-2">60%</span>
-                                  <div class="relative w-full">
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-red-200">
-                                      <div style="width: 60%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
+    <table class="items-center w-full bg-transparent border-collapse">
+        <thead>
+            <tr>
+                <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Role</th>
+                <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Amount</th>
+                <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left min-w-140-px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="text-gray-700 dark:text-gray-100">
+                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Administrator</th>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $adminCount; ?></td>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                    <div class="flex items-center">
+                        <span class="mr-2"><?php echo round($adminPercentage, 2); ?>%</span>
+                        <div class="relative w-full">
+                            <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
+                                <div style="width: <?php echo $adminPercentage; ?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="text-gray-700 dark:text-gray-100">
+                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Seller</th>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $sellerCount; ?></td>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                    <div class="flex items-center">
+                        <span class="mr-2"><?php echo round($sellerPercentage, 2); ?>%</span>
+                        <div class="relative w-full">
+                            <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
+                                <div style="width: <?php echo $sellerPercentage; ?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="text-gray-700 dark:text-gray-100">
+                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $userCount; ?></td>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                    <div class="flex items-center">
+                        <span class="mr-2"><?php echo round($userPercentage, 2); ?>%</span>
+                        <div class="relative w-full">
+                            <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
+                                <div style="width: <?php echo $userPercentage; ?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
                     </div>
                   </div>
                         <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md">

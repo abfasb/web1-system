@@ -7,7 +7,7 @@ if (isset($_POST['product_id'])) {
     $user_id = $_SESSION['user_id'];
 
     $query = "INSERT INTO wishlist (user_id, product_id) VALUES (:user_id, :product_id)";
-    $stmt = $pdo->prepare($query);
+    $stmt = $connection->prepare($query);
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
     $stmt->execute();
