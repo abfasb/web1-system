@@ -21,6 +21,19 @@ $productQuery = "SELECT Products.product_name, Order_Items.quantity, Order_Items
                  FROM Order_Items
                  INNER JOIN Products ON Order_Items.product_id = Products.product_id
                  WHERE Order_Items.order_id = ?";
+
+function getProduct($productId, $connection) {
+    $sql = "SELECT * FROM Products WHERE product_id = ?";
+    $stmt = $connection->prepare($sql);
+    $stmt->bind_param("i", $productId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $product = $result->fetch_assoc();
+    $stmt->close();
+    
+    return $product;
+}
+
 $productStmt = $connection->prepare($productQuery);
 $productStmt->bind_param("i", $orderId);
 $productStmt->execute();
@@ -129,7 +142,7 @@ while ($row = $productResult->fetch_assoc()) {
                 <p class="receipt-text"><span class="font-semibold">Date:</span> <?php echo date('M d, Y', strtotime($order['order_date'])); ?></p>
                 <p class="receipt-text"><span class="font-semibold">Total:</span> ₱<?php echo number_format($order['total_amount'], 2); ?></p>
             </div>
-            <div class="mb-6">
+            <div class="mb-2">
                 <h2 class="receipt-title mb-2">Product Details</h2>
                 <?php foreach ($products as $product) : ?>
                     <div class="receipt-product">
@@ -141,23 +154,17 @@ while ($row = $productResult->fetch_assoc()) {
                 <?php endforeach; ?>
             </div>
             <div class="receipt-footer text-center">
-                <button class="receipt-button" onclick="printReceipt()">Print Receipt</button>
+                <button class="receipt-button" onclick = "redirectOrder()">Check Order History</button>
             </div>
         </div>
     </div>
 
     <script>
-        function printReceipt() {
-            var receiptContent = document.querySelector('.receipt-card').innerHTML;
-            var printWindow = window.open('', '_blank');
-            printWindow.document.open();
-            printWindow.document.write('<html><head><title>Receipt</title></head><body>');
-            printWindow.document.write(receiptContent);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
+        function redirectOrder() {
+            window.location.href= "order_receipt.php";
         }
     </script>
 </body>
 
 </html>
+

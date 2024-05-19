@@ -22,6 +22,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $_SESSION['Username'] = $getName;
     $_SESSION['Role'] = "Administrator";
+
+
+    if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
+      setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
+  }
     header("Location: /web1-system/views/AdminPanel.php");
       exit;
   }
@@ -43,6 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['userId'] = $result['user_id'];
             $getRole = "Seller";
             $_SESSION['Role'] = $getRole;
+
+            if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
+              setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
+          }
             header("Location: /web1-system/views/AdminPanel.php");
           } else {
             $_SESSION['Username'] = $result['username'];
@@ -52,6 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $getRole = "Administrator";
             $_SESSION['Role'] = $getRole;
             $_SESSION['user_id'] = $result['user_id'];
+
+            if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
+              setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
+          }
             header("Location: /web1-system/views/MainMenu.php");
           }
           
@@ -105,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input id="password" name="Password" type="password" placeholder="Enter a password" class="flex items-center w-full px-5 py-4 mb-5 mr-2 text-sm font-medium outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded-2xl"/>
             <div class="flex flex-row justify-between mb-8">
               <label class="relative inline-flex items-center mr-3 cursor-pointer select-none">
-                <input type="checkbox" checked value="" class="sr-only peer">
+                <input type="checkbox" name="keep_logged_in" checked value="1" class="sr-only peer">
                 <div
                   class="w-5 h-5 bg-white border-2 rounded-sm border-grey-500 peer peer-checked:border-0 peer-checked:bg-purple-blue-500">
                   <img class="" src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/icons/check.png" alt="tick">

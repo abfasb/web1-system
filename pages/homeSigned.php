@@ -3,6 +3,7 @@ $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
 
+
 ?>
 
 <!DOCTYPE html>

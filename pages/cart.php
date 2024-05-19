@@ -79,7 +79,6 @@ if (isset($_POST['cash-on-delivery'])) {
   $address = isset($_POST['address']) ? $_POST['address'] : '';
   $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
 
-  // Insert order without payment details
   $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, address, shipping_method) 
               VALUES ('$user_id', NOW(), '$total', '$paymentMethod', '$address', '$shippingMethod')";
   mysqli_query($connection, $orderSql);
@@ -95,8 +94,12 @@ if (isset($_POST['cash-on-delivery'])) {
       mysqli_query($connection, $orderItemSql);
   }
 
-  echo '<script>alert("Your order was successfully processed with Cash On Delivery.");</script>';
-  header("Location: receipt.php?order_id=$orderId");
+  echo '<script>
+        alert("Your order was successfully processed with Cash On Delivery.");
+        setTimeout(function() {
+            window.location.href = "receipt.php?order_id=' . $orderId . '";
+        }, 1000);
+    </script>';
 
 } else {
   $email = isset($_POST['email']) ? $_POST['email'] : '';
