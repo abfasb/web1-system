@@ -17,12 +17,11 @@ if (isset($_POST['product_id']) && isset($_POST['colors']) && isset($_POST['size
     $attributes_json = json_encode($attributes);
 
     $query = "INSERT INTO Cart (user_id, product_id, quantity, attributes) VALUES (?, ?, 1, ?)";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "iis", $user_id, $product_id, $attributes_json);
-    $result = mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-
-    mysqli_close($connection);
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(2, $product_id, PDO::PARAM_INT);
+    $stmt->bindParam(3, $attributes_json, PDO::PARAM_STR);
+    $result = $stmt->execute();
 
     if ($result) {
         echo 'success';

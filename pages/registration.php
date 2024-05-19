@@ -1,35 +1,38 @@
 <?php
-    include '../config/connection.php';
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $fullName = $_POST['fullName'];
-        $email = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_EMAIL);
-        $password = $_POST['Password'];
-    
-        if(empty($email) || empty($password) || empty($fullName)) {
-            $_SESSION['error_message'] = 'Please enter both email and password.';
-        } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['error_message'] = 'Invalid email format.';
-        } else if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
-            $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 characters.';
-        } else {
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $queryUser = "INSERT INTO Users(username, email, password) VALUES (?, ?, ?)";
-            $statement = mysqli_prepare($connection, $queryUser);
-            mysqli_stmt_bind_param($statement, "sss", $fullName, $email, $hashedPassword);
-            $queried = mysqli_stmt_execute($statement);
-    
-            if($queried) {
-                echo "<script> alert('Registered Succesfully!') </script>";
-                header("Location: /web1-system/pages/login.php");
-                exit();
-            }
-            else {
-                $_SESSION['error_message'] = 'Registration failed. Please try again.';
-            }
+include '../config/connection.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fullName = $_POST['fullName'];
+    $email = filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_EMAIL);
+    $password = $_POST['Password'];
+
+    if(empty($email) || empty($password) || empty($fullName)) {
+        $_SESSION['error_message'] = 'Please enter both email and password.';
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $_SESSION['error_message'] = 'Invalid email format.';
+    } else if (!preg_match("/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/", $password)) {
+        $_SESSION['error_message'] = 'Password must contain at least one uppercase letter, one number, and be at least 8 characters.';
+    } else {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $queryUser = "INSERT INTO Users(username, email, password) VALUES (?, ?, ?)";
+        $statement = $connection->prepare($queryUser);
+        $statement->bindParam(1, $fullName);
+        $statement->bindParam(2, $email);
+        $statement->bindParam(3, $hashedPassword);
+        $queried = $statement->execute();
+
+        if($queried) {
+            echo "<script> alert('Registered Succesfully!') </script>";
+            header("Location: /web1-system/pages/login.php");
+            exit();
+        }
+        else {
+            $_SESSION['error_message'] = 'Registration failed. Please try again.';
         }
     }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

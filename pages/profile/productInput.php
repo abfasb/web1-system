@@ -1,15 +1,6 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "webDb";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
+include '../../config/connection.php';
 
 // Create uploads directory if it doesn't exist
 $target_dir = "uploads/";
@@ -26,10 +17,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $productDetails = $_POST["product-details"];
   $images = [];
   $colors = isset($_POST["colors"]) ? explode(", ", $_POST["colors"]) : [];
-$sizes = isset($_POST["sizes"]) ? explode(", ", $_POST["sizes"]) : [];
-$weights = isset($_POST["weights"]) ? explode(", WW", $_POST["weights"]) : [];
+  $sizes = isset($_POST["sizes"]) ? explode(", ", $_POST["sizes"]) : [];
+  $weights = isset($_POST["weights"]) ? explode(", WW", $_POST["weights"]) : [];
 
-$attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => $weights]);
+  $attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => $weights]);
+
   // Handle multiple file uploads
   foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
     $file_name = $_FILES["images"]["name"][$key];
@@ -45,36 +37,39 @@ $attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => 
   }
 
   // Check if category exists
-  $sql = "SELECT category_id FROM Categories WHERE category_name = '$categoryName'";
-  $result = $conn->query($sql);
+  $stmt = $connection->prepare("SELECT category_id FROM Categories WHERE category_name = :categoryName");
+  $stmt->bindParam(':categoryName', $categoryName);
+  $stmt->execute();
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
+  if ($stmt->rowCount() > 0) {
     $categoryId = $row["category_id"];
   } else {
-    $sql = "INSERT INTO Categories (category_name) VALUES ('$categoryName')";
-    if ($conn->query($sql) === TRUE) {
-      $categoryId = $conn->insert_id;
-    } else {
-      echo "Error: " . $sql . "<br>" . $conn->error;
-      exit();
-    }
+    $stmt = $connection->prepare("INSERT INTO Categories (category_name) VALUES (:categoryName)");
+    $stmt->bindParam(':categoryName', $categoryName);
+    $stmt->execute();
+    $categoryId = $connection->lastInsertId();
   }
 
   // Insert product into database
-  $sql = "INSERT INTO Products (product_name, description, price, category_id, images, attributes) VALUES ('$productName', '$productDetails', $price, $categoryId, '" . json_encode($images) . "', '$attributes')";
-  var_dump($colors);
-  var_dump($sizes);
+  $stmt = $connection->prepare("INSERT INTO Products (product_name, description, price, category_id, images, attributes) VALUES (:productName, :productDetails, :price, :categoryId, :images, :attributes)");
+  $stmt->bindParam(':productName', $productName);
+  $stmt->bindParam(':productDetails', $productDetails);
+  $stmt->bindParam(':price', $price);
+  $stmt->bindParam(':categoryId', $categoryId);
+  $stmt->bindParam(':images', json_encode($images));
+  $stmt->bindParam(':attributes', $attributes);
   
-  if ($conn->query($sql) === TRUE) {
+  if ($stmt->execute()) {
     echo '<script> alert ("New record created successfully") </script>';
   } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . $stmt->errorInfo();
   }
 }
 
-$conn->close();
+$conn = null;
 ?>
+
 
 
 <!DOCTYPE html>

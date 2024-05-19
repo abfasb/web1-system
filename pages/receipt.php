@@ -6,17 +6,14 @@ $orderId = $_GET['order_id'];
 
 $orderQuery = "SELECT * FROM Orders WHERE order_id = ?";
 $orderStmt = $connection->prepare($orderQuery);
-$orderStmt->bind_param("i", $orderId);
-$orderStmt->execute();
-$orderResult = $orderStmt->get_result();
-$order = $orderResult->fetch_assoc();
+$orderStmt->execute([$orderId]);
+$order = $orderStmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$order) {
     header("Location: ../views/utils/error.php");
     exit();
 }
 
-// Prepare and bind the product query
 $productQuery = "SELECT Products.product_name, Order_Items.quantity, Order_Items.unit_price
                  FROM Order_Items
                  INNER JOIN Products ON Order_Items.product_id = Products.product_id
@@ -25,23 +22,14 @@ $productQuery = "SELECT Products.product_name, Order_Items.quantity, Order_Items
 function getProduct($productId, $connection) {
     $sql = "SELECT * FROM Products WHERE product_id = ?";
     $stmt = $connection->prepare($sql);
-    $stmt->bind_param("i", $productId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $product = $result->fetch_assoc();
-    $stmt->close();
-    
+    $stmt->execute([$productId]);
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
     return $product;
 }
 
 $productStmt = $connection->prepare($productQuery);
-$productStmt->bind_param("i", $orderId);
-$productStmt->execute();
-$productResult = $productStmt->get_result();
-$products = [];
-while ($row = $productResult->fetch_assoc()) {
-    $products[] = $row;
-}
+$productStmt->execute([$orderId]);
+$products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>

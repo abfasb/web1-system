@@ -3,7 +3,6 @@
 include '../config/connection.php';
 session_start();
 
-
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
@@ -12,37 +11,32 @@ $userid = $_SESSION['userId'];
 if (isset($_GET['product_id'])) {
     $product_id = $_GET['product_id'];
 
-
     $query = "SELECT * FROM Products WHERE product_id = ?";
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(1, $product_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "i", $product_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    
-    $cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = $userid";
-$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = $userid";
+    $cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = ?";
+    $wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = ?";
 
-$cartCount = 0;
-$wishlistCount = 0;
+    $stmt = $connection->prepare($cartQuery);
+    $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+    $stmt->execute();
+    $cartCount = $stmt->fetch(PDO::FETCH_ASSOC)['cart_count'];
 
-// Execute the queries
-if ($resultss = $connection->query($cartQuery)) {
-  $cartCount = $resultss->fetch_assoc()['cart_count'];
-  $resultss->free();
-}
+    $stmt = $connection->prepare($wishlistQuery);
+    $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+    $stmt->execute();
+    $wishlistCount = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist_count'];
 
-if ($resultss = $connection->query($wishlistQuery)) {
-  $wishlistCount = $resultss->fetch_assoc()['wishlist_count'];
-  $resultss->free();
-}
-    if (mysqli_num_rows($result) > 0) {
-        while ($product = mysqli_fetch_assoc($result)) {
-          $productAttributes = isset($product['attributes']) ? json_decode(trim($product['attributes']), true) : [];
-          $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
-          $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
+    if ($result) {
+        foreach ($result as $product) {
+            $productAttributes = isset($product['attributes']) ? json_decode(trim($product['attributes']), true) : [];
+            $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
+            $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
             $productImages = json_decode($product['images'], true);
-                 
+
 ?>
 
 <!DOCTYPE html>
@@ -285,13 +279,11 @@ if ($resultss = $connection->query($wishlistQuery)) {
 
 <?php
         }
-    } else {
+      } else {
         echo "<p>Product not found</p>";
     }
 
-    mysqli_stmt_close($stmt);
-
-    mysqli_close($connection);
+    $connection = null;
 } else {
     echo "<p>Product ID not provided</p>";
 }

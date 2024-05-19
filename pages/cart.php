@@ -1,36 +1,33 @@
 <?php
-
 include '../config/connection.php';
 session_start();
 
-
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
-$userName =  $_SESSION['Username'];
+$userName = $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
 
-
 if (!isset($_SESSION['Username'], $_SESSION['Email'], $_SESSION['user_id'])) {
-  header("Location: ../pages/login.php");
-  exit();
+    header("Location: ../pages/login.php");
+    exit();
 }
 
 $provinces = [
-  "Abra", "Agusan del Norte", "Agusan del Sur", "Aklan", "Albay", "Antique", "Apayao", "Aurora", "Basilan", "Bataan",
-  "Batanes", "Batangas", "Benguet", "Biliran", "Bohol", "Bukidnon", "Bulacan", "Cagayan", "Camarines Norte", "Camarines Sur",
-  "Camiguin", "Capiz", "Catanduanes", "Cavite", "Cebu", "Cotabato", "Davao de Oro", "Davao del Norte", "Davao del Sur",
-  "Davao Occidental", "Davao Oriental", "Dinagat Islands", "Eastern Samar", "Guimaras", "Ifugao", "Ilocos Norte", "Ilocos Sur",
-  "Iloilo", "Isabela", "Kalinga", "La Union", "Laguna", "Lanao del Norte", "Lanao del Sur", "Leyte", "Maguindanao del Norte",
-  "Maguindanao del Sur", "Marinduque", "Masbate", "Metro Manila", "Misamis Occidental", "Misamis Oriental", "Mountain Province",
-  "Negros Occidental", "Negros Oriental", "Northern Samar", "Nueva Ecija", "Nueva Vizcaya", "Occidental Mindoro", "Oriental Mindoro",
-  "Palawan", "Pampanga", "Pangasinan", "Quezon", "Quirino", "Rizal", "Romblon", "Samar", "Sarangani", "Siquijor", "Sorsogon",
-  "South Cotabato", "Southern Leyte", "Sultan Kudarat", "Sulu", "Surigao del Norte", "Surigao del Sur", "Tarlac", "Tawi-Tawi",
-  "Zambales", "Zamboanga del Norte", "Zamboanga del Sur", "Zamboanga Sibugay"
+    "Abra", "Agusan del Norte", "Agusan del Sur", "Aklan", "Albay", "Antique", "Apayao", "Aurora", "Basilan", "Bataan",
+    "Batanes", "Batangas", "Benguet", "Biliran", "Bohol", "Bukidnon", "Bulacan", "Cagayan", "Camarines Norte", "Camarines Sur",
+    "Camiguin", "Capiz", "Catanduanes", "Cavite", "Cebu", "Cotabato", "Davao de Oro", "Davao del Norte", "Davao del Sur",
+    "Davao Occidental", "Davao Oriental", "Dinagat Islands", "Eastern Samar", "Guimaras", "Ifugao", "Ilocos Norte", "Ilocos Sur",
+    "Iloilo", "Isabela", "Kalinga", "La Union", "Laguna", "Lanao del Norte", "Lanao del Sur", "Leyte", "Maguindanao del Norte",
+    "Maguindanao del Sur", "Marinduque", "Masbate", "Metro Manila", "Misamis Occidental", "Misamis Oriental", "Mountain Province",
+    "Negros Occidental", "Negros Oriental", "Northern Samar", "Nueva Ecija", "Nueva Vizcaya", "Occidental Mindoro", "Oriental Mindoro",
+    "Palawan", "Pampanga", "Pangasinan", "Quezon", "Quirino", "Rizal", "Romblon", "Samar", "Sarangani", "Siquijor", "Sorsogon",
+    "South Cotabato", "Southern Leyte", "Sultan Kudarat", "Sulu", "Surigao del Norte", "Surigao del Sur", "Tarlac", "Tawi-Tawi",
+    "Zambales", "Zamboanga del Norte", "Zamboanga del Sur", "Zamboanga Sibugay"
 ];
 
 // Generate the select dropdown options
 $options = "";
 foreach ($provinces as $province) {
-  $options .= "<option value=\"$province\">$province</option>";
+    $options .= "<option value=\"$province\">$province</option>";
 }
 
 $user_id = $_SESSION['user_id'];
@@ -38,16 +35,12 @@ $query = "SELECT p.product_id, p.product_name, p.price, c.quantity, p.images, c.
           INNER JOIN Products p ON c.product_id = p.product_id
           WHERE c.user_id = ?";
 $stmt = $connection->prepare($query);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
+$stmt->execute([$user_id]);
+$cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $subtotal = 0;
-$cart_items = [];
-while ($row = $result->fetch_assoc()) {
-    $subtotal += $row['price'] * $row['quantity'];
-    $cart_items[] = $row;
+foreach ($cart_items as $item) {
+    $subtotal += $item['price'] * $item['quantity'];
 }
 
 $shipping = 8.00;
@@ -60,94 +53,87 @@ $cartCount = 0;
 $wishlistCount = 0;
 
 // Execute the queries
-if ($result = $connection->query($cartQuery)) {
-  $cartCount = $result->fetch_assoc()['cart_count'];
-  $result->free();
+$stmt = $connection->query($cartQuery);
+if ($stmt) {
+    $cartCount = $stmt->fetch(PDO::FETCH_ASSOC)['cart_count'];
 }
 
-if ($result = $connection->query($wishlistQuery)) {
-  $wishlistCount = $result->fetch_assoc()['wishlist_count'];
-  $result->free();
+$stmt = $connection->query($wishlistQuery);
+if ($stmt) {
+    $wishlistCount = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist_count'];
 }
-
 
 // Assuming $paymentMethod is determined earlier in your code
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
-if (isset($_POST['cash-on-delivery'])) {
-  $paymentMethod = "cash_on_delivery";
-  $address = isset($_POST['address']) ? $_POST['address'] : '';
-  $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
+    if (isset($_POST['cash-on-delivery'])) {
+        $paymentMethod = "cash_on_delivery";
+        $address = isset($_POST['address']) ? $_POST['address'] : '';
+        $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
 
-  $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, address, shipping_method) 
-              VALUES ('$user_id', NOW(), '$total', '$paymentMethod', '$address', '$shippingMethod')";
-  mysqli_query($connection, $orderSql);
-  $orderId = mysqli_insert_id($connection);
+        $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, address, shipping_method) 
+                      VALUES (?, NOW(), ?, ?, ?, ?)";
+        $stmt = $connection->prepare($orderSql);
+        $stmt->execute([$user_id, $total, $paymentMethod, $address, $shippingMethod]);
+        $orderId = $connection->lastInsertId();
 
-  foreach ($cart_items as $item) {
-      $productId = $item['product_id'];
-      $quantity = $item['quantity'];
-      $unitPrice = $item['price'];
+        foreach ($cart_items as $item) {
+            $productId = $item['product_id'];
+            $quantity = $item['quantity'];
+            $unitPrice = $item['price'];
 
-      $orderItemSql = "INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) 
-      VALUES ('$orderId', '$productId', '$quantity', '$unitPrice')";
-      mysqli_query($connection, $orderItemSql);
-  }
+            $orderItemSql = "INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) 
+                              VALUES (?, ?, ?, ?)";
+            $stmt = $connection->prepare($orderItemSql);
+            $stmt->execute([$orderId, $productId, $quantity, $unitPrice]);
+        }
 
-  echo '<script>
-        alert("Your order was successfully processed with Cash On Delivery.");
-        setTimeout(function() {
-            window.location.href = "receipt.php?order_id=' . $orderId . '";
-        }, 1000);
-    </script>';
+        echo '<script>
+                alert("Your order was successfully processed with Cash On Delivery.");
+                setTimeout(function() {
+                    window.location.href = "receipt.php?order_id=' . $orderId . '";
+                }, 1000);
+            </script>';
+    } else {
+        $email = isset($_POST['email']) ? $_POST['email'] : '';
+        $cardHolder = isset($_POST['card-holder']) ? $_POST['card-holder'] : '';
+        $cardNumber = isset($_POST['card-number']) ? $_POST['card-number'] : '';
+        $expiryDate = isset($_POST['credit-expiry']) ? $_POST['credit-expiry'] : '';
+        $cvc = isset($_POST['credit-cvc']) ? $_POST['credit-cvc'] : '';
+        $billingAddress = isset($_POST['billing-address']) ? $_POST['billing-address'] : '';
+        $billingState = isset($_POST['billing-state']) ? $_POST['billing-state'] : '';
+        $billingZip = isset($_POST['billing-zip']) ? $_POST['billing-zip'] : '';
+        $paymentMethod = "credit_card";
+        $address = isset($_POST['address']) ? $_POST['address'] : '';
+        $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
 
-} else {
-  $email = isset($_POST['email']) ? $_POST['email'] : '';
-  $cardHolder = isset($_POST['card-holder']) ? $_POST['card-holder'] : '';
-  $cardNumber = isset($_POST['card-number']) ? $_POST['card-number'] : '';
-  $expiryDate = isset($_POST['credit-expiry']) ? $_POST['credit-expiry'] : '';
-  $cvc = isset($_POST['credit-cvc']) ? $_POST['credit-cvc'] : '';
-  $billingAddress = isset($_POST['billing-address']) ? $_POST['billing-address'] : '';
-  $billingState = isset($_POST['billing-state']) ? $_POST['billing-state'] : '';
-  $billingZip = isset($_POST['billing-zip']) ? $_POST['billing-zip'] : '';
-  $paymentMethod = "credit_card";
-  $address = isset($_POST['address']) ? $_POST['address'] : '';
-  $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
+        $paymentSql = "INSERT INTO Payment_Details (email, card_holder, card_number, expiry_date, cvc, billing_address, billing_state, billing_zip) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $connection->prepare($paymentSql);
+        $stmt->execute([$email, $cardHolder, $cardNumber, $expiryDate, $cvc, $billingAddress, $billingState, $billingZip]);
+        $paymentId = $connection->lastInsertId();
 
-  $paymentSql = "INSERT INTO Payment_Details (email, card_holder, card_number, expiry_date, cvc, billing_address, billing_state, billing_zip) 
-          VALUES ('$email', '$cardHolder', '$cardNumber', '$expiryDate', '$cvc', '$billingAddress', '$billingState', '$billingZip')";
-  if (mysqli_query($connection, $paymentSql)) {
-      $paymentId = mysqli_insert_id($connection);
-    $paymentMethod = "credit_card";
-
-      // Insert order without payment details
-      $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, payment_id, address, shipping_method) 
-                  VALUES ('$user_id', NOW(), '$total', '$paymentMethod', '$paymentId', '$address', '$shippingMethod')";
-      mysqli_query($connection, $orderSql);
-      $orderId = mysqli_insert_id($connection);
-
-      foreach ($cart_items as $item) {
-          $productId = $item['product_id'];
-          $quantity = $item['quantity'];
-          $unitPrice = $item['price'];
-
-          $orderItemSql = "INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) 
-          VALUES ('$orderId', '$productId', '$quantity', '$unitPrice')";
-          mysqli_query($connection, $orderItemSql);
-      }
-
-      echo '<script>alert("Your order was successfully processed with Credit Card payment.");</script>';
-      header("Location: receipt.php?order_id=$orderId");
-
-  } else {
-      echo "Error inserting payment details: " . mysqli_error($connection);
-  }
+        $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, payment_id, address, shipping_method)
+        VALUES (?, NOW(), ?, ?, ?, ?, ?)";
+        $stmt = $connection->prepare($orderSql);
+        $stmt->execute([$user_id, $total, $paymentMethod, $paymentId, $address, $shippingMethod]);
+        $orderId = $connection->lastInsertId();
+        foreach ($cart_items as $item) {
+            $productId = $item['product_id'];
+            $quantity = $item['quantity'];
+            $unitPrice = $item['price'];
+    
+            $orderItemSql = "INSERT INTO Order_Items (order_id, product_id, quantity, unit_price) 
+                              VALUES (?, ?, ?, ?)";
+            $stmt = $connection->prepare($orderItemSql);
+            $stmt->execute([$orderId, $productId, $quantity, $unitPrice]);
+        }
+    
+        echo '<script>alert("Your order was successfully processed with Credit Card payment.");</script>';
+        header("Location: receipt.php?order_id=$orderId");
+    }
 }
-}
-
-
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

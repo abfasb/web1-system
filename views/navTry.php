@@ -2,7 +2,6 @@
 include '../config/connection.php';
 session_start();
 
-
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
@@ -12,24 +11,27 @@ if (!isset($userName)) {
   header("Location: ../pages/login.php");
 }
 
-$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = $userid";
-$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = $userid";
+$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = :userid";
+$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = :userid";
 
 $cartCount = 0;
 $wishlistCount = 0;
 
-if ($result = $connection->query($cartQuery)) {
-  $cartCount = $result->fetch_assoc()['cart_count'];
-  $result->free();
-}
+// Prepare and execute the queries
+$stmt = $connection->prepare($cartQuery);
+$stmt->bindParam(':userid', $userid);
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$cartCount = $result['cart_count'];
 
-if ($result = $connection->query($wishlistQuery)) {
-  $wishlistCount = $result->fetch_assoc()['wishlist_count'];
-  $result->free();
-}
-
+$stmt = $connection->prepare($wishlistQuery);
+$stmt->bindParam(':userid', $userid);
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$wishlistCount = $result['wishlist_count'];
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

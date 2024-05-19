@@ -5,22 +5,23 @@ session_start();
 
 if (isset($_GET['product_id'])) {
     $product_id = intval($_GET['product_id']);
-    
+
     // Assuming you have a cart table and a way to identify the user's cart
     $user_id = $_SESSION['user_id'];
-    
+
     // Remove product from the cart
-    $sql = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
+    $sql = "DELETE FROM cart WHERE user_id = :user_id AND product_id = :product_id";
     $stmt = $connection->prepare($sql);
-    $stmt->bind_param('ii', $user_id, $product_id);
-    
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+
     if ($stmt->execute()) {
         echo 'success';
     } else {
         echo 'error';
     }
 
-    $stmt->close();
-    $connection->close();
+    $stmt->closeCursor(); // Optional, closes the cursor
+    $connection = null; // Optional, closes the connection
 }
 ?>

@@ -1,24 +1,22 @@
 <?php
-    include '../config/connection.php';
+include '../config/connection.php';
 
-    session_start();
-    $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
-    $userName =  $_SESSION['Username'];
-    $emailAddress = $_SESSION['Email'];
-    $user_id = $_SESSION['user_id'];
-    
-    $sql = "SELECT * FROM Orders WHERE user_id = ?";
-    $stmt = $connection->prepare($sql);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $orders = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
+session_start();
+$userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
+$userName =  $_SESSION['Username'];
+$emailAddress = $_SESSION['Email'];
+$user_id = $_SESSION['user_id'];
 
-    $totalOrders = $orders;
-    $activeOrders = array_filter($orders, function($order) { return $order['status'] == 'active'; });
-    $completedOrders = array_filter($orders, function($order) { return $order['status'] == 'completed'; });
-    $cancelledOrders = array_filter($orders, function($order) { return $order['status'] == 'cancelled'; });
+$sql = "SELECT * FROM Orders WHERE user_id = ?";
+$stmt = $connection->prepare($sql);
+$stmt->execute([$user_id]);
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->closeCursor();
+
+$totalOrders = $orders;
+$activeOrders = array_filter($orders, function($order) { return $order['status'] == 'active'; });
+$completedOrders = array_filter($orders, function($order) { return $order['status'] == 'completed'; });
+$cancelledOrders = array_filter($orders, function($order) { return $order['status'] == 'cancelled'; });
 
 
 $sql = "SELECT o.*, p.product_name, p.images
@@ -27,17 +25,16 @@ $sql = "SELECT o.*, p.product_name, p.images
         JOIN Products p ON oi.product_id = p.product_id
         WHERE o.user_id = ?";
 $stmt = $connection->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$orders = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+$stmt->execute([$user_id]);
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->closeCursor();
 
 $totalOrders = $orders;
 $activeOrders = array_filter($orders, function($order) { return $order['status'] == 'active'; });
 $completedOrders = array_filter($orders, function($order) { return $order['status'] == 'completed'; });
 $cancelledOrders = array_filter($orders, function($order) { return $order['status'] == 'cancelled'; });
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

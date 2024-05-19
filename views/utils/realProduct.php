@@ -4,7 +4,6 @@ include '../../model/ProductModel.php';
 
 session_start();
 
-
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
@@ -14,27 +13,26 @@ $productModel = new ProductModel($connection);
 $products = $productModel->getAllProducts();
 $categories = $productModel->getSortedCategories();
 
-
-$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = $userid";
-$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = $userid";
+$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = :userid";
+$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = :userid";
 
 $cartCount = 0;
 $wishlistCount = 0;
 
-// Execute the queries
-if ($resultss = $connection->query($cartQuery)) {
-  $cartCount = $resultss->fetch_assoc()['cart_count'];
-  $resultss->free();
-}
+$stmt = $connection->prepare($cartQuery);
+$stmt->bindParam(':userid', $userid);
+$stmt->execute();
+$resultss = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$cartCount = $resultss[0]['cart_count'];
 
-if ($resultss = $connection->query($wishlistQuery)) {
-  $wishlistCount = $resultss->fetch_assoc()['wishlist_count'];
-  $resultss->free();
-}
-
-
+$stmt = $connection->prepare($wishlistQuery);
+$stmt->bindParam(':userid', $userid);
+$stmt->execute();
+$resultss = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$wishlistCount = $resultss[0]['wishlist_count'];
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

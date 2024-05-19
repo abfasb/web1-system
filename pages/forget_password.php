@@ -2,7 +2,6 @@
 
 include '../config/connection.php';
 
-
 session_start(); // Start the session
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
@@ -10,11 +9,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
   $token = bin2hex(random_bytes(32)); // Generate a random token
   $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token expires in 1 hour
 
-
   $query = "INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)";
-  $statement = mysqli_prepare($connection, $query);
-  mysqli_stmt_bind_param($statement, "sss", $email, $token, $expires_at);
-  mysqli_stmt_execute($statement);
+  $statement = $connection->prepare($query);
+  $statement->execute([$email, $token, $expires_at]);
 
   $reset_link = "http://localhost/web1-system/pages/new_password.php?token=$token";
   $email_subject = "Password Reset";
@@ -26,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
   exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

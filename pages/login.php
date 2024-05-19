@@ -6,79 +6,74 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $email = trim(filter_input(INPUT_POST, 'Username', FILTER_SANITIZE_EMAIL));
   $password = $_POST['Password'];
+
   if (($email === 'reymelrey.mislang@gmail.com' || $email === 'matbalinton@gmail.com' || $email == 'gwynethvaleriebrucal@gmail.com' || $email == 'calica.eman@gmail.com') && $password === '12345678') {
-      $getName; 
+    $getName;
     if ($email == 'reymelrey.mislang@gmail.com') {
       $getName = "Reymel Mislang";
-    }
-    else if ($email == 'matbalinton@gmail.com') {
+    } else if ($email == 'matbalinton@gmail.com') {
       $getName = "Matthew Balinton";
-    }
-    else if ($email == 'gwynethvaleriebrucal@gmail.com') {
+    } else if ($email == 'gwynethvaleriebrucal@gmail.com') {
       $getName = "Valerie Brucal";
-    }
-    else if ($email == 'calica.eman@gmail.com') {
+    } else if ($email == 'calica.eman@gmail.com') {
       $getName = "Emmanuel Calica";
     }
     $_SESSION['Username'] = $getName;
     $_SESSION['Role'] = "Administrator";
 
-
     if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
       setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
-  }
+    }
     header("Location: /web1-system/views/AdminPanel.php");
-      exit;
+    exit;
   }
 
   $query = "SELECT * FROM Users WHERE email = ?";
-  $statement = mysqli_prepare($connection, $query);
-  mysqli_stmt_bind_param($statement, 's', $email);
-  mysqli_stmt_execute($statement);
-  $queried = mysqli_stmt_get_result($statement);
+  $statement = $connection->prepare($query);
+  $statement->execute([$email]);
+  $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-  if ($queried && mysqli_num_rows($queried) > 0) {
-      $result = mysqli_fetch_assoc($queried);
+  if ($result) {
+    if (password_verify($password, $result['password'])) {
+      if ($result['role'] == 'seller') {
+        $_SESSION['Username'] = $result['username'];
+        $_SESSION['Email'] = $email;
+        echo '<script>alert("Login successful!");</script>';
+        $_SESSION['userId'] = $result['user_id'];
+        $getRole = "Seller";
+        $_SESSION['Role'] = $getRole;
 
-      if (password_verify($password, $result['password'])) {
-          if ($result['role'] == 'seller') {
-            $_SESSION['Username'] = $result['username'];
-            $_SESSION['Email'] = $email;
-            echo '<script>alert("Login successful!");</script>';
-            $_SESSION['userId'] = $result['user_id'];
-            $getRole = "Seller";
-            $_SESSION['Role'] = $getRole;
-
-            if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
-              setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
-          }
-            header("Location: /web1-system/views/AdminPanel.php");
-          } else {
-            $_SESSION['Username'] = $result['username'];
-            $_SESSION['Email'] = $email;
-            echo '<script>alert("Login successful!");</script>';
-            $_SESSION['userId'] = $result['user_id'];
-            $getRole = "Administrator";
-            $_SESSION['Role'] = $getRole;
-            $_SESSION['user_id'] = $result['user_id'];
-
-            if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
-              setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
-          }
-            header("Location: /web1-system/views/MainMenu.php");
-          }
-          
-          exit; // Ensure that code execution stops after redirection
+        if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
+          setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
+        }
+        header("Location: /web1-system/views/AdminPanel.php");
       } else {
-          $_SESSION['error_message'] = 'Wrong Password';
-          echo '<script> alert("Wrong Password"); </script>';
+        $_SESSION['Username'] = $result['username'];
+        $_SESSION['Email'] = $email;
+        echo '<script>alert("Login successful!");</script>';
+        $_SESSION['userId'] = $result['user_id'];
+        $getRole = "Administrator";
+        $_SESSION['Role'] = $getRole;
+        $_SESSION['user_id'] = $result['user_id'];
+
+        if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
+          setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
+        }
+        header("Location: /web1-system/views/MainMenu.php");
       }
+
+      exit; // Ensure that code execution stops after redirection
+    } else {
+      $_SESSION['error_message'] = 'Wrong Password';
+      echo '<script> alert("Wrong Password"); </script>';
+    }
   } else {
-      echo '<script> alert("Wrong Email, please try again later."); </script>';
-      $_SESSION['error_message'] = 'Wrong Email, please try again later.';
+    echo '<script> alert("Wrong Email, please try again later."); </script>';
+    $_SESSION['error_message'] = 'Wrong Email, please try again later.';
   }
 }
 ?>
+
 
 
 <!DOCTYPE html>

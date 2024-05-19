@@ -11,37 +11,29 @@ $user_id = $_SESSION['user_id'];
 $sql = "SELECT Wishlist.wishlist_id, Wishlist.user_id, Wishlist.product_id, Products.product_name, Products.description, Products.price, Products.images
         FROM Wishlist
         INNER JOIN Products ON Wishlist.product_id = Products.product_id
-        WHERE Wishlist.user_id = $user_id";
+        WHERE Wishlist.user_id = :user_id";
 
-$result = $connection->query($sql);
+$stmt = $connection->prepare($sql);
+$stmt->bindParam(':user_id', $user_id);
+$stmt->execute();
+$wishlist_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-if ($result) {
-    $wishlist_items = $result->fetch_all(MYSQLI_ASSOC);
-} else {
-    echo "Error: " . $sql . "<br>" . $mysqli->error;
-}
+$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = :user_id";
+$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = :user_id";
 
+$stmt = $connection->prepare($cartQuery);
+$stmt->bindParam(':user_id', $user_id);
+$stmt->execute();
+$cartCount = $stmt->fetch(PDO::FETCH_ASSOC)['cart_count'];
 
-$cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = $user_id";
-$wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = $user_id";
+$stmt = $connection->prepare($wishlistQuery);
+$stmt->bindParam(':user_id', $user_id);
+$stmt->execute();
+$wishlistCount = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist_count'];
 
-$cartCount = 0;
-$wishlistCount = 0;
-
-// Execute the queries
-if ($result = $connection->query($cartQuery)) {
-  $cartCount = $result->fetch_assoc()['cart_count'];
-  $result->free();
-}
-
-if ($result = $connection->query($wishlistQuery)) {
-  $wishlistCount = $result->fetch_assoc()['wishlist_count'];
-  $result->free();
-}
-
-
-$connection->close();
+$connection = null; // Close the connection
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
