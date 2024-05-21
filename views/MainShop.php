@@ -1,5 +1,15 @@
 <?php 
+include '../config/connection.php';
+session_start();
 
+try {
+    $sql = "SELECT user_id, username FROM Users WHERE role = 'seller'";
+    $stmt = $connection->prepare($sql);
+    $stmt->execute();
+    $sellers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "<script>console.error('Error:', '" . $e->getMessage() . "');</script>";
+}
 ?>
 
 
@@ -15,7 +25,8 @@
 </head>
 
 <body class="bg-gray-100 font-sans">
-    <!-- Categories -->
+
+    <?php include 'navTry.php'?>
     <nav class="bg-white shadow-md">
         <div class="container mx-auto px-4 py-3">
             <ul class="grid grid-cols-5 gap-4">
@@ -103,18 +114,14 @@
         </div>
     </nav>
 
-    <!-- Header -->
     <header class="bg-white shadow-md">
         <div class="container mx-auto px-4 py-6">
             <h1 class="text-3xl font-bold text-gray-800">New Arrivals</h1>
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container mx-auto my-8 px-4">
-        <!-- Product Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Product Card -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <img src="https://via.placeholder.com/400x300" alt="Product" class="w-full h-64 object-cover">
                 <div class="p-4">
@@ -126,9 +133,21 @@
                     </div>
                 </div>
             </div>
-            <!-- Repeat the above product card for more products -->
 
         </div>
+        <section class="mt-16">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">All Sellers</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <?php foreach ($sellers as $seller): ?>
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-4">
+                    <h2 class="text-xl font-semibold text-gray-800"><?= htmlspecialchars($seller['username']) ?></h2>
+                    <a href="seller_products.php?seller_id=<?= $seller['user_id'] ?>" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 inline-block">View Products</a>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
     </main>
 
 </body>

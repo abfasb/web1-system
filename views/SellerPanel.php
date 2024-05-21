@@ -8,16 +8,15 @@ $roleType = $_SESSION['Role'];
 $seller_id = $_SESSION['userId'];
 
 try {
-    // SQL query to count total orders for each seller
-    $sql = "SELECT seller_id, COUNT(order_id) AS total_orders
-            FROM (
-                SELECT o.order_id, p.user_id AS seller_id
-                FROM Orders o
-                INNER JOIN Order_Items oi ON o.order_id = oi.order_id
-                INNER JOIN Products p ON oi.product_id = p.product_id
-                WHERE p.user_id = ?
-            ) AS order_sellers
-            GROUP BY seller_id";
+    $sql = "SELECT 
+                COUNT(o.order_id) AS total_orders,
+                SUM(CASE WHEN o.status = 'active' THEN 1 ELSE 0 END) AS active_orders,
+                SUM(CASE WHEN o.status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
+                SUM(CASE WHEN o.status = 'completed' THEN 1 ELSE 0 END) AS completed_orders
+            FROM Orders o
+            INNER JOIN Order_Items oi ON o.order_id = oi.order_id
+            INNER JOIN Products p ON oi.product_id = p.product_id
+            WHERE p.user_id = ?";
 
     // Prepare the SQL statement
     $stmt = $connection->prepare($sql);
@@ -29,12 +28,24 @@ try {
     $stmt->execute();
 
     // Fetch the results into an associative array
-    $totalOrders = $stmt->fetch(PDO::FETCH_ASSOC);
+    $orderCounts = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Check if the fetch operation was successful
-    if ($totalOrders !== false) {
-        // Output the total orders for the seller to the console
-        echo "<script>console.log('Total orders for seller ID $seller_id:', " . $totalOrders['total_orders'] . ");</script>";
+    if ($orderCounts !== false) {
+        // Store the counts in variables
+        $totalOrders = $orderCounts['total_orders'];
+        $activeOrders = $orderCounts['active_orders'];
+        $cancelledOrders = $orderCounts['cancelled_orders'];
+        $completedOrders = $orderCounts['completed_orders'];
+
+        $activePercentage = ($totalOrders > 0) ? ($activeOrders / $totalOrders) * 100 : 0;
+        $cancelledPercentage = ($totalOrders > 0) ? ($cancelledOrders / $totalOrders) * 100 : 0;
+        $completedPercentage = ($totalOrders > 0) ? ($completedOrders / $totalOrders) * 100 : 0;
+
+        // Output the counts for debugging purposes
+        echo "<script>console.log('Total orders for seller ID $seller_id: $totalOrders');</script>";
+        echo "<script>console.log('Active orders for seller ID $seller_id: $activeOrders');</script>";
+        echo "<script>console.log('Cancelled orders for seller ID $seller_id: $cancelledOrders');</script>";
     } else {
         // Handle case where no results were returned
         echo "<script>console.log('No orders found for seller ID $seller_id');</script>";
@@ -44,6 +55,40 @@ try {
     // Handle database errors
     echo "<script>console.error('Error:', '" . $e->getMessage() . "');</script>";
 }
+
+
+
+$query = "
+    SELECT DATE(o.order_date) as order_date, 
+           SUM(CASE WHEN o.status = 'active' THEN 1 ELSE 0 END) as active_orders,
+           SUM(CASE WHEN o.status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_orders,
+           SUM(CASE WHEN o.status = 'completed' THEN 1 ELSE 0 END) as completed_orders
+    FROM Orders o
+    JOIN Order_Items oi ON o.order_id = oi.order_id
+    JOIN Products p ON oi.product_id = p.product_id
+    WHERE p.user_id = :seller_id AND o.order_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    GROUP BY DATE(o.order_date)
+    ORDER BY order_date";
+
+$statement = $connection->prepare($query);
+$statement->execute(['seller_id' => $seller_id]);
+
+$labels = [];
+$activeData = [];
+$cancelledData = [];
+$completedData = [];
+
+while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+    $labels[] = date('M d', strtotime($row['order_date']));
+    $activeData[] = $row['active_orders'];
+    $cancelledData[] = $row['cancelled_orders'];
+    $completedData[] = $row['completed_orders'];
+}
+
+$labelsJSON = json_encode($labels);
+$activeDataJSON = json_encode($activeData);
+$cancelledDataJSON = json_encode($cancelledData);
+$completedDataJSON = json_encode($completedData);
 ?>
 
 
@@ -119,7 +164,7 @@ try {
                 </ul>
             </li>
             <li class="mb-1 group">
-                <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+                <a href="./SellerPanel/MainOrders.php" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
                     <i class='bx bx-archive mr-3 text-lg'></i>                
                     <span class="text-sm">Orders</span>
                 </a>
@@ -278,7 +323,7 @@ try {
                     <div class="flex justify-between mb-6">
                         <div>
                             <div class="flex items-center mb-1">
-                                <div class="text-2xl font-semibold"><?php ?></div>
+                                <div class="text-2xl font-semibold"><?php echo $totalOrders ?></div>
                             </div>
                             <div class="text-sm font-medium text-gray-400">Orders</div>
                         </div>
@@ -304,7 +349,7 @@ try {
                     <div class="flex justify-between mb-4">
                         <div>
                             <div class="flex items-center mb-1">
-                                <div class="text-2xl font-semibold"><?php echo $active_orders??0?></div>
+                                <div class="text-2xl font-semibold"><?php echo $activeOrders??0?></div>
                                 <div class="p-1 rounded bg-emerald-500/10 text-emerald-500 text-[12px] font-semibold leading-none ml-2">+30%</div>
                             </div>
                             <div class="text-sm font-medium text-gray-400">Active</div>
@@ -329,7 +374,7 @@ try {
                 <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
                     <div class="flex justify-between mb-6">
                         <div>
-                            <div class="text-2xl font-semibold mb-1"><?php echo $cancelled_orders??0?></div>
+                            <div class="text-2xl font-semibold mb-1"><?php echo $cancelledOrders??0?></div>
                             <div class="text-sm font-medium text-gray-400">Cancelled</div>
                         </div>
                          <div class="dropdown">
@@ -362,63 +407,49 @@ try {
                         <table class="items-center w-full bg-transparent border-collapse">
                           <thead>
                             <tr>
-                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Role</th>
-                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Amount</th>
-                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left min-w-140-px"></th>
+                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Status</th>
+                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">Quantity</th>
+                              <th class="px-4 bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-100 align-middle border border-solid border-gray-200 dark:border-gray-500 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left min-w-140-px">Percentage</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Administrator</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">1</td>
+                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Active Orders</th>
+                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $activeOrders ?></td>
                               <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                                 <div class="flex items-center">
-                                  <span class="mr-2">70%</span>
+                                  <span class="mr-2"><?php echo round($activePercentage) . "%" ?></span>
                                   <div class="relative w-full">
                                     <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
-                                      <div style="width: 70%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
+                                      <div style="width: <?php echo $activePercentage ?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
                                     </div>
                                   </div>
                                 </div>
                               </td>
                             </tr>
                             <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">6</td>
+                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Completed</th>
+                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $completedOrders ?></td>
                               <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                                 <div class="flex items-center">
-                                  <span class="mr-2">40%</span>
-                                  <div class="relative w-full">
-                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
-                                      <div style="width: 40%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">5</td>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                <div class="flex items-center">
-                                  <span class="mr-2">45%</span>
+                                  <span class="mr-2"><?php echo round($completedPercentage) . "%" ?></span>
                                   <div class="relative w-full">
                                     <div class="overflow-hidden h-2 text-xs flex rounded bg-pink-200">
-                                      <div style="width: 45%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-pink-500"></div>
+                                      <div style="width: <?php echo $completedPercentage ?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-pink-500"></div>
                                     </div>
                                   </div>
                                 </div>
                               </td>
                             </tr>
                             <tr class="text-gray-700 dark:text-gray-100">
-                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">User</th>
-                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">4</td>
+                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Cancelled</th>
+                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $cancelledOrders ?></td>
                               <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                                 <div class="flex items-center">
-                                  <span class="mr-2">60%</span>
+                                  <span class="mr-2"><?php echo round($cancelledPercentage) . "%" ?></span>
                                   <div class="relative w-full">
                                     <div class="overflow-hidden h-2 text-xs flex rounded bg-red-200">
-                                      <div style="width: 60%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"></div>
+                                      <div style="width: <?php echo $cancelledPercentage ?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-red-500"></div>
                                     </div>
                                   </div>
                                 </div>
@@ -449,66 +480,51 @@ try {
                     </div>
                     <div class="overflow-hidden">
                         <table class="w-full min-w-[540px]">
-                            <tbody>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Lorem Ipsum</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">02-02-2024</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">17.45</span>
-                                    </td>
-                                     <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="dropdown">
-                                            <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
-                                            <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td> 
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Lorem Ipsum</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">02-02-2024</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">17.45</span>
-                                    </td>
-                                     <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="dropdown">
-                                            <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
-                                            <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td> 
-                                </tr>
-                            </tbody>
+                        <tbody>
+                        <?php
+            $stmtt = $connection->prepare("SELECT Orders.*, Products.*, Users.username as seller_username FROM Orders 
+            INNER JOIN Order_Items ON Orders.order_id = Order_Items.order_id 
+            INNER JOIN Products ON Order_Items.product_id = Products.product_id 
+            INNER JOIN Users ON Products.user_id = Users.user_id 
+            WHERE Products.user_id = :seller_id");
+            $stmtt->execute(['seller_id' => $seller_id]);
+            $orders = $stmtt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($orders as $order) {
+    $order_date = date('d-m-Y', strtotime($order['order_date']));
+    $order_time = date('H:i', strtotime($order['order_date']));
+    ?>
+    <tr>
+        <td class="py-2 px-4 border-b border-b-gray-50">
+            <div class="flex items-center">
+                <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate"><?php echo "Just Ordered" ?></a>
+            </div>
+        </td>
+        <td class="py-2 px-4 border-b border-b-gray-50">
+            <span class="text-[13px] font-medium text-gray-400"><?php echo $order_date; ?></span>
+        </td>
+        <td class="py-2 px-4 border-b border-b-gray-50">
+            <span class="text-[13px] font-medium text-gray-400"><?php echo $order_time; ?></span>
+        </td>
+        <td class="py-2 px-4 border-b border-b-gray-50">
+            <div class="dropdown">
+                <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
+                <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
+                    <li>
+                        <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
+                    </li>
+                    <li>
+                        <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </td>
+    </tr>
+<?php } ?>
+    </tbody>
                         </table>
                     </div>
                 </div>
@@ -535,21 +551,21 @@ try {
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                         <div class="rounded-md border border-dashed border-gray-200 p-4">
                             <div class="flex items-center mb-0.5">
-                                <div class="text-xl font-semibold">10</div>
+                                <div class="text-xl font-semibold"><?php echo $activeOrders ?></div>
                                 <span class="p-1 rounded text-[12px] font-semibold bg-blue-500/10 text-blue-500 leading-none ml-1">₱80</span>
                             </div>
                             <span class="text-gray-400 text-sm">Active</span>
                         </div>
                         <div class="rounded-md border border-dashed border-gray-200 p-4">
                             <div class="flex items-center mb-0.5">
-                                <div class="text-xl font-semibold">50</div>
+                                <div class="text-xl font-semibold"><?php echo $completedOrders ?></div>
                                 <span class="p-1 rounded text-[12px] font-semibold bg-emerald-500/10 text-emerald-500 leading-none ml-1">+₱469</span>
                             </div>
                             <span class="text-gray-400 text-sm">Completed</span>
                         </div>
                         <div class="rounded-md border border-dashed border-gray-200 p-4">
                             <div class="flex items-center mb-0.5">
-                                <div class="text-xl font-semibold">4</div>
+                                <div class="text-xl font-semibold"><?php echo $cancelledOrders ?></div>
                                 <span class="p-1 rounded text-[12px] font-semibold bg-rose-500/10 text-rose-500 leading-none ml-1">-₱130</span>
                             </div>
                             <span class="text-gray-400 text-sm">Canceled</span>
@@ -587,146 +603,34 @@ try {
                                 </tr>
                             </thead>
                             <tbody>
+                            <?php
+                            $stmqt = $connection->prepare("SELECT Orders.*, Products.*, Users.username as seller_username FROM Orders 
+                                                    INNER JOIN Order_Items ON Orders.order_id = Order_Items.order_id 
+                                                    INNER JOIN Products ON Order_Items.product_id = Products.product_id 
+                                                    INNER JOIN Users ON Products.user_id = Users.user_id 
+                                                    WHERE Products.user_id = :seller_id");
+                            $stmqt->execute(['seller_id' => $seller_id]);
+                            $orders = $stmqt->fetchAll(PDO::FETCH_ASSOC);
+
+                            foreach ($orders as $order) {
+                                $order_date = date('d-m-Y', strtotime($order['order_date']));
+                                $order_time = date('H:i', strtotime($order['order_date']));
+                                ?>
                                 <tr>
                                     <td class="py-2 px-4 border-b border-b-gray-50">
                                         <div class="flex items-center">
                                             <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
+                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate"><?php echo $order['product_name']; ?></a>
                                         </div>
                                     </td>
                                     <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
+                                        <span class="text-[13px] font-medium text-<?php echo $order['status'] == 'active' ? 'emerald' : 'rose'; ?>-500"><?php echo $order['price'] > 0 ? '+₱' : '-₱'; ?><?php echo abs($order['price']); ?></span>
                                     </td>
                                     <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
+                                        <span class="inline-block p-1 rounded bg-<?php echo $order['status'] == 'active' ? 'emerald' : 'rose'; ?>-500/10 text-<?php echo $order['status'] == 'active' ? 'emerald' : 'rose'; ?>-500 font-medium text-[12px] leading-none"><?php echo ucfirst($order['status']); ?></span>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
+                            <?php } ?>
                             </tbody>
                         </table>
                     </div>
@@ -737,6 +641,53 @@ try {
 
     <script src="https://unpkg.com/@popperjs/core@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+           new Chart(document.getElementById('order-chart'), {
+            type: 'line',
+            data: {
+                labels: <?php echo $labelsJSON; ?>,
+                datasets: [
+                    {
+                        label: 'Active',
+                        data: <?php echo $activeDataJSON; ?>,
+                        borderWidth: 1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgb(59 130 246 / .05)',
+                        tension: .2
+                    },
+                    {
+                        label: 'Completed',
+                        data: <?php echo $completedDataJSON; ?>,
+                        borderWidth: 1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(16, 185, 129)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgb(16 185 129 / .05)',
+                        tension: .2
+                    },
+                    {
+                        label: 'Cancelled',
+                        data: <?php echo $cancelledDataJSON; ?>,
+                        borderWidth: 1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(244, 63, 94)',
+                        borderColor: 'rgb(244, 63, 94)',
+                        backgroundColor: 'rgb(244 63 94 / .05)',
+                        tension: .2
+                    },
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
     <script src="../scripts/adminScripts.js"></script>
 
 </body>

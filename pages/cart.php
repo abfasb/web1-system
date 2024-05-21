@@ -70,10 +70,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
         $address = isset($_POST['address']) ? $_POST['address'] : '';
         $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
 
-        $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, address, shipping_method) 
-                      VALUES (?, NOW(), ?, ?, ?, ?)";
+        $productId = $cart_items[0]['product_id'];
+        $productQuery = $connection->prepare("SELECT user_id FROM Products WHERE product_id = ?");
+        $productQuery->execute([$productId]);
+        $product = $productQuery->fetch(PDO::FETCH_ASSOC);
+        $seller_id = $product['user_id'];
+
+        $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, address, shipping_method, seller_id) 
+                      VALUES (?, NOW(), ?, ?, ?, ?, ?)";
         $stmt = $connection->prepare($orderSql);
-        $stmt->execute([$user_id, $total, $paymentMethod, $address, $shippingMethod]);
+        $stmt->execute([$user_id, $total, $paymentMethod, $address, $shippingMethod, $seller_id]);
         $orderId = $connection->lastInsertId();
 
         foreach ($cart_items as $item) {
@@ -106,16 +112,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
         $address = isset($_POST['address']) ? $_POST['address'] : '';
         $shippingMethod = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : '';
 
+        $productId = $cart_items[0]['product_id'];
+        $productQuery = $connection->prepare("SELECT user_id FROM Products WHERE product_id = ?");
+        $productQuery->execute([$productId]);
+        $product = $productQuery->fetch(PDO::FETCH_ASSOC);
+        $seller_id = $product['user_id'];
+
         $paymentSql = "INSERT INTO Payment_Details (email, card_holder, card_number, expiry_date, cvc, billing_address, billing_state, billing_zip) 
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $connection->prepare($paymentSql);
         $stmt->execute([$email, $cardHolder, $cardNumber, $expiryDate, $cvc, $billingAddress, $billingState, $billingZip]);
         $paymentId = $connection->lastInsertId();
 
-        $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, payment_id, address, shipping_method)
-        VALUES (?, NOW(), ?, ?, ?, ?, ?)";
+        $orderSql = "INSERT INTO Orders (user_id, order_date, total_amount, payment_method, payment_id, address, shipping_method, seller_id)
+        VALUES (?, NOW(), ?, ?, ?, ?, ?, ?)";
         $stmt = $connection->prepare($orderSql);
-        $stmt->execute([$user_id, $total, $paymentMethod, $paymentId, $address, $shippingMethod]);
+        $stmt->execute([$user_id, $total, $paymentMethod, $paymentId, $address, $shippingMethod, $seller_id]);
         $orderId = $connection->lastInsertId();
         foreach ($cart_items as $item) {
             $productId = $item['product_id'];

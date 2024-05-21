@@ -147,7 +147,7 @@ if (isset($_GET['product_id'])) {
         <div class="lg:flex lg:items-start">
           <div class="lg:order-2 lg:ml-5">
             <div class="max-w-xl overflow-hidden rounded-lg">
-            <img id="largeImage" class="h-[383px] w-[575px] max-w-full object-cover" src="https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />  
+            <img id="largeImage" class="h-[383px] w-[575px] max-w-full object-cover" src="../pages/profile/uploads/<?php echo $productImages[0] ?>" alt="" />  
           </div>
           </div>
 

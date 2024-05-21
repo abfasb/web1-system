@@ -17,7 +17,6 @@ $wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id 
 $cartCount = 0;
 $wishlistCount = 0;
 
-// Prepare and execute the queries
 $stmt = $connection->prepare($cartQuery);
 $stmt->bindParam(':userid', $userid);
 $stmt->execute();
