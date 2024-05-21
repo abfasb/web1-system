@@ -2,6 +2,7 @@
 
 include '../../config/connection.php';
 
+session_start();
 // Create uploads directory if it doesn't exist
 $target_dir = "uploads/";
 if (!file_exists($target_dir)) {
@@ -52,13 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   // Insert product into database
-  $stmt = $connection->prepare("INSERT INTO Products (product_name, description, price, category_id, images, attributes) VALUES (:productName, :productDetails, :price, :categoryId, :images, :attributes)");
+  $userId = $_SESSION['userId']; // Assuming the seller's user ID is stored in the session
+  $stmt = $connection->prepare("INSERT INTO Products (product_name, description, price, category_id, images, attributes, user_id) VALUES (:productName, :productDetails, :price, :categoryId, :images, :attributes, :userId)");
   $stmt->bindParam(':productName', $productName);
   $stmt->bindParam(':productDetails', $productDetails);
   $stmt->bindParam(':price', $price);
   $stmt->bindParam(':categoryId', $categoryId);
   $stmt->bindParam(':images', json_encode($images));
   $stmt->bindParam(':attributes', $attributes);
+  $stmt->bindParam(':userId', $userId);
   
   if ($stmt->execute()) {
     echo '<script> alert ("New record created successfully") </script>';

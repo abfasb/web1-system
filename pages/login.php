@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['keep_logged_in']) && $_POST['keep_logged_in'] == '1') {
           setcookie('remember_me', $email, time() + (30 * 24 * 60 * 60), '/');
         }
-        header("Location: /web1-system/views/AdminPanel.php");
+        header("Location: /web1-system/views/SellerPanel.php");
       } else {
         $_SESSION['Username'] = $result['username'];
         $_SESSION['Email'] = $email;

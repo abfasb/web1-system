@@ -18,7 +18,6 @@ if (!$order) {
     exit;
 }
 
-// Update order status to cancelled
 $sql = "UPDATE Orders SET status = 'cancelled' WHERE order_id = ?";
 $stmt = $connection->prepare($sql);
 $stmt->execute([$order_id]);
