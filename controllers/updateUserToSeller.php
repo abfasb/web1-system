@@ -17,5 +17,5 @@ $stmt->bindParam(1, $userId, PDO::PARAM_INT);
 $stmt->execute();
 
 echo "User role updated to seller!";
-header("Location: /web1-system/views/AdminPanel.php");
+header("Location: /web1-system/views/SellerPanel.php");
 ?>

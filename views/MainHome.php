@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,900&display=swap" rel="stylesheet" />
     <style>
         .scrolls::-webkit-scrollbar {
-          width: 7px;
+          width: 1px;
          }
         
         .scrolls::-webkit-scrollbar-thumb {
@@ -85,7 +85,7 @@
     <div class="mb-12">
       <div class="lg:flex-no-wrap -mx-3 flex flex-row flex-wrap items-end">
         <div class="mr-auto w-full flex-grow px-3">
-          <h3 class="text-3xl font-bold text-indigo-600 sm:text-5xl">Valley's Go to Marketing Studio</h3>
+          <h3 class="text-3xl font-bold text-indigo-600 sm:text-5xl">Shosphere: Where Eco-Conscious Shoppers Thrive</h3>
         </div>
       </div>
     </div>
@@ -172,7 +172,7 @@
 						<p class="text-gray-600 mt-2 text-sm" x-text="card.description"></p>
 						<div class="flex justify-between items-center mt-4">
 							<span class="text-2xl font-extrabold text-gray-900" x-text="'$' + card.price.toFixed(2)"></span>
-							<a :href="card.link"
+							<a :href="#"
 								class="text-white bg-fuchsia-950 hover:bg-fuchsia-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"><svg
 									xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
 									stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
@@ -186,7 +186,165 @@
 		</template>
 	</div>
 </div>
-<?php include '../pages/footer.php'?>
+
+<h1 class = "p-8 text-[30px] mt-8 font-bold font-mono">Best Deals</h1>
+
+<div x-data="swipeCards()" class= "scrolls" x-init="
+			let isDown = false;
+			let startX;
+			let scrollLeft;
+			$el.addEventListener('mousedown', (e) => {
+			isDown = true;
+			startX = e.pageX - $el.offsetLeft;
+			scrollLeft = $el.scrollLeft;
+			});
+			$el.addEventListener('mouseleave', () => {
+			isDown = false;
+			});
+			$el.addEventListener('mouseup', () => {
+			isDown = false;
+			});
+			$el.addEventListener('mousemove', (e) => {
+			if (!isDown) return;
+			e.preventDefault();
+			const x = e.pageX - $el.offsetLeft;
+			const walk = (x - startX) * 1;
+			$el.scrollLeft = scrollLeft - walk;
+			});
+			" class="overflow-x-scroll scrollbar-hide mb-4 relative px-0.5" style="overflow-y: hidden;">
+	<div class="flex snap-x snap-mandatory gap-4" style="width: max-content;">
+		<template x-for="card in cards" :key="card.id">
+			<div class="flex-none w-64 snap-center">
+				<div class="bg-white border-1 border border-gray-200 rounded-lg overflow-hidden mb-4">
+					<img :src="card.image" alt="" class="w-full h-40 object-cover">
+					<div class="p-4">
+						<h3 class="text-lg leading-6 font-bold text-gray-900" x-text="card.title"></h3>
+						<p class="text-gray-600 mt-2 text-sm" x-text="card.description"></p>
+						<div class="flex justify-between items-center mt-4">
+							<span class="text-2xl font-extrabold text-gray-900" x-text="'$' + card.price.toFixed(2)"></span>
+							<a :href="#"
+								class="text-white bg-fuchsia-950 hover:bg-fuchsia-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"><svg
+									xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+									stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+									<path stroke-linecap="round" stroke-linejoin="round"
+										d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+								</svg></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</template>
+	</div>
+</div>
+<footer class="w-full text-gray-700 bg-gray-100 body-font">
+    <div
+        class="container flex flex-col flex-wrap px-5 py-24 mx-auto md:items-center lg:items-start md:flex-row md:flex-no-wrap">
+        <div class="flex-shrink-0 w-64 mx-auto text-center md:mx-0 md:text-left">
+            <a class="flex items-center justify-center font-medium text-gray-900 title-font md:justify-start">
+                <img src="../assets/img/logoooo.png" alt="WebStay Logo" class = " w-20 h-auto">
+            </a>
+            <p class="mt-2 text-sm text-gray-500">Design, Code and Ship!</p>
+            <div class="mt-4">
+                <span class="inline-flex justify-center mt-2 sm:ml-auto sm:mt-0 sm:justify-start">
+                    <a class="text-gray-500 cursor-pointer hover:text-gray-700">
+                        <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            class="w-5 h-5" viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a class="ml-3 text-gray-500 cursor-pointer hover:text-gray-700">
+                        <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            class="w-5 h-5" viewBox="0 0 24 24">
+                            <path
+                                d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z">
+                            </path>
+                        </svg>
+                    </a>
+                    <a class="ml-3 text-gray-500 cursor-pointer hover:text-gray-700">
+                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+                        </svg>
+                    </a>
+                    <a class="ml-3 text-gray-500 cursor-pointer hover:text-gray-700">
+                        <svg fill="currentColor" stroke="currentColor" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
+                            <path stroke="none"
+                                d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z">
+                            </path>
+                            <circle cx="4" cy="4" r="2" stroke="none"></circle>
+                        </svg>
+                    </a>
+                </span>
+            </div>
+        </div>
+        <div class="flex flex-wrap flex-grow mt-10 -mb-10 text-center md:pl-20 md:mt-0 md:text-left">
+            <div class="w-full px-4 lg:w-1/4 md:w-1/2">
+                <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">About</h2>
+                <nav class="mb-10 list-none">
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Company</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Careers</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Blog</a>
+                    </li>
+                </nav>
+            </div>
+            <div class="w-full px-4 lg:w-1/4 md:w-1/2">
+                <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">Support</h2>
+                <nav class="mb-10 list-none">
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Contact Support</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Help Resources</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Release Updates</a>
+                    </li>
+                </nav>
+            </div>
+            <div class="w-full px-4 lg:w-1/4 md:w-1/2">
+                <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">Platform
+                </h2>
+                <nav class="mb-10 list-none">
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Terms &amp; Privacy</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Pricing</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">FAQ</a>
+                    </li>
+                </nav>
+            </div>
+            <div class="w-full px-4 lg:w-1/4 md:w-1/2">
+                <h2 class="mb-3 text-sm font-medium tracking-widest text-gray-900 uppercase title-font">Contact</h2>
+                <nav class="mb-10 list-none">
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Send a Message</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">Request a Quote</a>
+                    </li>
+                    <li class="mt-3">
+                        <a class="text-gray-500 cursor-pointer hover:text-gray-900">09055812027</a>
+                    </li>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="bg-gray-300">
+        <div class="container px-5 py-4 mx-auto">
+            <p class="text-sm text-gray-700 capitalize xl:text-center">© 2024 All rights reserved </p>
+        </div>
+    </div>
+</footer>
 <script>
 	function swipeCards() {
 			  return {

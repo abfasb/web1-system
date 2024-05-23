@@ -118,7 +118,18 @@ $conn = null;
     </style>
 </head>
 <body>
-<div class="bg-white border rounded-lg shadow relative m-10">
+
+
+<a href="#" onclick="history.go(-1);" class="absolute top-0 left-0 flex flex-row p-5 text-gray-500 font-bold hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+Go Back
+        
+    </a>
+    
+<div class="bg-white border rounded-lg shadow relative m-12 ">
+
 
 <div class="flex items-start justify-between p-5 border-b rounded-t">
     <h3 class="text-xl font-semibold">
@@ -174,16 +185,12 @@ $conn = null;
         </div>
         <div class="flex space-x-4 items-center justify-center gap-4 my-4">
 <div class="col-span-full">
-  <label for="colors" class="text-sm font-medium text-gray-900 block mb-2">Colors (Optional, separate multiple colors with commas)</label>
+  <label for="colors" class="text-sm font-medium text-gray-900 block mb-2">Colors (Attributes, separate multiple colors with commas)</label>
   <input type="text" name="colors" id="colors" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter colors">
 </div>
 <div class="col-span-full">
-  <label for="sizes" class="text-sm font-medium text-gray-900 block mb-2">Sizes (Optional, separate multiple sizes with commas)</label>
+  <label for="sizes" class="text-sm font-medium text-gray-900 block mb-2">Sizes (Attributes, separate multiple sizes with commas)</label>
   <input type="text" name="sizes" id="sizes" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter sizes">
-</div>
-<div class="col-span-full">
-  <label for="weights" class="text-sm font-medium text-gray-900 block mb-2">Weights (Optional, separate multiple weights with commas)</label>
-  <input type="text" name="weights" id="weights" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Enter weights">
 </div>
 </div>
 
@@ -202,7 +209,7 @@ $conn = null;
  document.getElementById('images').addEventListener('change', function(event) {
     const files = Array.from(event.target.files);
     const imageContainer = document.getElementById('image-container');
-    imageContainer.innerHTML = ''; // Clear existing images
+    imageContainer.innerHTML = '';
 
     files.forEach((file, index) => {
         const reader = new FileReader();
@@ -221,22 +228,18 @@ $conn = null;
         reader.readAsDataURL(file);
     });
 
-    // Store files in a global array for tracking
     window.uploadedFiles = files;
 });
 
 function removeImage(index) {
-    // Remove the file from the array
     window.uploadedFiles.splice(index, 1);
     
-    // Update the file input
     const dataTransfer = new DataTransfer();
     window.uploadedFiles.forEach(file => {
         dataTransfer.items.add(file);
     });
     document.getElementById('images').files = dataTransfer.files;
 
-    // Re-render the image previews
     const imageContainer = document.getElementById('image-container');
     imageContainer.innerHTML = '';
     window.uploadedFiles.forEach((file, index) => {

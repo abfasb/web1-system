@@ -10,6 +10,14 @@ try {
 } catch (PDOException $e) {
     echo "<script>console.error('Error:', '" . $e->getMessage() . "');</script>";
 }
+
+$query = "SELECT product_id, product_name, description, price, images, created_at 
+          FROM Products 
+          ORDER BY created_at DESC 
+          LIMIT 6";
+$stmt = $connection->prepare($query);
+$stmt->execute();
+$new_arrivals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 
@@ -27,92 +35,6 @@ try {
 <body class="bg-gray-100 font-sans">
 
     <?php include 'navTry.php'?>
-    <nav class="bg-white shadow-md">
-        <div class="container mx-auto px-4 py-3">
-            <ul class="grid grid-cols-5 gap-4">
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            bolt
-                        </span>
-                        Electronics
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            apparel
-                        </span>
-                        Clothing
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            auto_stories
-                        </span>
-                        Books
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            kitchen
-                        </span>
-                        Home & Kitchen
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            sports_soccer
-                        </span>
-                        Sports & Outdoors
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            health_and_safety
-                        </span>
-                        Health & Beauty
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            smart_toy
-                        </span>
-                        Toys & Games
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-14 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            manufacturing
-                        </span>
-                        Automotive
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-10 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            construction
-                        </span>
-                        Tools & Home Improvement
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="flex items-center justify-center gap-2 text-lg text-gray-800 hover:text-blue-500 px-8 py-10 rounded-lg shadow-md">
-                        <span class="material-symbols-outlined">
-                            grocery
-                        </span>
-                        Grocery & Gourmet Food
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
 
     <header class="bg-white shadow-md">
         <div class="container mx-auto px-4 py-6">
@@ -121,20 +43,24 @@ try {
     </header>
 
     <main class="container mx-auto my-8 px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="https://via.placeholder.com/400x300" alt="Product" class="w-full h-64 object-cover">
-                <div class="p-4">
-                    <h2 class="text-xl font-semibold text-gray-800">Product Name</h2>
-                    <p class="mt-2 text-gray-600">Description of the product goes here. You can add some details about the product to entice customers.</p>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="font-bold text-gray-800">$99.99</span>
-                        <button class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Add to Cart</button>
-                    </div>
+    <div class="container mx-auto my-10 p-5 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">New Arrivals</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <?php foreach ($new_arrivals as $product): ?>
+            <div class="p-6 border border-gray-200 rounded-lg shadow-md">
+                <img src="../pages/profile/uploads/<?php echo htmlspecialchars(json_decode($product['images'])[0]); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>" class="object-cover w-full h-48">
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-gray-800"><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                    <p class="mt-2 text-gray-600"><?php echo htmlspecialchars(substr($product['description'], 0, 100)); ?>...</p>
+                    <p class="mt-2 font-bold text-gray-800">$<?php echo htmlspecialchars(number_format($product['price'], 2)); ?></p>
+                    <p class="mt-2 text-sm text-gray-400"><?php echo htmlspecialchars(date('F j, Y', strtotime($product['created_at']))); ?></p>
+<a href = "./viewProduct.php?product_id=<?php echo $product['product_id']; ?>" class="px-4 mt-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600">Add to Cart</a>
+
                 </div>
             </div>
-
-        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
         <section class="mt-16">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">All Sellers</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -33,6 +33,20 @@ $stmt = $connection->prepare($sql);
 $stmt->execute([$order_id]);
 $order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_order'])) {
+    // Update the order status to 'completed'
+    $sql = "UPDATE Orders SET status = 'completed' WHERE order_id = ? AND user_id = ?";
+    $stmt = $connection->prepare($sql);
+    $stmt->execute([$order_id, $user_id]);
+
+    // Check if the update was successful
+    if ($stmt->rowCount() > 0) {
+        echo "<script>alert('Thank you for ordering!'); window.location.href='reviews_panel.php';</script>";
+        exit;
+    } else {
+        echo "<script>alert('Failed to update order status.');</script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -77,6 +91,9 @@ $order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </li>
                 <?php } ?>
             </ul>
+            <form action="" method="POST">
+                <button type="submit" name="complete_order" class="mt-6 w-full bg-green-600 text-white py-3 rounded-md shadow-lg hover:bg-green-700 transition ease-in-out duration-300">Completed</button>
+            </form>
             <button id="cancel-order" class="mt-6 w-full bg-red-600 text-white py-3 rounded-md shadow-lg hover:bg-red-700 transition ease-in-out duration-300">Cancel Order</button>
         </div>
     </div>
@@ -100,9 +117,9 @@ $order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 </div>
-                <div class="mt-5 sm:mt-6">
-                    <button id="confirm-cancel" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">Yes, Cancel Order</button>
-                    <button id="close-modal" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">No, Keep Order</button>
+                <div class="mt-5 sm:mt-6 flex justify-center space-x-4">
+                    <button id="confirm-cancel" type="button" class="inline-flex justify-center w-40 rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">Yes, Cancel Order</button>
+                    <button id="close-modal" type="button" class="inline-flex justify-center w-40 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">No, Keep Order</button>
                 </div>
             </div>
         </div>
@@ -112,7 +129,6 @@ $order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
         document.getElementById('cancel-order').addEventListener('click', function() {
             document.getElementById('confirmation-modal').classList.remove('hidden');
         });
-
         document.getElementById('close-modal').addEventListener('click', function() {
             document.getElementById('confirmation-modal').classList.add('hidden');
         });

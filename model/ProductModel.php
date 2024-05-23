@@ -20,6 +20,31 @@ class ProductModel {
         return $products;
     }
 
+    public function getAllProductsWithRatings() {
+        $sql = "
+            SELECT p.*, IFNULL(AVG(r.rating), 0) AS average_rating, COUNT(r.review_id) AS review_count
+            FROM Products p
+            LEFT JOIN Reviews r ON p.product_id = r.product_id
+            GROUP BY p.product_id
+        ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getProductWithRatingById($product_id) {
+        $sql = "
+            SELECT p.*, IFNULL(AVG(r.rating), 0) AS average_rating, COUNT(r.review_id) AS reviews_count
+            FROM Products p
+            LEFT JOIN Reviews r ON p.product_id = r.product_id
+            WHERE p.product_id = :product_id
+            GROUP BY p.product_id
+        ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindParam(':product_id', $product_id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getSortedCategories()
     {
         $query = "SELECT * FROM Categories ORDER BY category_name ASC";

@@ -24,7 +24,6 @@ $provinces = [
     "Zambales", "Zamboanga del Norte", "Zamboanga del Sur", "Zamboanga Sibugay"
 ];
 
-// Generate the select dropdown options
 $options = "";
 foreach ($provinces as $province) {
     $options .= "<option value=\"$province\">$province</option>";
@@ -52,7 +51,6 @@ $wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id 
 $cartCount = 0;
 $wishlistCount = 0;
 
-// Execute the queries
 $stmt = $connection->query($cartQuery);
 if ($stmt) {
     $cartCount = $stmt->fetch(PDO::FETCH_ASSOC)['cart_count'];
@@ -63,7 +61,6 @@ if ($stmt) {
     $wishlistCount = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist_count'];
 }
 
-// Assuming $paymentMethod is determined earlier in your code
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
     if (isset($_POST['cash-on-delivery'])) {
         $paymentMethod = "cash_on_delivery";
@@ -81,6 +78,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
         $stmt = $connection->prepare($orderSql);
         $stmt->execute([$user_id, $total, $paymentMethod, $address, $shippingMethod, $seller_id]);
         $orderId = $connection->lastInsertId();
+
+        $notificationType = "order";
+        $message = "You have a new order (#{$orderId})";
+        $insertNotificationSql = "INSERT INTO Notifications (user_id, order_id, notification_type, message) 
+                                VALUES (?, ?, ?, ?)";
+        $stmt = $connection->prepare($insertNotificationSql);
+        $stmt->execute([$seller_id, $orderId, $notificationType, $message]);
 
         foreach ($cart_items as $item) {
             $productId = $item['product_id'];
@@ -129,6 +133,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
         $stmt = $connection->prepare($orderSql);
         $stmt->execute([$user_id, $total, $paymentMethod, $paymentId, $address, $shippingMethod, $seller_id]);
         $orderId = $connection->lastInsertId();
+
+        $notificationType = "order";
+        $message = "You have a new order (#{$order_id})";
+        $insertNotificationSql = "INSERT INTO Notifications (user_id, order_id, notification_type, message) 
+                                VALUES (?, ?, ?, ?)";
+        $stmt = $connection->prepare($insertNotificationSql);
+        $stmt->execute([$seller_id, $orderId, $notificationType, $message]);
+
         foreach ($cart_items as $item) {
             $productId = $item['product_id'];
             $quantity = $item['quantity'];
@@ -145,7 +157,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

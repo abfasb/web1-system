@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="../scripts/GoogleAuth.js" type="module" defer></script>
   </head>
 <body >
-<div class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/realbg.png');">
+<div class=" flex items-center justify-center bg-cover bg-center h-screen relative" style="background-image: url('../assets/img/asf.jpg');">
       <div class="flex justify-center w-full h-full my-auto xl:gap-14 lg:justify-normal md:gap-5 draggable">
       <div class="flex items-center justify-center px-10 w-full lg:p-12">
         <div class="flex items-center xl:p-10">

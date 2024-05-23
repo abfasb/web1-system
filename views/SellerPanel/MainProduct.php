@@ -7,6 +7,13 @@ $roleType = $_SESSION['Role'];
 
 $seller_id = $_SESSION['userId'];
 
+$sql = "SELECT * FROM Products WHERE user_id = :user_id";
+$stmt = $connection->prepare($sql);
+$stmt->bindParam(':user_id', $seller_id, PDO::PARAM_INT);
+
+$stmt->execute();
+$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 ?>
 
@@ -70,7 +77,7 @@ $seller_id = $_SESSION['userId'];
 
             <span class="text-gray-400 font-bold">Seller</span>
             <li class="mb-1 group">
-                <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
+                <a href="../SellerPanel.php" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
                     <i class='bx bxl-blogger mr-3 text-lg' ></i>                 
                     <span class="text-sm">Products</span>
                     <i class="ri-arrow-right-s-line ml-auto group-[.selected]:rotate-90"></i>
@@ -80,7 +87,7 @@ $seller_id = $_SESSION['userId'];
                         <a href="" class="text-gray-900 text-sm flex items-center hover:text-[#f84525] before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">All</a>
                     </li> 
                     <li class="mb-4">
-                        <a href="../pages/profile/productInput.php" class="text-gray-900 text-sm flex items-center hover:text-[#f84525] before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Add Product</a>
+                        <a href="../../pages/profile/productInput.php" class="text-gray-900 text-sm flex items-center hover:text-[#f84525] before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Add Product</a>
                     </li> 
                 </ul>
             </li>
@@ -238,8 +245,6 @@ $seller_id = $_SESSION['userId'];
 
 
 
-
-
         <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased">
     <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -258,7 +263,7 @@ $seller_id = $_SESSION['userId'];
                     </form>
                 </div>
                 <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                    <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal" class="flex items-center justify-center bg-blue-700 text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
+                    <button type="button" onclick="location.href='../../pages/profile/productInput.php'"  class="flex items-center justify-center bg-blue-700 text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                         <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                             <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                         </svg>
@@ -312,130 +317,86 @@ $seller_id = $_SESSION['userId'];
             </div>
            
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="px-4 py-4">Images</th>
-                            <th scope="col" class="px-4 py-3">Product</th>
-                            <th scope="col" class="px-4 py-3">Category</th>
-                            <th scope="col" class="px-4 py-3">Price</th>
-                            <th scope="col" class="px-4 py-3">Description</th>
-                            <th scope="col" class="px-4 py-3">
-                                <span class="sr-only">Actions</span>
-                            </th>
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <tr>
+            <th scope="col" class="px-4 py-4">Images</th>
+            <th scope="col" class="px-4 py-3">Product</th>
+            <th scope="col" class="px-4 py-3">Category</th>
+            <th scope="col" class="px-4 py-3">Price</th>
+            <th scope="col" class="px-4 py-3">Description</th>
+            <th scope="col" class="px-4 py-3">
+                <span class="sr-only">Actions</span>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($products as $product) : ?>
+    <?php
+    $productImages = json_decode($product['images'], true);
+
+    // Query to get the category name for the current product
+    $query = "SELECT category_name FROM Categories WHERE category_id = ?";
+    $stmt = $connection->prepare($query);
+    $stmt->execute([$product['category_id']]);
+    $category = $stmt->fetch(PDO::FETCH_ASSOC);
+    $categoryName = $category ? $category['category_name'] : '';
+
+    ?>
+    <tr class="border-b dark:border-gray-700 table-row">
+        <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <img src="../../pages/profile/uploads/<?php echo $productImages[0] ?>" alt="Product Image" class="rounded-full h-16 w-16">
+        </td>
+        <td class="px-4 py-3"><?php echo $product['product_name']; ?></td>
+        <td class="px-4 py-3"><?php echo $categoryName; ?></td>
+        <td class="px-4 py-3"><?php echo $product['price']; ?></td>
+        <td class="px-4 py-3"><?php echo $product['description']; ?></td>
+        <td class="px-4 py-3 flex items-center justify-end">
+            <button id="<?php echo $product['product_id']; ?>-dropdown-button" data-dropdown-toggle="<?php echo $product['product_id']; ?>-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+            </button>
+            <div id="<?php echo $product['product_id']; ?>-dropdown" class="hidden z-10 w-60 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
+                <ul class="py-1 text-sm" aria-labelledby="<?php echo $product['product_id']; ?>-dropdown-button">
+                    <li>
+                        <button type="button" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" data-product-id="<?php echo $product['product_id']; ?>" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                            </svg>
+                            Edit
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
+                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            Preview
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" data-modal-target="deleteModal" data-modal-toggle="deleteModal" data-product-id="<?php echo $product['product_id']; ?>" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400">
+                            <svg class="w-4 h-4 mr-2" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M6.09922 0.300781C5.93212 0.30087 5.76835 0.347476 5.62625 0.435378C5.48414 0.523281 5.36931 0.649009 5.29462 0.798481L4.64302 2.10078H1.59922C1.36052 2.10078 1.13161 2.1956 0.962823 2.36439C0.79404 2.53317 0.699219 2.76209 0.699219 3.00078C0.699219 3.23948 0.79404 3.46839 0.962823 3.63718C1.13161 3.80596 1.36052 3.90078 1.59922 3.90078V12.9008C1.59922 13.3782 1.78886 13.836 2.12643 14.1736C2.46399 14.5111 2.92183 14.7008 3.39922 14.7008H10.5992C11.0766 14.7008 11.5344 14.5111 11.872 14.1736C12.2096 13.836 12.3992 13.3782 12.3992 12.9008V3.90078C12.6379 3.90078 12.8668 3.80596 13.0356 3.63718C13.2044 3.46839 13.2992 3.23948 13.2992 3.00078C13.2992 2.76209 13.2044 2.53317 13.0356 2.36439C12.8668 2.1956 12.6379 2.10078 12.3992 2.10078H9.35542L8.70382 0.798481C8.62913 0.649009 8.5143 0.523281 8.37219 0.435378C8.23009 0.347476 8.06631 0.30087 7.89922 0.300781H6.09922ZM4.29922 5.70078C4.29922 5.46209 4.39404 5.23317 4.56282 5.06439C4.73161 4.8956 4.96052 4.80078 5.19922 4.80078C5.43791 4.80078 5.66683 4.8956 5.83561 5.06439C6.0044 5.23317 6.09922 5.46209 6.09922 5.70078V11.1008C6.09922 11.3395 6.0044 11.5684 5.83561 11.7372C5.66683 11.906 5.43791 12.0008 5.19922 12.0008C4.96052 12.0008 4.73161 11.906 4.56282 11.7372C4.39404 11.5684 4.29922 11.3395 4.29922 11.1008V5.70078ZM8.79922 4.80078C8.56052 4.80078 8.33161 4.8956 8.16282 5.06439C7.99404 5.23317 7.89922 5.46209 7.89922 5.70078V11.1008C7.89922 11.3395 7.99404 11.5684 8.16282 11.7372C8.33161 11.906 8.56052 12.0008 8.79922 12.0008C9.03791 12.0008 9.26683 11.906 9.43561 11.7372C9.6044 11.5684 9.69922 11.3395 9.69922 11.1008V5.70078C9.69922 5.46209 9.6044 5.23317 9.43561 5.06439C9.26683 4.8956 9.03791 4.80078 8.79922 4.80078Z" />
+                        `</svg>
+                        Delete
+                        </button>
+                        </li>
+                        </ul>
+                        </div>
+                        </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                    <?php 
-                       /* while ($results = $stmt->fetch(PDO::FETCH_ASSOC)) { 
-                            foreach ($results as $key => $value) {
-                                if (stripos($value, $search_query) !== false) {
-                                    $matchedText = substr($value, stripos($value, $search_query), strlen($search_query));
-                                    $results[$key] = str_ireplace($search_query, '<span class="highlight">' . $matchedText . '</span>', $value);
-                                }
-                            }*/
-                        ?>
-                        <tr class="border-b dark:border-gray-700 table-row">
-                            <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"><?php// echo $results['mcb_last_name'] ?></th>
-                            <td class="px-4 py-3"><?php// echo $results['mcb_first_name'] ?></td>
-                            <td class="px-4 py-3"><?php //echo $results['mcb_email'] ?></td>
-                            <td class="px-4 py-3"><?php //echo $results['mcb_gender'] ?></td>
-                            <td class="px-4 py-3"><?php //echo $results['mcb_address'] ?></td>
-                            <td class="px-4 py-3 flex items-center justify-end">
-                                <button id="<?php //echo $results['id']?>-dropdown-button" data-dropdown-toggle="<?php echo $results['id']?>-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
-                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
-                                    </svg>
-                                </button>
-                                <div id="<?php //echo $results['id']?>-dropdown" class="hidden z-10 w-60 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
-                                    <ul class="py-1 text-sm" aria-labelledby="<?php// echo// $results['id']?>-dropdown-button">
-                                        <li>
-                                        <button type="button" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" data-product-id="<?php// echo $results['id'] ?>" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
-                                                </svg>
-                                                Edit
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button type="button" data-modal-target="readProductModal" data-modal-toggle="readProductModal" data-product-id="<?php echo $results['id'] ?>" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" />
-                                                </svg>
-                                                Preview
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button type="button" data-modal-target="deleteModal" data-modal-toggle="deleteModal" data-product-id="<?php echo $results['id'] ?>" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-400">
-                                                <svg class="w-4 h-4 mr-2" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                                    <path fill-rule="evenodd" clip-rule="evenodd" fill="currentColor" d="M6.09922 0.300781C5.93212 0.30087 5.76835 0.347476 5.62625 0.435378C5.48414 0.523281 5.36931 0.649009 5.29462 0.798481L4.64302 2.10078H1.59922C1.36052 2.10078 1.13161 2.1956 0.962823 2.36439C0.79404 2.53317 0.699219 2.76209 0.699219 3.00078C0.699219 3.23948 0.79404 3.46839 0.962823 3.63718C1.13161 3.80596 1.36052 3.90078 1.59922 3.90078V12.9008C1.59922 13.3782 1.78886 13.836 2.12643 14.1736C2.46399 14.5111 2.92183 14.7008 3.39922 14.7008H10.5992C11.0766 14.7008 11.5344 14.5111 11.872 14.1736C12.2096 13.836 12.3992 13.3782 12.3992 12.9008V3.90078C12.6379 3.90078 12.8668 3.80596 13.0356 3.63718C13.2044 3.46839 13.2992 3.23948 13.2992 3.00078C13.2992 2.76209 13.2044 2.53317 13.0356 2.36439C12.8668 2.1956 12.6379 2.10078 12.3992 2.10078H9.35542L8.70382 0.798481C8.62913 0.649009 8.5143 0.523281 8.37219 0.435378C8.23009 0.347476 8.06631 0.30087 7.89922 0.300781H6.09922ZM4.29922 5.70078C4.29922 5.46209 4.39404 5.23317 4.56282 5.06439C4.73161 4.8956 4.96052 4.80078 5.19922 4.80078C5.43791 4.80078 5.66683 4.8956 5.83561 5.06439C6.0044 5.23317 6.09922 5.46209 6.09922 5.70078V11.1008C6.09922 11.3395 6.0044 11.5684 5.83561 11.7372C5.66683 11.906 5.43791 12.0008 5.19922 12.0008C4.96052 12.0008 4.73161 11.906 4.56282 11.7372C4.39404 11.5684 4.29922 11.3395 4.29922 11.1008V5.70078ZM8.79922 4.80078C8.56052 4.80078 8.33161 4.8956 8.16282 5.06439C7.99404 5.23317 7.89922 5.46209 7.89922 5.70078V11.1008C7.89922 11.3395 7.99404 11.5684 8.16282 11.7372C8.33161 11.906 8.56052 12.0008 8.79922 12.0008C9.03791 12.0008 9.26683 11.906 9.43561 11.7372C9.6044 11.5684 9.69922 11.3395 9.69922 11.1008V5.70078C9.69922 5.46209 9.6044 5.23317 9.43561 5.06439C9.26683 4.8956 9.03791 4.80078 8.79922 4.80078Z" />
-                                                </svg>
-                                                Delete
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                        <?php// } ?>
-                    </tbody>
+
+                        <?php endforeach; ?>`
+
+                </tbody>
                 </table>
+
             </div>
            
-<div id="createProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Add Product</h3>
-                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-target="createProductModal" data-modal-toggle="createProductModal">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="sr-only">Close modal</span>
-                </button>
-            </div>
-            <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="POST">
-    <div class="grid gap-4 mb-4 sm:grid-cols-2">
-        <div>
-            <label for="mcb_last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
-            <input type="text" name="mcb_last_name" id="mcb_last_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Last Name" required="">
-        </div>
-        <div>
-            <label for="mcb_first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First Name</label>
-            <input type="text" name="mcb_first_name" id="mcb_first_name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="First Name" required="">
-        </div>
-        <div>
-            <label for="mcb_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-            <input type="email" name="mcb_email" id="mcb_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Email" required="">
-        </div>
-        <div>
-            <label for="mcb_gender" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gender</label>
-            <select id="mcb_gender" name="mcb_gender" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required="">
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-        <div class="sm:col-span-2"> 
-        <label for="mcb_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
-        <textarea name="mcb_address" id="mcb_address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 resize-none" placeholder="Address" required=""></textarea>
-    </div>
-    </div>
-    <button type="submit" name="add_product" class="w-full text-white inline-flex items-center justify-center bg-blue-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-    <svg class="mr-1 -ml-1 w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-    </svg>
-    <span class="text-center">Add new product</span>
-</button>
-
-</form>
-
-        </div>
-    </div>
-</div>
 <div id="updateProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
@@ -448,34 +409,42 @@ $seller_id = $_SESSION['userId'];
                     <span class="sr-only">Close modal</span>
                 </button>
             </div>
-            <form action="./update.php" method="GET">
+            <form action="./update.php" method="GET" enctype="multipart/form-data">
     <div class="grid gap-4 mb-4 sm:grid-cols-2">
         <div>
             <input type="hidden" name="productId" id="productId" value="">
-            <label for="mcb_last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Last Name</label>
+            <label for="mcb_last_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Name</label>
             <input type="text" name="mcb_last_name" id="mcb_last_name" value="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Last Name">
         </div>
         <div>
-            <label for="mcb_first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First Name</label>
+            <label for="mcb_first_name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
             <input type="text" name="mcb_first_name" id="mcb_first_name" value="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="First Name">
         </div>
         <div>
-            <label for="mcb_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+            <label for="mcb_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
             <input type="email" name="mcb_email" id="mcb_email" value="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Email">
         </div>
         <div>
-            <label for="mcb_gender" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Gender</label>
+            <label for="mcb_gender" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
             <select name="mcb_gender" id="mcb_gender" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+                     <option value="Electronics">Electronics</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Books">Books</option>
+                    <option value="Home & Kitchen">Home & Kitchen</option>
+                    <option value="Sports & Outdoors">Sports & Outdoors</option>
+                    <option value="Health & Beauty">Health & Beauty</option>
+                    <option value="Toys & Games">Toys & Games</option>
+                    <option value="Automotive">Automotive</option>
+                    <option value="Tools & Home Improvement">Tools & Home Improvement</option>
+                    <option value="Grocery & Gourmet Food">Grocery & Gourmet Food</option>
             </select>
         </div>
         <div class="w-full">
-            <label for="mcb_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Address</label>
-            <textarea name="mcb_address" id="mcb_address" rows="5" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Address"></textarea>
+            <label for="images" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Images</label>
+            <input type="file" id = "images" name="images" accept="image/*" class ="w-full" multiple>
+            <div id="imageContainer" class="grid grid-cols-3 gap-4"></div>
         </div>
+
     </div>
     <div class="flex items-center space-x-4">
         <button type="submit" name="update_product" class="text-white bg-blue-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Update product</button>
@@ -491,47 +460,8 @@ $seller_id = $_SESSION['userId'];
         </div>
     </div>
 </div>
-<div id="readProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-xl max-h-full">
-        <!-- Modal content -->
-        <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-            <!-- Modal header -->
-            <div class="flex justify-between mb-4 rounded-t sm:mb-5">
-                <div class="text-lg text-gray-900 md:text-xl dark:text-white">
-                    <h3 class="font-semibold ">For ProductName</h3>
-                    <p class="font-bold">$For Price</p>
-                </div>
-                <div>
-                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="readProductModal">
-                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                        <span class="sr-only">Close modal</span>
-                    </button>
-                </div>
-            </div>
-            <dl><dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Details</dt><dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">For Description</dd><dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Category</dt><dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">For Category</dd></dl>
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-3 sm:space-x-4">
-                <button type="button" data-modal-target="updateProductModal" data-modal-toggle="updateProductModal" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-700 dark:text-gray-200">
-                  <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                         <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                         <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
-                    </svg>
-                           Edit
-                 </button>
-                    <button type="button" class="py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Preview</button>
-                </div>
-                <button type="button" class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
-                    <svg aria-hidden="true" class="w-5 h-5 mr-1.5 -ml-1" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 <div id="deleteModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-md max-h-full">
         <div class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
@@ -588,55 +518,109 @@ $seller_id = $_SESSION['userId'];
     </main>
 
     <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-           new Chart(document.getElementById('order-chart'), {
-            type: 'line',
-            data: {
-                labels: <?php echo $labelsJSON; ?>,
-                datasets: [
-                    {
-                        label: 'Active',
-                        data: <?php echo $activeDataJSON; ?>,
-                        borderWidth: 1,
-                        fill: true,
-                        pointBackgroundColor: 'rgb(59, 130, 246)',
-                        borderColor: 'rgb(59, 130, 246)',
-                        backgroundColor: 'rgb(59 130 246 / .05)',
-                        tension: .2
-                    },
-                    {
-                        label: 'Completed',
-                        data: <?php echo $completedDataJSON; ?>,
-                        borderWidth: 1,
-                        fill: true,
-                        pointBackgroundColor: 'rgb(16, 185, 129)',
-                        borderColor: 'rgb(16, 185, 129)',
-                        backgroundColor: 'rgb(16 185 129 / .05)',
-                        tension: .2
-                    },
-                    {
-                        label: 'Cancelled',
-                        data: <?php echo $cancelledDataJSON; ?>,
-                        borderWidth: 1,
-                        fill: true,
-                        pointBackgroundColor: 'rgb(244, 63, 94)',
-                        borderColor: 'rgb(244, 63, 94)',
-                        backgroundColor: 'rgb(244 63 94 / .05)',
-                        tension: .2
-                    },
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
     <script src="../../scripts/adminScripts.js"></script>
+            <script>
+                
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const updateButtons = document.querySelectorAll('[data-modal-toggle="updateProductModal"]');
+        const deleteButtons = document.querySelectorAll('[data-modal-toggle="deleteModal"]');
+        const readButtons = document.querySelectorAll('[data-modal-toggle="readProductModal"]');
+        const updateModal = document.getElementById('updateProductModal');
+        const deleteModal = document.getElementById('deleteModal');
+        const readModal = document.getElementById('readProductModal');
+        const updateForm = updateModal.querySelector('form');
+        const deleteForm = deleteModal.querySelector('form');
+
+        updateButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = button.getAttribute('data-product-id');
+            const lastName = button.closest('tr').querySelectorAll('td')[0].innerText.trim();
+            const firstName = button.closest('tr').querySelectorAll('td')[1].innerText.trim();
+            const email = button.closest('tr').querySelectorAll('td')[2].innerText.trim();
+            const gender = button.closest('tr').querySelectorAll('td')[3].innerText.trim();
+            const address = button.closest('tr').querySelectorAll('td')[4].innerText.trim();
+
+            console.log('Last Name:', lastName);
+            console.log('First Name:', firstName);
+            console.log('Email:', email);
+            console.log('Gender:', gender);
+            console.log('Address:', address);
+
+            updateForm.querySelector('#productId').value = productId;
+            updateForm.querySelector('#mcb_last_name').value = lastName;
+            updateForm.querySelector('#mcb_first_name').value = firstName;
+            updateForm.querySelector('#mcb_email').value = email;
+            updateForm.querySelector('#mcb_gender').value = gender;
+            updateForm.querySelector('#mcb_address').value = address;
+
+            updateForm.setAttribute('action', `./update.php?productId=${productId}`);
+
+            // Fetch the images for the product
+            fetch(`./getImages.php?productId=${productId}`)
+                .then(response => response.json())
+                .then(images => {
+                    // Populate the image container
+                    const imageContainer = document.getElementById('imageContainer');
+                    imageContainer.innerHTML = ''; // Clear previous images
+                    images.forEach(imageUrl => {
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        img.classList.add('w-full', 'h-auto', 'object-cover');
+                        imageContainer.appendChild(img);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching images:', error);
+                });
+        });
+    });
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const Id = button.getAttribute('data-product-id');
+                deleteForm.querySelector('#deleteProductId').value = Id;
+                deleteForm.setAttribute('action', `./delete.php?Id=${Id}`);
+
+            });
+        });
+
+        readButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = button.getAttribute('data-product-id');
+                const lastName = button.closest('tr').querySelector('th').innerText;
+                const firstName = button.closest('tr').querySelectorAll('td')[0].innerText;
+                const address = button.closest('tr').querySelectorAll('td')[1].innerText;
+
+                readModal.querySelector('.font-semibold').innerText = `Last Name: ${lastName}`;
+                readModal.querySelector('.font-bold').innerText = `First Name: ${firstName}`;
+                readModal.querySelector('.font-light:nth-of-type(1)').innerText = `Your Full Name: ${firstName} ${lastName}`;
+                readModal.querySelector('.font-light:nth-of-type(2)').innerText = `Address: ${address}`;
+
+                readModal.classList.remove('hidden');
+                readModal.setAttribute('aria-hidden', 'false');
+                readModal.focus();
+            });
+        });
+
+
+        
+    });
+
+    document.addEventListener('DOMContentLoaded', function(e) {
+    const searchInput = document.getElementById('simple-search');
+    searchInput.addEventListener('submit', function() {
+        event.preventDefault();
+        const searchValue = searchInput.value.trim();
+        fetch(`search.php?search_query=${searchValue}`)
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+            return false; 
+    });
+});
+            </script>
 </body>
 </html>

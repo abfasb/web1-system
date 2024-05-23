@@ -10,6 +10,7 @@ $seller_id = $_SESSION['userId'];
 try {
     $sql = "SELECT 
                 COUNT(o.order_id) AS total_orders,
+                SUM(CASE WHEN o.status = 'pending' THEN 1 ELSE 0 END) AS pending_orders,
                 SUM(CASE WHEN o.status = 'active' THEN 1 ELSE 0 END) AS active_orders,
                 SUM(CASE WHEN o.status = 'cancelled' THEN 1 ELSE 0 END) AS cancelled_orders,
                 SUM(CASE WHEN o.status = 'completed' THEN 1 ELSE 0 END) AS completed_orders
@@ -18,45 +19,37 @@ try {
             INNER JOIN Products p ON oi.product_id = p.product_id
             WHERE p.user_id = ?";
 
-    // Prepare the SQL statement
     $stmt = $connection->prepare($sql);
 
-    // Bind the seller_id parameter
     $stmt->bindParam(1, $seller_id, PDO::PARAM_INT);
 
-    // Execute the query
     $stmt->execute();
 
-    // Fetch the results into an associative array
     $orderCounts = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Check if the fetch operation was successful
     if ($orderCounts !== false) {
         // Store the counts in variables
         $totalOrders = $orderCounts['total_orders'];
+        $pendingOrders = $orderCounts['pending_orders'];
         $activeOrders = $orderCounts['active_orders'];
         $cancelledOrders = $orderCounts['cancelled_orders'];
         $completedOrders = $orderCounts['completed_orders'];
 
+        $pendingPercentage = ($totalOrders > 0) ? ($pendingOrders / $totalOrders) * 100 : 0;
         $activePercentage = ($totalOrders > 0) ? ($activeOrders / $totalOrders) * 100 : 0;
         $cancelledPercentage = ($totalOrders > 0) ? ($cancelledOrders / $totalOrders) * 100 : 0;
         $completedPercentage = ($totalOrders > 0) ? ($completedOrders / $totalOrders) * 100 : 0;
 
-        // Output the counts for debugging purposes
         echo "<script>console.log('Total orders for seller ID $seller_id: $totalOrders');</script>";
         echo "<script>console.log('Active orders for seller ID $seller_id: $activeOrders');</script>";
         echo "<script>console.log('Cancelled orders for seller ID $seller_id: $cancelledOrders');</script>";
     } else {
-        // Handle case where no results were returned
         echo "<script>console.log('No orders found for seller ID $seller_id');</script>";
     }
 
 } catch (PDOException $e) {
-    // Handle database errors
     echo "<script>console.error('Error:', '" . $e->getMessage() . "');</script>";
 }
-
-
 
 $query = "
     SELECT DATE(o.order_date) as order_date, 
@@ -211,55 +204,50 @@ $completedDataJSON = json_encode($completedData);
                     </div>
                 </li>
                 <li class="dropdown">
-                    <button type="button" class="dropdown-toggle text-gray-400 mr-4 w-8 h-8 rounded flex items-center justify-center  hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="hover:bg-gray-100 rounded-full" viewBox="0 0 24 24" style="fill: gray;transform: msFilter;"><path d="M19 13.586V10c0-3.217-2.185-5.927-5.145-6.742C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v3.586l-1.707 1.707A.996.996 0 0 0 3 16v2a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-2a.996.996 0 0 0-.293-.707L19 13.586zM19 17H5v-.586l1.707-1.707A.996.996 0 0 0 7 14v-4c0-2.757 2.243-5 5-5s5 2.243 5 5v4c0 .266.105.52.293.707L19 16.414V17zm-7 5a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22z"></path></svg>                    
-                    </button>
+                <button type="button" class="dropdown-toggle relative text-gray-400 mr-4 w-8 h-8 rounded flex items-center justify-center  hover:text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" class="hover:bg-gray-100 rounded-full" viewBox="0 0 24 24" style="fill: gray;transform: msFilter;">
+                        <path d="M19 13.586V10c0-3.217-2.185-5.927-5.145-6.742C13.562 2.52 12.846 2 12 2s-1.562.52-1.855 1.258C7.185 4.074 5 6.783 5 10v3.586l-1.707 1.707A.996.996 0 0 0 3 16v2a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-2a.996.996 0 0 0-.293-.707L19 13.586zM19 17H5v-.586l1.707-1.707A.996.996 0 0 0 7 14v-4c0-2.757 2.243-5 5-5s5 2.243 5 5v4c0 .266.105.52.293.707L19 16.414V17zm-7 5a2.98 2.98 0 0 0 2.818-2H9.182A2.98 2.98 0 0 0 12 22z"></path>
+                    </svg>   
+                    <?php
+
+                    $stmt = $connection->prepare("SELECT COUNT(*) AS unread_count FROM Notifications WHERE user_id = ? AND is_read = 0");
+                    $stmt->execute([$seller_id]);
+                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                    $unread_count = $result['unread_count'];
+
+                    if ($unread_count > 0) {
+                        echo '<div class="notification-indicator bg-red-500 w-3 h-3 rounded-full absolute top-0 right-0"></div>';
+                    }
+                    ?>
+                </button>
+
                     <div class="dropdown-menu shadow-md shadow-black/5 z-30 hidden max-w-xs w-full bg-white rounded-md border border-gray-100">
                         <div class="flex items-center px-4 pt-4 border-b border-b-gray-100 notification-tab">
                             <button type="button" data-tab="notification" data-tab-page="notifications" class="text-gray-400 font-medium text-[13px] hover:text-gray-600 border-b-2 border-b-transparent mr-4 pb-1 active">Notifications</button>
                             <button type="button" data-tab="notification" data-tab-page="messages" class="text-gray-400 font-medium text-[13px] hover:text-gray-600 border-b-2 border-b-transparent mr-4 pb-1">Messages</button>
                         </div>
                         <div class="my-2">
-                            <ul class="max-h-64 overflow-y-auto" data-tab-for="notification" data-page="notifications">
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">New order</div>
-                                            <div class="text-[11px] text-gray-400">from a user</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">New order</div>
-                                            <div class="text-[11px] text-gray-400">from a user</div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                            <ul class="max-h-64 overflow-y-auto hidden" data-tab-for="notification" data-page="messages">
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">John Doe</div>
-                                            <div class="text-[11px] text-gray-400">Hello there!</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">John Doe</div>
-                                            <div class="text-[11px] text-gray-400">Hello there!</div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+                        <ul class="max-h-64 overflow-y-auto" data-tab-for="notification" data-page="notifications">
+                        <?php
+
+                        $stmt = $connection->prepare("SELECT * FROM Notifications WHERE user_id = ?");
+                        $stmt->execute([$seller_id]);
+                        $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Display notifications
+                        foreach ($notifications as $notification):
+                        ?>
+                        <li>
+                            <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
+                                <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+                                <div class="ml-2">
+                                    <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500"><?= htmlspecialchars($notification['notification_type']) ?></div>
+                                    <div class="text-[11px] text-gray-400"><?= htmlspecialchars($notification['message']) ?></div>
+                                </div>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
                         </div>
                     </div>
                 </li>
@@ -343,7 +331,7 @@ $completedDataJSON = json_encode($completedData);
                         </div> 
                     </div>
 
-                    <a href="/gebruikers" class="text-[#f84525] font-medium text-sm hover:text-red-800">View</a>
+                    <a href="#" class="text-[#f84525] font-medium text-sm hover:text-red-800">View</a>
                 </div>
                 <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
                     <div class="flex justify-between mb-4">
@@ -428,6 +416,20 @@ $completedDataJSON = json_encode($completedData);
                               </td>
                             </tr>
                             <tr class="text-gray-700 dark:text-gray-100">
+                              <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Pending Orders</th>
+                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $pendingOrders ?></td>
+                              <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                <div class="flex items-center">
+                                  <span class="mr-2"><?php echo round($pendingPercentage) . "%" ?></span>
+                                  <div class="relative w-full">
+                                    <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
+                                      <div style="width: <?php echo $pendingPercentage?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr class="text-gray-700 dark:text-gray-100">
                               <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Completed</th>
                               <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $completedOrders ?></td>
                               <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
@@ -486,7 +488,7 @@ $completedDataJSON = json_encode($completedData);
             INNER JOIN Order_Items ON Orders.order_id = Order_Items.order_id 
             INNER JOIN Products ON Order_Items.product_id = Products.product_id 
             INNER JOIN Users ON Products.user_id = Users.user_id 
-            WHERE Products.user_id = :seller_id");
+            WHERE Products.user_id = :seller_id LIMIT 9");
             $stmtt->execute(['seller_id' => $seller_id]);
             $orders = $stmtt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -608,7 +610,7 @@ foreach ($orders as $order) {
                                                     INNER JOIN Order_Items ON Orders.order_id = Order_Items.order_id 
                                                     INNER JOIN Products ON Order_Items.product_id = Products.product_id 
                                                     INNER JOIN Users ON Products.user_id = Users.user_id 
-                                                    WHERE Products.user_id = :seller_id");
+                                                    WHERE Products.user_id = :seller_id LIMIT 10");
                             $stmqt->execute(['seller_id' => $seller_id]);
                             $orders = $stmqt->fetchAll(PDO::FETCH_ASSOC);
 

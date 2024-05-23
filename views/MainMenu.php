@@ -1,11 +1,17 @@
 <?php
 include '../config/connection.php';
+include '../model/ProductModel.php';
+
 session_start();
 
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName = $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
 $userid = $_SESSION['userId'];
+
+$productModel = new ProductModel($connection);
+$products = $productModel->getAllProductsWithRatings();
+
 
 if (!isset($userName)) {
     header("Location: ../pages/login.php");
@@ -56,11 +62,6 @@ $wishlistCount = $wishlistResult['wishlist_count'];
 
     <br>
     <div style = "display: flex; flex-wrap: wrap; justify-content: center; flex-direction: row; gap:1rem; z-index: 100;">
-    <?php include './utils/card.php'?>
-    <?php include './utils/card.php'?>
-    <?php include './utils/card.php'?>
-    <?php include './utils/card.php'?>
-    <?php include './utils/card.php'?>
     <?php include './utils/card.php'?>
     </div>
     <section class="home">

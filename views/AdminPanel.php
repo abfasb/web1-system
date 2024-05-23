@@ -14,11 +14,103 @@ $sellerCount = $sellerQuery->fetch(PDO::FETCH_ASSOC)['seller_count'];
 $adminQuery = $connection->query("SELECT COUNT(*) AS admin_count FROM Users WHERE role = 'administrator'");
 $adminCount = $adminQuery->fetch(PDO::FETCH_ASSOC)['admin_count'];
 
-$total = $userCount + $sellerCount + 3;
+$total = $userCount + $sellerCount + 4;
 $userPercentage = ($userCount / $total) * 100;
 $sellerPercentage = ($sellerCount / $total) * 100;
-$adminPercentage = (3 / $total) * 100;
+$adminPercentage = (4 / $total) * 100;
+
+
+$sql = "SELECT * FROM Orders ORDER BY created_at DESC LIMIT 5";
+$stmt = $connection->prepare($sql);
+$stmt->execute();
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+$sql2 = "
+        SELECT 
+            o.order_id, 
+            o.created_at, 
+            o.status, 
+            oi.quantity, 
+            oi.unit_price, 
+            p.product_name, 
+            p.images 
+        FROM Orders o
+        JOIN Order_Items oi ON o.order_id = oi.order_id
+        JOIN Products p ON oi.product_id = p.product_id
+        ORDER BY o.created_at DESC LIMIT 10
+    ";
+    $stmt2 = $connection->prepare($sql2);
+    $stmt2->execute();
+    $orderss = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+    $sqlRevenue = "
+    SELECT SUM(oi.unit_price * oi.quantity) AS total_revenue
+    FROM Orders o
+    JOIN Order_Items oi ON o.order_id = oi.order_id
+    WHERE o.status = 'completed'
+";
+$stmtRevenue = $connection->prepare($sqlRevenue);
+$stmtRevenue->execute();
+$totalRevenue = $stmtRevenue->fetch(PDO::FETCH_ASSOC)['total_revenue'];
+
+$sqlProducts = "
+    SELECT COUNT(DISTINCT p.product_id) AS total_products
+    FROM Products p
+";
+$stmtProducts = $connection->prepare($sqlProducts);
+$stmtProducts->execute();
+$totalProducts = $stmtProducts->fetch(PDO::FETCH_ASSOC)['total_products'];
   
+
+
+
+$revenueStmt = $connection->query("
+    SELECT DATE(order_date) as date, SUM(total_amount) as total_revenue 
+    FROM Orders 
+    GROUP BY DATE(order_date)
+    ORDER BY DATE(order_date)
+");
+$revenueData = $revenueStmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+
+
+$query = "
+    SELECT DATE(o.order_date) as order_date, 
+           SUM(CASE WHEN o.status = 'active' THEN 1 ELSE 0 END) as active_orders,
+           SUM(CASE WHEN o.status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_orders,
+           SUM(CASE WHEN o.status = 'completed' THEN 1 ELSE 0 END) as completed_orders
+    FROM Orders o
+    JOIN Order_Items oi ON o.order_id = oi.order_id
+    JOIN Products p ON oi.product_id = p.product_id
+    WHERE o.order_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+    GROUP BY DATE(o.order_date)
+    ORDER BY order_date";
+
+
+$statement = $connection->prepare($query);
+$statement->execute();
+
+$labels = [];
+$activeData = [];
+$cancelledData = [];
+$completedData = [];
+
+while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+    $labels[] = date('M d', strtotime($row['order_date']));
+    $activeData[] = $row['active_orders'];
+    $cancelledData[] = $row['cancelled_orders'];
+    $completedData[] = $row['completed_orders'];
+}
+
+$labelsJSON = json_encode($labels);
+$activeDataJSON = json_encode($activeData);
+$cancelledDataJSON = json_encode($cancelledData);
+$completedDataJSON = json_encode($completedData);
+
 ?>
 
 <!DOCTYPE html>
@@ -34,1245 +126,9 @@ $adminPercentage = (3 / $total) * 100;
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../public/output.css">
+    <link rel="stylesheet" href="./utils/style.css">
     <title>Admin Panel</title>
-    <style>
-        *,
-::before,
-::after {
-  box-sizing: border-box;
-  /* 1 */
-  border-width: 0;
-  /* 2 */
-  border-style: solid;
-  /* 2 */
-  border-color: #e5e7eb;
-  /* 2 */
-}
-
-::before,
-::after {
-  --tw-content: '';
-}
-
-html {
-  line-height: 1.5;
-  /* 1 */
-  -webkit-text-size-adjust: 100%;
-  /* 2 */
-  -moz-tab-size: 4;
-  /* 3 */
-  -o-tab-size: 4;
-     tab-size: 4;
-  /* 3 */
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  /* 4 */
-  font-feature-settings: normal;
-  /* 5 */
-  font-variation-settings: normal;
-  /* 6 */
-}
-
-
-body {
-  margin: 0;
-  /* 1 */
-  line-height: inherit;
-  /* 2 */
-}
-
-
-hr {
-  height: 0;
-  /* 1 */
-  color: inherit;
-  /* 2 */
-  border-top-width: 1px;
-  /* 3 */
-}
-
-
-abbr:where([title]) {
-  -webkit-text-decoration: underline dotted;
-          text-decoration: underline dotted;
-}
-
-
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: inherit;
-  font-weight: inherit;
-}
-
-/*
-Reset links to optimize for opt-in styling instead of opt-out.
-*/
-
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
-
-/*
-Add the correct font weight in Edge and Safari.
-*/
-
-b,
-strong {
-  font-weight: bolder;
-}
-
-/*
-1. Use the user's configured `mono` font family by default.
-2. Correct the odd `em` font sizing in all browsers.
-*/
-
-code,
-kbd,
-samp,
-pre {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  /* 1 */
-  font-size: 1em;
-  /* 2 */
-}
-
-/*
-Add the correct font size in all browsers.
-*/
-
-small {
-  font-size: 80%;
-}
-
-sub,
-sup {
-  font-size: 75%;
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-
-sub {
-  bottom: -0.25em;
-}
-
-sup {
-  top: -0.5em;
-}
-
-table {
-  text-indent: 0;
-  /* 1 */
-  border-color: inherit;
-  /* 2 */
-  border-collapse: collapse;
-  /* 3 */
-}
-
-button,
-input,
-optgroup,
-select,
-textarea {
-  font-family: inherit;
-  /* 1 */
-  font-feature-settings: inherit;
-  /* 1 */
-  font-variation-settings: inherit;
-  /* 1 */
-  font-size: 100%;
-  /* 1 */
-  font-weight: inherit;
-  /* 1 */
-  line-height: inherit;
-  /* 1 */
-  color: inherit;
-  /* 1 */
-  margin: 0;
-  /* 2 */
-  padding: 0;
-  /* 3 */
-}
-
-button,
-select {
-  text-transform: none;
-}
-
-
-
-button,
-[type='button'],
-[type='reset'],
-[type='submit'] {
-  -webkit-appearance: button;
-  /* 1 */
-  background-color: transparent;
-  /* 2 */
-  background-image: none;
-  /* 2 */
-}
-
-
-
-:-moz-focusring {
-  outline: auto;
-}
-
-
-
-:-moz-ui-invalid {
-  box-shadow: none;
-}
-
-
-
-progress {
-  vertical-align: baseline;
-}
-
-
-
-::-webkit-inner-spin-button,
-::-webkit-outer-spin-button {
-  height: auto;
-}
-
-
-[type='search'] {
-  -webkit-appearance: textfield;
-  /* 1 */
-  outline-offset: -2px;
-  /* 2 */
-}
-
-/*
-Remove the inner padding in Chrome and Safari on macOS.
-*/
-
-::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-
-::-webkit-file-upload-button {
-  -webkit-appearance: button;
-  /* 1 */
-  font: inherit;
-  /* 2 */
-}
-
-
-summary {
-  display: list-item;
-}
-
-
-blockquote,
-dl,
-dd,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-hr,
-figure,
-p,
-pre {
-  margin: 0;
-}
-
-fieldset {
-  margin: 0;
-  padding: 0;
-}
-
-legend {
-  padding: 0;
-}
-
-ol,
-ul,
-menu {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-
-dialog {
-  padding: 0;
-}
-
-
-textarea {
-  resize: vertical;
-}
-
-
-input::-moz-placeholder, textarea::-moz-placeholder {
-  opacity: 1;
-  /* 1 */
-  color: #9ca3af;
-  /* 2 */
-}
-
-input::placeholder,
-textarea::placeholder {
-  opacity: 1;
-  /* 1 */
-  color: #9ca3af;
-  /* 2 */
-}
-
-/*
-Set the default cursor for buttons.
-*/
-
-button,
-[role="button"] {
-  cursor: pointer;
-}
-
-/*
-Make sure disabled buttons don't get the pointer cursor.
-*/
-
-:disabled {
-  cursor: default;
-}
-
-
-img,
-svg,
-video,
-canvas,
-audio,
-iframe,
-embed,
-object {
-  display: block;
-  /* 1 */
-  vertical-align: middle;
-  /* 2 */
-}
-
-
-img,
-video {
-  max-width: 100%;
-  height: auto;
-}
-
-
-[hidden] {
-  display: none;
-}
-
-*, ::before, ::after{
-  --tw-border-spacing-x: 0;
-  --tw-border-spacing-y: 0;
-  --tw-translate-x: 0;
-  --tw-translate-y: 0;
-  --tw-rotate: 0;
-  --tw-skew-x: 0;
-  --tw-skew-y: 0;
-  --tw-scale-x: 1;
-  --tw-scale-y: 1;
-  --tw-pan-x:  ;
-  --tw-pan-y:  ;
-  --tw-pinch-zoom:  ;
-  --tw-scroll-snap-strictness: proximity;
-  --tw-gradient-from-position:  ;
-  --tw-gradient-via-position:  ;
-  --tw-gradient-to-position:  ;
-  --tw-ordinal:  ;
-  --tw-slashed-zero:  ;
-  --tw-numeric-figure:  ;
-  --tw-numeric-spacing:  ;
-  --tw-numeric-fraction:  ;
-  --tw-ring-inset:  ;
-  --tw-ring-offset-width: 0px;
-  --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(59 130 246 / 0.5);
-  --tw-ring-offset-shadow: 0 0 #0000;
-  --tw-ring-shadow: 0 0 #0000;
-  --tw-shadow: 0 0 #0000;
-  --tw-shadow-colored: 0 0 #0000;
-  --tw-blur:  ;
-  --tw-brightness:  ;
-  --tw-contrast:  ;
-  --tw-grayscale:  ;
-  --tw-hue-rotate:  ;
-  --tw-invert:  ;
-  --tw-saturate:  ;
-  --tw-sepia:  ;
-  --tw-drop-shadow:  ;
-  --tw-backdrop-blur:  ;
-  --tw-backdrop-brightness:  ;
-  --tw-backdrop-contrast:  ;
-  --tw-backdrop-grayscale:  ;
-  --tw-backdrop-hue-rotate:  ;
-  --tw-backdrop-invert:  ;
-  --tw-backdrop-opacity:  ;
-  --tw-backdrop-saturate:  ;
-  --tw-backdrop-sepia:  ;
-}
-
-::backdrop{
-  --tw-border-spacing-x: 0;
-  --tw-border-spacing-y: 0;
-  --tw-translate-x: 0;
-  --tw-translate-y: 0;
-  --tw-rotate: 0;
-  --tw-skew-x: 0;
-  --tw-skew-y: 0;
-  --tw-scale-x: 1;
-  --tw-scale-y: 1;
-  --tw-pan-x:  ;
-  --tw-pan-y:  ;
-  --tw-pinch-zoom:  ;
-  --tw-scroll-snap-strictness: proximity;
-  --tw-gradient-from-position:  ;
-  --tw-gradient-via-position:  ;
-  --tw-gradient-to-position:  ;
-  --tw-ordinal:  ;
-  --tw-slashed-zero:  ;
-  --tw-numeric-figure:  ;
-  --tw-numeric-spacing:  ;
-  --tw-numeric-fraction:  ;
-  --tw-ring-inset:  ;
-  --tw-ring-offset-width: 0px;
-  --tw-ring-offset-color: #fff;
-  --tw-ring-color: rgb(59 130 246 / 0.5);
-  --tw-ring-offset-shadow: 0 0 #0000;
-  --tw-ring-shadow: 0 0 #0000;
-  --tw-shadow: 0 0 #0000;
-  --tw-shadow-colored: 0 0 #0000;
-  --tw-blur:  ;
-  --tw-brightness:  ;
-  --tw-contrast:  ;
-  --tw-grayscale:  ;
-  --tw-hue-rotate:  ;
-  --tw-invert:  ;
-  --tw-saturate:  ;
-  --tw-sepia:  ;
-  --tw-drop-shadow:  ;
-  --tw-backdrop-blur:  ;
-  --tw-backdrop-brightness:  ;
-  --tw-backdrop-contrast:  ;
-  --tw-backdrop-grayscale:  ;
-  --tw-backdrop-hue-rotate:  ;
-  --tw-backdrop-invert:  ;
-  --tw-backdrop-opacity:  ;
-  --tw-backdrop-saturate:  ;
-  --tw-backdrop-sepia:  ;
-}
-
-.fixed{
-  position: fixed;
-}
-
-.absolute{
-  position: absolute;
-}
-
-.relative{
-  position: relative;
-}
-
-.sticky{
-  position: sticky;
-}
-
-.left-0{
-  left: 0px;
-}
-
-.left-4{
-  left: 1rem;
-}
-
-.top-0{
-  top: 0px;
-}
-
-.top-1\/2{
-  top: 50%;
-}
-
-.z-30{
-  z-index: 30;
-}
-
-.z-40{
-  z-index: 40;
-}
-
-.z-50{
-  z-index: 50;
-}
-
-.my-2{
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.-ml-3{
-  margin-left: -0.75rem;
-}
-
-.mb-0{
-  margin-bottom: 0px;
-}
-
-.mb-0\.5{
-  margin-bottom: 0.125rem;
-}
-
-.mb-1{
-  margin-bottom: 0.25rem;
-}
-
-.mb-2{
-  margin-bottom: 0.5rem;
-}
-
-.mb-4{
-  margin-bottom: 1rem;
-}
-
-.mb-6{
-  margin-bottom: 1.5rem;
-}
-
-.ml-1{
-  margin-left: 0.25rem;
-}
-
-.ml-2{
-  margin-left: 0.5rem;
-}
-
-.ml-3{
-  margin-left: 0.75rem;
-}
-
-.ml-4{
-  margin-left: 1rem;
-}
-
-.ml-auto{
-  margin-left: auto;
-}
-
-.mr-1{
-  margin-right: 0.25rem;
-}
-
-.mr-2{
-  margin-right: 0.5rem;
-}
-
-.mr-3{
-  margin-right: 0.75rem;
-}
-
-.mr-4{
-  margin-right: 1rem;
-}
-
-.mt-2{
-  margin-top: 0.5rem;
-}
-
-.mt-3{
-  margin-top: 0.75rem;
-}
-
-.mt-4{
-  margin-top: 1rem;
-}
-
-.block{
-  display: block;
-}
-
-.inline-block{
-  display: inline-block;
-}
-
-.flex{
-  display: flex;
-}
-
-.table{
-  display: table;
-}
-
-.grid{
-  display: grid;
-}
-
-.hidden{
-  display: none;
-}
-
-.h-2{
-  height: 0.5rem;
-}
-
-.h-4{
-  height: 1rem;
-}
-
-.h-6{
-  height: 1.5rem;
-}
-
-.h-8{
-  height: 2rem;
-}
-
-.h-full{
-  height: 100%;
-}
-
-.max-h-64{
-  max-height: 16rem;
-}
-
-.min-h-screen{
-  min-height: 100vh;
-}
-
-.w-2{
-  width: 0.5rem;
-}
-
-.w-6{
-  width: 1.5rem;
-}
-
-.w-64{
-  width: 16rem;
-}
-
-.w-8{
-  width: 2rem;
-}
-
-.w-full{
-  width: 100%;
-}
-
-.min-w-\[460px\]{
-  min-width: 460px;
-}
-
-.min-w-\[540px\]{
-  min-width: 540px;
-}
-
-.max-w-\[140px\]{
-  max-width: 140px;
-}
-
-.max-w-xs{
-  max-width: 20rem;
-}
-
-.-translate-x-full{
-  --tw-translate-x: -100%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.-translate-y-1\/2{
-  --tw-translate-y: -50%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.appearance-none{
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-}
-
-.grid-cols-1{
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.items-start{
-  align-items: flex-start;
-}
-
-.items-center{
-  align-items: center;
-}
-
-.justify-center{
-  justify-content: center;
-}
-
-.justify-between{
-  justify-content: space-between;
-}
-
-.gap-4{
-  gap: 1rem;
-}
-
-.gap-6{
-  gap: 1.5rem;
-}
-
-.overflow-x-auto{
-  overflow-x: auto;
-}
-
-.overflow-y-auto{
-  overflow-y: auto;
-}
-
-.truncate{
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rounded{
-  border-radius: 0.25rem;
-}
-
-.rounded-full{
-  border-radius: 9999px;
-}
-
-.rounded-md{
-  border-radius: 0.375rem;
-}
-
-.rounded-bl-md{
-  border-bottom-left-radius: 0.375rem;
-}
-
-.rounded-br-md{
-  border-bottom-right-radius: 0.375rem;
-}
-
-.rounded-tl-md{
-  border-top-left-radius: 0.375rem;
-}
-
-.rounded-tr-md{
-  border-top-right-radius: 0.375rem;
-}
-
-.border{
-  border-width: 1px;
-}
-
-.border-b{
-  border-bottom-width: 1px;
-}
-
-.border-b-2{
-  border-bottom-width: 2px;
-}
-
-.border-dashed{
-  border-style: dashed;
-}
-
-.border-gray-100{
-  --tw-border-opacity: 1;
-  border-color: rgb(243 244 246 / var(--tw-border-opacity));
-}
-
-.border-gray-200{
-  --tw-border-opacity: 1;
-  border-color: rgb(229 231 235 / var(--tw-border-opacity));
-}
-
-.border-b-gray-100{
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(243 244 246 / var(--tw-border-opacity));
-}
-
-.border-b-gray-50{
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(249 250 251 / var(--tw-border-opacity));
-}
-
-.border-b-gray-800{
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(31 41 55 / var(--tw-border-opacity));
-}
-
-.border-b-transparent{
-  border-bottom-color: transparent;
-}
-
-.bg-black\/50{
-  background-color: rgb(0 0 0 / 0.5);
-}
-
-.bg-blue-500{
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
-}
-
-.bg-blue-500\/10{
-  background-color: rgb(59 130 246 / 0.1);
-}
-
-.bg-emerald-500\/10{
-  background-color: rgb(16 185 129 / 0.1);
-}
-
-.bg-gray-100{
-  --tw-bg-opacity: 1;
-  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
-}
-
-.bg-gray-50{
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
-}
-
-.bg-gray-900{
-  --tw-bg-opacity: 1;
-  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
-}
-
-.bg-rose-500\/10{
-  background-color: rgb(244 63 94 / 0.1);
-}
-
-.bg-white{
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-select-arrow{
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTExLjk5OTcgMTMuMTcxNEwxNi45NDk1IDguMjIxNjhMMTguMzYzNyA5LjYzNTg5TDExLjk5OTcgMTUuOTk5OUw1LjYzNTc0IDkuNjM1ODlMNy4wNDk5NiA4LjIyMTY4TDExLjk5OTcgMTMuMTcxNFoiIGZpbGw9InJnYmEoMTU2LDE2MywxNzUsMSkiPjwvcGF0aD48L3N2Zz4=");
-}
-
-.bg-\[length\:16px_16px\]{
-  background-size: 16px 16px;
-}
-
-.bg-\[right_16px_center\]{
-  background-position: right 16px center;
-}
-
-.bg-no-repeat{
-  background-repeat: no-repeat;
-}
-
-.object-cover{
-  -o-object-fit: cover;
-     object-fit: cover;
-}
-
-.p-1{
-  padding: 0.25rem;
-}
-
-.p-4{
-  padding: 1rem;
-}
-
-.p-6{
-  padding: 1.5rem;
-}
-
-.px-4{
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.px-6{
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-
-.py-1{
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}
-
-.py-1\.5{
-  padding-top: 0.375rem;
-  padding-bottom: 0.375rem;
-}
-
-.py-2{
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-
-.pb-1{
-  padding-bottom: 0.25rem;
-}
-
-.pb-4{
-  padding-bottom: 1rem;
-}
-
-.pl-10{
-  padding-left: 2.5rem;
-}
-
-.pl-4{
-  padding-left: 1rem;
-}
-
-.pl-7{
-  padding-left: 1.75rem;
-}
-
-.pr-10{
-  padding-right: 2.5rem;
-}
-
-.pr-4{
-  padding-right: 1rem;
-}
-
-.pt-4{
-  padding-top: 1rem;
-}
-
-.text-left{
-  text-align: left;
-}
-
-.align-top{
-  vertical-align: top;
-}
-
-.align-middle{
-  vertical-align: middle;
-}
-
-.font-inter{
-  font-family: 'Inter', sans-serif;
-}
-
-.text-2xl{
-  font-size: 1.5rem;
-  line-height: 2rem;
-}
-
-.text-\[11px\]{
-  font-size: 11px;
-}
-
-.text-\[12px\]{
-  font-size: 12px;
-}
-
-.text-\[13px\]{
-  font-size: 13px;
-}
-
-.text-base{
-  font-size: 1rem;
-  line-height: 1.5rem;
-}
-
-.text-lg{
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-}
-
-.text-sm{
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-.text-xl{
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.font-bold{
-  font-weight: 700;
-}
-
-.font-medium{
-  font-weight: 500;
-}
-
-.font-normal{
-  font-weight: 400;
-}
-
-.font-semibold{
-  font-weight: 600;
-}
-
-.uppercase{
-  text-transform: uppercase;
-}
-
-.leading-none{
-  line-height: 1;
-}
-
-.tracking-wide{
-  letter-spacing: 0.025em;
-}
-
-.text-blue-500{
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
-.text-emerald-500{
-  --tw-text-opacity: 1;
-  color: rgb(16 185 129 / var(--tw-text-opacity));
-}
-
-.text-gray-300{
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity));
-}
-
-.text-gray-400{
-  --tw-text-opacity: 1;
-  color: rgb(156 163 175 / var(--tw-text-opacity));
-}
-
-.text-gray-600{
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity));
-}
-
-.text-gray-800{
-  --tw-text-opacity: 1;
-  color: rgb(31 41 55 / var(--tw-text-opacity));
-}
-
-.text-rose-500{
-  --tw-text-opacity: 1;
-  color: rgb(244 63 94 / var(--tw-text-opacity));
-}
-
-.text-white{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.shadow-md{
-  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.shadow-black\/10{
-  --tw-shadow-color: rgb(0 0 0 / 0.1);
-  --tw-shadow: var(--tw-shadow-colored);
-}
-
-.shadow-black\/5{
-  --tw-shadow-color: rgb(0 0 0 / 0.05);
-  --tw-shadow: var(--tw-shadow-colored);
-}
-
-.outline-none{
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-}
-
-.transition-all{
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.transition-transform{
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
-.notification-tab > .active{
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(59 130 246 / var(--tw-border-opacity));
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
-.notification-tab > .active:hover{
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
-.order-tab > .active{
-  --tw-bg-opacity: 1;
-  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.order-tab > .active:hover{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-@media (min-width: 768px){
-  .main.active{
-    margin-left: 0px;
-    width: 100%;
-  }
-}
-
-.before\:mr-3::before{
-  content: var(--tw-content);
-  margin-right: 0.75rem;
-}
-
-.before\:h-1::before{
-  content: var(--tw-content);
-  height: 0.25rem;
-}
-
-.before\:w-1::before{
-  content: var(--tw-content);
-  width: 0.25rem;
-}
-
-.before\:rounded-full::before{
-  content: var(--tw-content);
-  border-radius: 9999px;
-}
-
-.before\:bg-gray-300::before{
-  content: var(--tw-content);
-  --tw-bg-opacity: 1;
-  background-color: rgb(209 213 219 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-50:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity));
-}
-
-.hover\:bg-gray-950:hover{
-  --tw-bg-opacity: 1;
-  background-color: rgb(3 7 18 / var(--tw-bg-opacity));
-}
-
-.hover\:text-blue-500:hover{
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
-.hover\:text-blue-600:hover{
-  --tw-text-opacity: 1;
-  color: rgb(37 99 235 / var(--tw-text-opacity));
-}
-
-.hover\:text-gray-100:hover{
-  --tw-text-opacity: 1;
-  color: rgb(243 244 246 / var(--tw-text-opacity));
-}
-
-.hover\:text-gray-600:hover{
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity));
-}
-
-.focus\:border-blue-500:focus{
-  --tw-border-opacity: 1;
-  border-color: rgb(59 130 246 / var(--tw-border-opacity));
-}
-
-.group:hover .group-hover\:text-blue-500{
-  --tw-text-opacity: 1;
-  color: rgb(59 130 246 / var(--tw-text-opacity));
-}
-
-.group.selected .group-\[\.selected\]\:block{
-  display: block;
-}
-
-.group.selected .group-\[\.selected\]\:rotate-90{
-  --tw-rotate: 90deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.group.active .group-\[\.active\]\:bg-gray-800{
-  --tw-bg-opacity: 1;
-  background-color: rgb(31 41 55 / var(--tw-bg-opacity));
-}
-
-.group.selected .group-\[\.selected\]\:bg-gray-950{
-  --tw-bg-opacity: 1;
-  background-color: rgb(3 7 18 / var(--tw-bg-opacity));
-}
-
-.group.active .group-\[\.active\]\:text-white{
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.group.selected .group-\[\.selected\]\:text-gray-100{
-  --tw-text-opacity: 1;
-  color: rgb(243 244 246 / var(--tw-text-opacity));
-}
-
-@media (min-width: 768px){
-  .md\:ml-64{
-    margin-left: 16rem;
-  }
-
-  .md\:hidden{
-    display: none;
-  }
-
-  .md\:w-\[calc\(100\%-256px\)\]{
-    width: calc(100% - 256px);
-  }
-
-  .md\:grid-cols-2{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px){
-  .lg\:col-span-2{
-    grid-column: span 2 / span 2;
-  }
-
-  .lg\:grid-cols-2{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .lg\:grid-cols-3{
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-    </style>
 </head>
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1300,18 +156,12 @@ video {
                 </a>
                 <ul class="pl-7 mt-2 hidden group-[.selected]:block">
                     <li class="mb-4">
-                        <a href="" class="text-gray-900 text-sm flex items-center hover:text-[#f84525] before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">All</a>
+                        <a href="./AdminPanel/MainTable.php" class="text-gray-900 text-sm flex items-center hover:text-[#f84525] before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">All</a>
                     </li> 
                     <li class="mb-4">
                         <a href="" class="text-gray-900 text-sm flex items-center hover:text-[#f84525] before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Roles</a>
                     </li> 
                 </ul>
-            </li>
-            <li class="mb-1 group">
-                <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-                    <i class='bx bx-list-ul mr-3 text-lg'></i>                
-                    <span class="text-sm">Activities</span>
-                </a>
             </li>
             <span class="text-gray-400 font-bold">Seller</span>
             <li class="mb-1 group">
@@ -1332,7 +182,7 @@ video {
             <li class="mb-1 group">
                 <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
                     <i class='bx bx-archive mr-3 text-lg'></i>                
-                    <span class="text-sm">Archive</span>
+                    <span class="text-sm">Orders</span>
                 </a>
             </li>
             <span class="text-gray-400 font-bold">PERSONAL</span>
@@ -1346,17 +196,15 @@ video {
             <li class="mb-1 group">
                 <a href="" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
                     <i class='bx bx-envelope mr-3 text-lg' ></i>                
-                    <span class="text-sm">Messages</span>
-                    <span class=" md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-green-600 bg-green-200 rounded-full">2 New</span>
+                    <span class="text-sm">FAQ</span>
+                    <span class=" md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-green-600 bg-green-200 rounded-full">4 New</span>
                 </a>
             </li>
         </ul>
     </div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay"></div>
-    <!-- end sidenav -->
 
     <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-200 min-h-screen transition-all main">
-        <!-- navbar -->
         <div class="py-2 px-6 bg-[#f8f4f3] flex items-center shadow-md shadow-black/5 sticky top-0 left-0 z-30">
             <button type="button" class="text-lg text-gray-900 font-semibold sidebar-toggle">
                 <i class="ri-menu-line"></i>
@@ -1386,46 +234,27 @@ video {
                             <button type="button" data-tab="notification" data-tab-page="messages" class="text-gray-400 font-medium text-[13px] hover:text-gray-600 border-b-2 border-b-transparent mr-4 pb-1">Messages</button>
                         </div>
                         <div class="my-2">
-                            <ul class="max-h-64 overflow-y-auto" data-tab-for="notification" data-page="notifications">
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">New order</div>
-                                            <div class="text-[11px] text-gray-400">from a user</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">New order</div>
-                                            <div class="text-[11px] text-gray-400">from a user</div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                            <ul class="max-h-64 overflow-y-auto hidden" data-tab-for="notification" data-page="messages">
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">John Doe</div>
-                                            <div class="text-[11px] text-gray-400">Hello there!</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
-                                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
-                                        <div class="ml-2">
-                                            <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500">John Doe</div>
-                                            <div class="text-[11px] text-gray-400">Hello there!</div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+                        <ul class="max-h-64 overflow-y-auto" data-tab-for="notification" data-page="notifications">
+                        <?php
+
+                        $stmt = $connection->prepare("SELECT * FROM Notifications");
+                        $stmt->execute();
+                        $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Display notifications
+                        foreach ($notifications as $notification):
+                        ?>
+                        <li>
+                            <a href="#" class="py-2 px-4 flex items-center hover:bg-gray-50 group">
+                                <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+                                <div class="ml-2">
+                                    <div class="text-[13px] text-gray-600 font-medium truncate group-hover:text-blue-500"><?= htmlspecialchars($notification['notification_type']) ?></div>
+                                    <div class="text-[11px] text-gray-400"><?= htmlspecialchars($notification['message']) ?></div>
+                                </div>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
                         </div>
                     </div>
                 </li>
@@ -1480,9 +309,8 @@ video {
                 </li>
             </ul>
         </div>
-        <!-- end navbar -->
 
-      <!-- Content -->
+
         <div class="p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
@@ -1540,7 +368,7 @@ video {
                 <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
                     <div class="flex justify-between mb-6">
                         <div>
-                            <div class="text-2xl font-semibold mb-1">3</div>
+                            <div class="text-2xl font-semibold mb-1">4</div>
                             <div class="text-sm font-medium text-gray-400">Admin</div>
                         </div>
                          <div class="dropdown">
@@ -1581,7 +409,7 @@ video {
         <tbody>
             <tr class="text-gray-700 dark:text-gray-100">
                 <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">Administrator</th>
-                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo $adminCount; ?></td>
+                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"><?php echo 4; ?></td>
                 <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                     <div class="flex items-center">
                         <span class="mr-2"><?php echo round($adminPercentage, 2); ?>%</span>
@@ -1645,68 +473,42 @@ video {
                         </div>
                     </div>
                     <div class="overflow-hidden">
-                        <table class="w-full min-w-[540px]">
-                            <tbody>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Lorem Ipsum</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">02-02-2024</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">17.45</span>
-                                    </td>
-                                     <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="dropdown">
-                                            <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
-                                            <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td> 
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Lorem Ipsum</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">02-02-2024</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-gray-400">17.45</span>
-                                    </td>
-                                     <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="dropdown">
-                                            <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
-                                            <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td> 
-                                </tr>
-                            </tbody>
-                        </table>
+                    <table class="w-full min-w-[540px]">
+    <tbody>
+        <?php foreach ($orders as $order): ?>
+        <tr>
+            <td class="py-2 px-4 border-b border-b-gray-50">
+                <div class="flex items-center">
+                    <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Order ID: <?php echo $order['order_id']; ?></a>
+                </div>
+            </td>
+            <td class="py-2 px-4 border-b border-b-gray-50">
+                <span class="text-[13px] font-medium text-gray-400"><?php echo date('d-m-Y', strtotime($order['created_at'])); ?></span>
+            </td>
+            <td class="py-2 px-4 border-b border-b-gray-50">
+                <span class="text-[13px] font-medium text-gray-400"><?php echo date('H:i', strtotime($order['created_at'])); ?></span>
+            </td>
+            <td class="py-2 px-4 border-b border-b-gray-50">
+                <div class="dropdown">
+                    <button type="button" class="dropdown-toggle text-gray-400 hover:text-gray-600 text-sm w-6 h-6 rounded flex items-center justify-center bg-gray-50"><i class="ri-more-2-fill"></i></button>
+                    <ul class="dropdown-menu shadow-md shadow-black/5 z-30 hidden py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
+                        <li>
+                            <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Profile</a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Settings</a>
+                        </li>
+                        <li>
+                            <a href="#" class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-blue-500 hover:bg-gray-50">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
                     </div>
                 </div>
             </div>
@@ -1730,26 +532,26 @@ video {
                         </div> 
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                    <div class="rounded-md border border-dashed border-gray-200 p-4">
+                      <div class="flex items-center mb-0.5">
+                          <div class="text-xl font-semibold"><?php echo number_format($totalRevenue, 2); ?></div>
+                          <span class="p-1 rounded text-[12px] font-semibold bg-blue-500/10 text-blue-500 leading-none ml-1">₱<?php echo number_format($totalRevenue, 2); ?></span>
+                      </div>
+                      <span class="text-gray-400 text-sm">Total Revenue</span>
+                  </div>
+                  <div class="rounded-md border border-dashed border-gray-200 p-4">
+                      <div class="flex items-center mb-0.5">
+                          <div class="text-xl font-semibold"><?php echo $totalProducts; ?></div>
+                          <span class="p-1 rounded text-[12px] font-semibold bg-emerald-500/10 text-emerald-500 leading-none ml-1">+₱<?php echo number_format($totalProducts, 2); ?></span>
+                      </div>
+                      <span class="text-gray-400 text-sm">All Products</span>
+                  </div>
                         <div class="rounded-md border border-dashed border-gray-200 p-4">
                             <div class="flex items-center mb-0.5">
                                 <div class="text-xl font-semibold">10</div>
-                                <span class="p-1 rounded text-[12px] font-semibold bg-blue-500/10 text-blue-500 leading-none ml-1">₱80</span>
-                            </div>
-                            <span class="text-gray-400 text-sm">Active</span>
-                        </div>
-                        <div class="rounded-md border border-dashed border-gray-200 p-4">
-                            <div class="flex items-center mb-0.5">
-                                <div class="text-xl font-semibold">50</div>
-                                <span class="p-1 rounded text-[12px] font-semibold bg-emerald-500/10 text-emerald-500 leading-none ml-1">+₱469</span>
-                            </div>
-                            <span class="text-gray-400 text-sm">Completed</span>
-                        </div>
-                        <div class="rounded-md border border-dashed border-gray-200 p-4">
-                            <div class="flex items-center mb-0.5">
-                                <div class="text-xl font-semibold">4</div>
                                 <span class="p-1 rounded text-[12px] font-semibold bg-rose-500/10 text-rose-500 leading-none ml-1">-₱130</span>
                             </div>
-                            <span class="text-gray-400 text-sm">Canceled</span>
+                            <span class="text-gray-400 text-sm">Categories</span>
                         </div>
                     </div>
                     <div>
@@ -1778,162 +580,92 @@ video {
                         <table class="w-full min-w-[460px]">
                             <thead>
                                 <tr>
-                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md">Service</th>
+                                    <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tl-md rounded-bl-md">Product Name</th>
                                     <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left">Earning</th>
                                     <th class="text-[12px] uppercase tracking-wide font-medium text-gray-400 py-2 px-4 bg-gray-50 text-left rounded-tr-md rounded-br-md">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-emerald-500">+₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-emerald-500/10 text-emerald-500 font-medium text-[12px] leading-none">Pending</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <div class="flex items-center">
-                                            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover block">
-                                            <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate">Create landing page</a>
-                                        </div>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="text-[13px] font-medium text-rose-500">-₱235</span>
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-b-gray-50">
-                                        <span class="inline-block p-1 rounded bg-rose-500/10 text-rose-500 font-medium text-[12px] leading-none">Withdrawn</span>
-                                    </td>
-                                </tr>
-                            </tbody>
+                              <?php foreach ($orderss as $order): ?>
+                              <tr>
+                                  <td class="py-2 px-4 border-b border-b-gray-50">
+                                      <div class="flex items-center">
+                                          <?php 
+                                              $images = json_decode($order['images'], true);
+                                              $imageSrc = isset($images[0]) ? $images[0] : 'https://placehold.co/32x32'; 
+                                          ?>
+                                          <img src="../pages/profile/uploads/<?php echo $imageSrc; ?>" alt="" class="w-8 h-8 rounded object-cover block">
+                                          <a href="#" class="text-gray-600 text-sm font-medium hover:text-blue-500 ml-2 truncate"><?php echo $order['product_name']; ?></a>
+                                      </div>
+                                  </td>
+                                  <td class="py-2 px-4 border-b border-b-gray-50">
+                                      <span class="text-[13px] font-medium text-emerald-500">₱<?php echo number_format($order['unit_price'], 2); ?></span>
+                                  </td>
+                                  <td class="py-2 px-4 border-b border-b-gray-50">
+                                      <span class="inline-block p-1 rounded bg-<?php echo $order['status'] === 'pending' ? 'emerald' : ($order['status'] === 'completed' ? 'blue' : 'rose'); ?>-500/10 text-<?php echo $order['status'] === 'pending' ? 'emerald' : ($order['status'] === 'completed' ? 'blue' : 'rose'); ?>-500 font-medium text-[12px] leading-none">
+                                          <?php echo ucfirst($order['status']); ?>
+                                      </span>
+                                  </td>
+                              </tr>
+                              <?php endforeach; ?>
+                          </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('order-chart'), {
+            type: 'line',
+            data: {
+                labels: <?php echo $labelsJSON; ?>,
+                datasets: [
+                    {
+                        label: 'Active',
+                        data: <?php echo $activeDataJSON; ?>,
+                        borderWidth: 1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgb(59 130 246 / .05)',
+                        tension: .2
+                    },
+                    {
+                        label: 'Completed',
+                        data: <?php echo $completedDataJSON; ?>,
+                        borderWidth: 1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(16, 185, 129)',
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgb(16 185 129 / .05)',
+                        tension: .2
+                    },
+                    {
+                        label: 'Cancelled',
+                        data: <?php echo $cancelledDataJSON; ?>,
+                        borderWidth: 1,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(244, 63, 94)',
+                        borderColor: 'rgb(244, 63, 94)',
+                        backgroundColor: 'rgb(244 63 94 / .05)',
+                        tension: .2
+                    },
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+    </script>
 
     <script src="https://unpkg.com/@popperjs/core@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../scripts/adminScripts.js"></script>
 
 </body>
