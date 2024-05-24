@@ -1,16 +1,8 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "webDb";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+include '../../config/connection.php';
 
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
-
+session_start();
 // Create uploads directory if it doesn't exist
 $target_dir = "uploads/";
 if (!file_exists($target_dir)) {
@@ -26,10 +18,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $productDetails = $_POST["product-details"];
   $images = [];
   $colors = isset($_POST["colors"]) ? explode(", ", $_POST["colors"]) : [];
-$sizes = isset($_POST["sizes"]) ? explode(", ", $_POST["sizes"]) : [];
-$weights = isset($_POST["weights"]) ? explode(", WW", $_POST["weights"]) : [];
+  $sizes = isset($_POST["sizes"]) ? explode(", ", $_POST["sizes"]) : [];
+  $weights = isset($_POST["weights"]) ? explode(", WW", $_POST["weights"]) : [];
 
-$attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => $weights]);
+  $attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => $weights]);
+
   // Handle multiple file uploads
   foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
     $file_name = $_FILES["images"]["name"][$key];
@@ -45,36 +38,41 @@ $attributes = json_encode(["colors" => $colors, "sizes" => $sizes, "weights" => 
   }
 
   // Check if category exists
-  $sql = "SELECT category_id FROM Categories WHERE category_name = '$categoryName'";
-  $result = $conn->query($sql);
+  $stmt = $connection->prepare("SELECT category_id FROM Categories WHERE category_name = :categoryName");
+  $stmt->bindParam(':categoryName', $categoryName);
+  $stmt->execute();
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
+  if ($stmt->rowCount() > 0) {
     $categoryId = $row["category_id"];
   } else {
-    $sql = "INSERT INTO Categories (category_name) VALUES ('$categoryName')";
-    if ($conn->query($sql) === TRUE) {
-      $categoryId = $conn->insert_id;
-    } else {
-      echo "Error: " . $sql . "<br>" . $conn->error;
-      exit();
-    }
+    $stmt = $connection->prepare("INSERT INTO Categories (category_name) VALUES (:categoryName)");
+    $stmt->bindParam(':categoryName', $categoryName);
+    $stmt->execute();
+    $categoryId = $connection->lastInsertId();
   }
 
   // Insert product into database
-  $sql = "INSERT INTO Products (product_name, description, price, category_id, images, attributes) VALUES ('$productName', '$productDetails', $price, $categoryId, '" . json_encode($images) . "', '$attributes')";
-  var_dump($colors);
-  var_dump($sizes);
+  $userId = $_SESSION['userId']; // Assuming the seller's user ID is stored in the session
+  $stmt = $connection->prepare("INSERT INTO Products (product_name, description, price, category_id, images, attributes, user_id) VALUES (:productName, :productDetails, :price, :categoryId, :images, :attributes, :userId)");
+  $stmt->bindParam(':productName', $productName);
+  $stmt->bindParam(':productDetails', $productDetails);
+  $stmt->bindParam(':price', $price);
+  $stmt->bindParam(':categoryId', $categoryId);
+  $stmt->bindParam(':images', json_encode($images));
+  $stmt->bindParam(':attributes', $attributes);
+  $stmt->bindParam(':userId', $userId);
   
-  if ($conn->query($sql) === TRUE) {
+  if ($stmt->execute()) {
     echo '<script> alert ("New record created successfully") </script>';
   } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . $stmt->errorInfo();
   }
 }
 
-$conn->close();
+$conn = null;
 ?>
+
 
 
 <!DOCTYPE html>
@@ -84,6 +82,40 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+       .image-preview {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9;
+    }
+    .image-preview img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+    .remove-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255, 0, 0, 0.7);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    </style>
 </head>
 <body>
 <div class="bg-white border rounded-lg shadow relative m-10">
@@ -131,8 +163,13 @@ $conn->close();
                 <textarea id="product-details" name="product-details" rows="6" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-4" placeholder="Details"></textarea>
             </div>
             <div class="col-span-full">
-                <label for="images" class="text-sm font-medium text-gray-900 block mb-2">Images</label>
-                <input type="file" name="images[]" id="images" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" multiple required="">
+                    <label for="images" class="text-sm font-medium text-gray-900 block mb-2">Images</label>
+                    <input type="file" name="images[]" id="images" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" multiple required="">
+                </div>
+            </div>
+            
+            <div class="col-span-full mt-4">
+                <div id="image-container" class="flex flex-wrap gap-4"></div>
             </div>
         </div>
         <div class="flex space-x-4 items-center justify-center gap-4 my-4">
@@ -161,5 +198,65 @@ $conn->close();
 </div>
 
 </div>
+<script>
+ document.getElementById('images').addEventListener('change', function(event) {
+    const files = Array.from(event.target.files);
+    const imageContainer = document.getElementById('image-container');
+    imageContainer.innerHTML = ''; // Clear existing images
+
+    files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.classList.add('image-preview');
+            div.innerHTML = `
+                <img src="${e.target.result}" alt="Image">
+                <button class="remove-button" data-index="${index}">&times;</button>
+            `;
+            div.querySelector('.remove-button').addEventListener('click', function() {
+                removeImage(index);
+            });
+            imageContainer.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+    });
+
+    // Store files in a global array for tracking
+    window.uploadedFiles = files;
+});
+
+function removeImage(index) {
+    // Remove the file from the array
+    window.uploadedFiles.splice(index, 1);
+    
+    // Update the file input
+    const dataTransfer = new DataTransfer();
+    window.uploadedFiles.forEach(file => {
+        dataTransfer.items.add(file);
+    });
+    document.getElementById('images').files = dataTransfer.files;
+
+    // Re-render the image previews
+    const imageContainer = document.getElementById('image-container');
+    imageContainer.innerHTML = '';
+    window.uploadedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.classList.add('image-preview');
+            div.innerHTML = `
+                <img src="${e.target.result}" alt="Image">
+                <button class="remove-button" data-index="${index}">&times;</button>
+            `;
+            div.querySelector('.remove-button').addEventListener('click', function() {
+                removeImage(index);
+            });
+            imageContainer.appendChild(div);
+        }
+        reader.readAsDataURL(file);
+    });
+}
+
+</script>
 </body>
 </html>

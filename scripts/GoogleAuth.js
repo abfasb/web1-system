@@ -35,7 +35,7 @@ googleLogin.addEventListener('click', () => {
           console.log(errorMessage);
         });
     } else {
-      console.log('hello world');
+      window.location.href = `../views/MainMenu.php`;
 
     }
   });

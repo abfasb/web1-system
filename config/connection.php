@@ -1,8 +1,14 @@
 <?php
     $host = 'localhost';
-    $user = 'root';
-    $password = '';
     $database = 'webDb';
+    $username = 'root';
+    $password = '';
 
-    $connection = mysqli_connect($host, $user, $password, $database) or die('Error: ' .mysqli_error());
+    try {
+        $connection = new PDO("mysql:host=$host;dbname=$database", $username, $password);
+        // Set the PDO error mode to exception
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch(PDOException $e) {
+        die("Connection failed: " . $e->getMessage());
+    }
 ?>

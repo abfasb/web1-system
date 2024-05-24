@@ -4,18 +4,18 @@ session_start();
 
 if (isset($_POST['product_id'])) {
     $product_id = $_POST['product_id'];
-    $user_id = $_SESSION['user_id']; 
-    // Insert into wishlist table
-    $query = "INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)";
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "ii", $user_id, $product_id);
-    mysqli_stmt_execute($stmt);
+    $user_id = $_SESSION['user_id'];
 
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
+    $query = "INSERT INTO wishlist (user_id, product_id) VALUES (:user_id, :product_id)";
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    if ($stmt->rowCount() > 0) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Failed to add product to wishlist.']);
     }
-    mysqli_stmt_close($stmt);
 }
 ?>

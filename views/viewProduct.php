@@ -3,32 +3,40 @@
 include '../config/connection.php';
 session_start();
 
-
 $userInitial = strtoupper(substr($_SESSION['Username'], 0, 1));
 $userName =  $_SESSION['Username'];
 $emailAddress = $_SESSION['Email'];
+$userid = $_SESSION['userId'];
 
-// Check if product_id is provided in the URL
 if (isset($_GET['product_id'])) {
-    // Get the product ID from the URL
     $product_id = $_GET['product_id'];
 
-
-    // Prepare a query to fetch product details based on product_id
     $query = "SELECT * FROM Products WHERE product_id = ?";
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(1, $product_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt = mysqli_prepare($connection, $query);
-    mysqli_stmt_bind_param($stmt, "i", $product_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    if (mysqli_num_rows($result) > 0) {
-        while ($product = mysqli_fetch_assoc($result)) {
-          $productAttributes = isset($product['attributes']) ? json_decode(trim($product['attributes']), true) : [];
-          $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
-          $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
+    $cartQuery = "SELECT COUNT(*) AS cart_count FROM Cart WHERE user_id = ?";
+    $wishlistQuery = "SELECT COUNT(*) AS wishlist_count FROM Wishlist WHERE user_id = ?";
+
+    $stmt = $connection->prepare($cartQuery);
+    $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+    $stmt->execute();
+    $cartCount = $stmt->fetch(PDO::FETCH_ASSOC)['cart_count'];
+
+    $stmt = $connection->prepare($wishlistQuery);
+    $stmt->bindParam(1, $userid, PDO::PARAM_INT);
+    $stmt->execute();
+    $wishlistCount = $stmt->fetch(PDO::FETCH_ASSOC)['wishlist_count'];
+
+    if ($result) {
+        foreach ($result as $product) {
+            $productAttributes = isset($product['attributes']) ? json_decode(trim($product['attributes']), true) : [];
+            $productColors = isset($productAttributes['colors']) ? $productAttributes['colors'] : [];
+            $productSizes = isset($productAttributes['sizes']) ? $productAttributes['sizes'] : [];
             $productImages = json_decode($product['images'], true);
-            var_dump($productImages);
-                 
+
 ?>
 
 <!DOCTYPE html>
@@ -56,13 +64,30 @@ if (isset($_GET['product_id'])) {
       <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">ShopSphere</span>
   </a>
   <div class="flex items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+  <ul class="ml-4 xl:w-48 absolute right-0 ">
+                <li class="ml-2 lg:ml-4 relative inline-block">
+                    <a class="" href="../pages/wishlist.php">
+                        <div class="absolute -top-1 right-0 z-10 bg-yellow-400 text-xs font-bold px-1 py-0.5 rounded-sm " id="wishlist-count"><?php echo $wishlistCount ?></div>
+                        <svg class="h-9 lg:h-10 p-2 text-white" aria-hidden="true" focusable="false" data-prefix="far" data-icon="heart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-heart fa-w-16 fa-9x">
+                            <path fill="currentColor" d="M458.4 64.3C400.6 15.7 311.3 23 256 79.3 200.7 23 111.4 15.6 53.6 64.3-21.6 127.6-10.6 230.8 43 285.5l175.4 178.7c10 10.2 23.4 15.9 37.6 15.9 14.3 0 27.6-5.6 37.6-15.8L469 285.6c53.5-54.7 64.7-157.9-10.6-221.3zm-23.6 187.5L259.4 430.5c-2.4 2.4-4.4 2.4-6.8 0L77.2 251.8c-36.5-37.2-43.9-107.6 7.3-150.7 38.9-32.7 98.9-27.8 136.5 10.5l35 35.7 35-35.7c37.8-38.5 97.8-43.2 136.5-10.6 51.1 43.1 43.5 113.9 7.3 150.8z"></path>
+                        </svg>
+                    </a>
+                </li>
+                <li class="ml-2 lg:ml-4 relative inline-block">
+                    <a class="" href="../pages/cart.php">
+                        <div class="absolute -top-1 right-0 z-10 bg-yellow-400 text-xs font-bold px-1 py-0.5 rounded-sm" id="cart-count"><?php echo $cartCount ?></div>
+                        <svg class="h-9 lg:h-10 p-2 text-white" aria-hidden="true" focusable="false" data-prefix="far" data-icon="shopping-cart" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-shopping-cart fa-w-18 fa-9x">
+                            <path fill="currentColor" d="M551.991 64H144.28l-8.726-44.608C133.35 8.128 123.478 0 112 0H12C5.373 0 0 5.373 0 12v24c0 6.627 5.373 12 12 12h80.24l69.594 355.701C150.796 415.201 144 430.802 144 448c0 35.346 28.654 64 64 64s64-28.654 64-64a63.681 63.681 0 0 0-8.583-32h145.167a63.681 63.681 0 0 0-8.583 32c0 35.346 28.654 64 64 64 35.346 0 64-28.654 64-64 0-18.136-7.556-34.496-19.676-46.142l1.035-4.757c3.254-14.96-8.142-29.101-23.452-29.101H203.76l-9.39-48h312.405c11.29 0 21.054-7.869 23.452-18.902l45.216-208C578.695 78.139 567.299 64 551.991 64zM208 472c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm256 0c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm23.438-200H184.98l-31.31-160h368.548l-34.78 160z"></path>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
       <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
         <span class="sr-only">Open user menu</span>
         <div class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
     <span class="font-medium text-gray-600 dark:text-gray-300"><?php echo $userInitial ?></span>
 </div>
       </button>
-      <!-- Dropdown menu -->
       <div class="hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600 z-50" id="user-dropdown">
         <div class="px-4 py-3 z-50">
           <span class="block text-sm text-gray-900 dark:text-white"><?php echo $userName ?></span>
@@ -93,7 +118,7 @@ if (isset($_GET['product_id'])) {
   <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">
     <ul class="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
       <li>
-        <a href="./MainMenu.php" class="block py-2 px-3 text-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
+        <a href="./MainMenu.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700" aria-current="page">Home</a>
       </li>
       <li>
         <a href="./MainHome.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
@@ -102,7 +127,7 @@ if (isset($_GET['product_id'])) {
         <a href="#" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Shop</a>
       </li>
       <li>
-        <a href="./utils/realProduct.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Collections</a>
+        <a href="./utils/realProduct.php" class="block py-2 px-3 text-gray-900 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">Collections</a>
       </li>
       <li>
         <a href="../pages/meet_the_team.php" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
@@ -122,7 +147,7 @@ if (isset($_GET['product_id'])) {
         <div class="lg:flex lg:items-start">
           <div class="lg:order-2 lg:ml-5">
             <div class="max-w-xl overflow-hidden rounded-lg">
-            <img id="largeImage" class="h-[383px] w-[575px] max-w-full object-cover" src="https://www.marthastewart.com/thmb/_n6b8N7i1enxW0vwrtztm-2GOfs=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/what-is-powdered-milk-getty-0823-d48aaff493c64523b78b8c521eee16ff.jpg" alt="" />  
+            <img id="largeImage" class="h-[383px] w-[575px] max-w-full object-cover" src="../pages/profile/uploads/<?php echo $productImages[0] ?>" alt="" />  
           </div>
           </div>
 
@@ -161,7 +186,7 @@ if (isset($_GET['product_id'])) {
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" class=""></path>
             </svg>
           </div>
-          <p class="ml-2 text-sm font-medium text-gray-500">1,209 Reviews</p>
+          <p class="ml-2 text-sm font-medium text-gray-500">48 Reviews</p>
         </div>
 
         <h2 class="mt-8 text-base text-gray-900">Color</h2>
@@ -235,7 +260,7 @@ if (isset($_GET['product_id'])) {
 
             <a href="#" title="" class="inline-flex items-center border-b-2 border-transparent py-4 text-sm font-medium text-gray-600">
               Reviews
-              <span class="ml-2 block rounded-full bg-gray-500 px-2 py-px text-xs font-bold text-gray-100"> 1,209 </span>
+              <span class="ml-2 block rounded-full bg-gray-500 px-2 py-px text-xs font-bold text-gray-100"> 48 </span>
             </a>
           </nav>
         </div>
@@ -254,18 +279,17 @@ if (isset($_GET['product_id'])) {
 
 <?php
         }
-    } else {
+      } else {
         echo "<p>Product not found</p>";
     }
 
-    mysqli_stmt_close($stmt);
-
-    mysqli_close($connection);
+    $connection = null;
 } else {
     echo "<p>Product ID not provided</p>";
 }
 ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   function toggleImage(button, image) {
@@ -302,6 +326,7 @@ if (isset($_GET['product_id'])) {
         if (xhr.status === 200 && xhr.responseText === 'success') {
             // Cart updated successfully
             alert('Product added to cart');
+            location.reload();
         } else {
             alert('Error adding product to cart');
         }
@@ -322,6 +347,8 @@ function addToWishlist(product_id) {
         }
     });
 }
+
+
 
 
 </script>

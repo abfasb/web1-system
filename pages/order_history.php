@@ -1,4 +1,37 @@
-<?php 
+<?php
+include '../config/connection.php';
+
+session_start();
+$user_id = $_SESSION['user_id'];
+
+if (!isset($_GET['order_id'])) {
+    echo "Order ID is required.";
+    exit;
+}
+
+$order_id = $_GET['order_id'];
+
+// Fetch order details
+$sql = "SELECT o.*, u.email FROM Orders o
+        JOIN Users u ON o.user_id = u.user_id
+        WHERE o.order_id = ? AND o.user_id = ?";
+$stmt = $connection->prepare($sql);
+$stmt->execute([$order_id, $user_id]);
+$order = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$order) {
+    echo "Order not found.";
+    exit;
+}
+
+// Fetch order items
+$sql = "SELECT oi.*, p.product_name, p.images
+        FROM Order_Items oi
+        JOIN Products p ON oi.product_id = p.product_id
+        WHERE oi.order_id = ?";
+$stmt = $connection->prepare($sql);
+$stmt->execute([$order_id]);
+$order_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -6,145 +39,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../public/output.css">
+    <title>Order Receipt</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body>
-
-<?php include './homeSigned.php' ?>
-
-    
-<div class="py-14 px-4 md:px-6 2xl:px-20 2xl:container 2xl:mx-auto">
-            <div class="flex justify-start item-start space-y-2 flex-col">
-                <h1 class="text-3xl lg:text-4xl font-semibold leading-7 lg:leading-9 text-black">Order #13432</h1>
-                <p class="text-base dark:text-gray-300 font-medium leading-6 text-gray-600">21st Mart 2021 at 10:34 PM</p>
-            </div> 
-            <div class="mt-10 flex flex-col xl:flex-row jusitfy-center items-stretch w-full xl:space-x-8 space-y-4 md:space-y-6 xl:space-y-0">
-                <div class="flex flex-col justify-start items-start w-full space-y-4 md:space-y-6 xl:space-y-8">
-                    <div class="flex flex-col justify-start items-start dark:bg-gray-800 bg-gray-50 px-4 py-4 md:py-6 md:p-6 xl:p-8 w-full">
-                        <p class="text-lg md:text-xl dark:text-white font-semibold leading-6 xl:leading-5 text-gray-800">Customer’s Cart</p>
-                        <div class="mt-4 md:mt-6 flex flex-col md:flex-row justify-start items-start md:items-center md:space-x-6 xl:space-x-8 w-full">
-                            <div class="pb-4 md:pb-8 w-full md:w-40">
-                                <img class="w-full hidden md:block" src="https://i.ibb.co/84qQR4p/Rectangle-10.png" alt="dress" />
-                                <img class="w-full md:hidden" src="https://i.ibb.co/L039qbN/Rectangle-10.png" alt="dress" />
-                            </div>
-                            <div class="border-b border-gray-200 md:flex-row flex-col flex justify-between items-start w-full pb-8 space-y-4 md:space-y-0">
-                                <div class="w-full flex flex-col justify-start items-start space-y-8">
-                                    <h3 class="text-xl dark:text-white xl:text-2xl font-semibold leading-6 text-gray-800">Premium Quaility Dress</h3>
-                                    <div class="flex justify-start items-start flex-col space-y-2">
-                                        <p class="text-sm dark:text-white leading-none text-gray-800"><span class="dark:text-gray-400 text-gray-300">Style: </span> Italic Minimal Design</p>
-                                        <p class="text-sm dark:text-white leading-none text-gray-800"><span class="dark:text-gray-400 text-gray-300">Size: </span> Small</p>
-                                        <p class="text-sm dark:text-white leading-none text-gray-800"><span class="dark:text-gray-400 text-gray-300">Color: </span> Light Blue</p>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between space-x-8 items-start w-full">
-                                    <p class="text-base dark:text-white xl:text-lg leading-6">$36.00 <span class="text-red-300 line-through"> $45.00</span></p>
-                                    <p class="text-base dark:text-white xl:text-lg leading-6 text-gray-800">01</p>
-                                    <p class="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">$36.00</p>
-                                </div>
-                            </div>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8 mt-10">
+        <h1 class="text-4xl font-bold mb-8 text-center text-indigo-600">Order Receipt</h1>
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-gray-700">Order Details</h2>
+            <div class="mb-6 border-b pb-4">
+                <p class="text-lg"><strong>Email:</strong> <?= htmlspecialchars($order['email']) ?></p>
+                <p class="text-lg"><strong>Order ID:</strong> #<?= htmlspecialchars($order['order_id']) ?></p>
+                <p class="text-lg"><strong>Order Date:</strong> <?= htmlspecialchars($order['order_date']) ?></p>
+                <p class="text-lg"><strong>Shipping Method:</strong> <?= htmlspecialchars($order['shipping_method']) ?></p>
+                <p class="text-lg"><strong>Total Amount:</strong> ₱<?= htmlspecialchars($order['total_amount']) ?></p>
+            </div>
+            <h2 class="text-2xl font-semibold mt-6 mb-4 text-gray-700">Products</h2>
+            <ul class="divide-y divide-gray-200">
+                <?php foreach ($order_items as $item) { 
+                    $images = json_decode($item['images'], true);
+                    $image_url = htmlspecialchars($images[0] ?? 'default_image.png');
+                    $subtotal = $item['unit_price'] * $item['quantity'];
+                ?>
+                    <li class="py-4 flex items-center">
+                        <img src="./profile/uploads/<?= $image_url ?>" alt="<?= htmlspecialchars($item['product_name']) ?>" class="w-16 h-16 object-cover rounded mr-4 shadow-lg">
+                        <div class="flex-1">
+                            <p class="text-lg font-medium text-gray-800"><?= htmlspecialchars($item['product_name']) ?></p>
                         </div>
-                        <div class="mt-6 md:mt-0 flex justify-start flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-6 xl:space-x-8 w-full">
-                            <div class="w-full md:w-40">
-                                <img class="w-full hidden md:block" src="https://i.ibb.co/s6snNx0/Rectangle-17.png" alt="dress" />
-                                <img class="w-full md:hidden" src="https://i.ibb.co/BwYWJbJ/Rectangle-10.png" alt="dress" />
-                            </div>
-                            <div class="flex justify-between items-start w-full flex-col md:flex-row space-y-4 md:space-y-0">
-                                <div class="w-full flex flex-col justify-start items-start space-y-8">
-                                    <h3 class="text-xl dark:text-white xl:text-2xl font-semibold leading-6 text-gray-800">High Quaility Italic Dress</h3>
-                                    <div class="flex justify-start items-start flex-col space-y-2">
-                                        <p class="text-sm dark:text-white leading-none text-gray-800"><span class="dark:text-gray-400 text-gray-300">Style: </span> Italic Minimal Design</p>
-                                        <p class="text-sm dark:text-white leading-none text-gray-800"><span class="dark:text-gray-400 text-gray-300">Size: </span> Small</p>
-                                        <p class="text-sm dark:text-white leading-none text-gray-800"><span class="dark:text-gray-400 text-gray-300">Color: </span> Light Blue</p>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between space-x-8 items-start w-full">
-                                    <p class="text-base dark:text-white xl:text-lg leading-6">$20.00 <span class="text-red-300 line-through"> $30.00</span></p>
-                                    <p class="text-base dark:text-white xl:text-lg leading-6 text-gray-800">01</p>
-                                    <p class="text-base dark:text-white xl:text-lg font-semibold leading-6 text-gray-800">$20.00</p>
-                                </div>
-                            </div>
+                        <div class="text-right">
+                            <p class="text-lg text-gray-800">₱<?= htmlspecialchars($item['unit_price']) ?></p>
+                            <p class="text-sm text-gray-600">Quantity: <?= htmlspecialchars($item['quantity']) ?></p>
+                            <p class="text-sm font-bold text-gray-800">Subtotal: ₱<?= number_format($subtotal, 2) ?></p>
                         </div>
+                    </li>
+                <?php } ?>
+            </ul>
+            <button id="cancel-order" class="mt-6 w-full bg-red-600 text-white py-3 rounded-md shadow-lg hover:bg-red-700 transition ease-in-out duration-300">Cancel Order</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="confirmation-modal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <div>
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                        <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </div>
-                    <div class="flex justify-center flex-col md:flex-row flex-col items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8">
-                        <div class="flex flex-col px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
-                            <h3 class="text-xl dark:text-white font-semibold leading-5 text-gray-800">Summary</h3>
-                            <div class="flex justify-center items-center w-full space-y-4 flex-col border-gray-200 border-b pb-4">
-                                <div class="flex justify-between w-full">
-                                    <p class="text-base dark:text-white leading-4 text-gray-800">Subtotal</p>
-                                    <p class="text-base dark:text-gray-300 leading-4 text-gray-600">$56.00</p>
-                                </div>
-                                <div class="flex justify-between items-center w-full">
-                                    <p class="text-base dark:text-white leading-4 text-gray-800">Discount <span class="bg-gray-200 p-1 text-xs font-medium dark:bg-white dark:text-gray-800 leading-3 text-gray-800">STUDENT</span></p>
-                                    <p class="text-base dark:text-gray-300 leading-4 text-gray-600">-$28.00 (50%)</p>
-                                </div>
-                                <div class="flex justify-between items-center w-full">
-                                    <p class="text-base dark:text-white leading-4 text-gray-800">Shipping</p>
-                                    <p class="text-base dark:text-gray-300 leading-4 text-gray-600">$8.00</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center w-full">
-                                <p class="text-base dark:text-white font-semibold leading-4 text-gray-800">Total</p>
-                                <p class="text-base dark:text-gray-300 font-semibold leading-4 text-gray-600">$36.00</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-col justify-center px-4 py-6 md:p-6 xl:p-8 w-full bg-gray-50 dark:bg-gray-800 space-y-6">
-                            <h3 class="text-xl dark:text-white font-semibold leading-5 text-gray-800">Shipping</h3>
-                            <div class="flex justify-between items-start w-full">
-                                <div class="flex justify-center items-center space-x-4">
-                                    <div class="w-8 h-8">
-                                        <img class="w-full h-full" alt="logo" src="https://i.ibb.co/L8KSdNQ/image-3.png" />
-                                    </div>
-                                    <div class="flex flex-col justify-start items-center">
-                                        <p class="text-lg leading-6 dark:text-white font-semibold text-gray-800">DPD Delivery<br /><span class="font-normal">Delivery with 24 Hours</span></p>
-                                    </div>
-                                </div>
-                                <p class="text-lg font-semibold leading-6 dark:text-white text-gray-800">$8.00</p>
-                            </div>
-                            <div class="w-full flex justify-center items-center">
-                                <button class="hover:bg-black dark:bg-white dark:text-gray-800 dark:hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 py-5 w-96 md:w-full bg-gray-800 text-base font-medium leading-4 text-white">View Carrier Details</button>
-                            </div>
+                    <div class="mt-3 text-center sm:mt-5">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Cancel Order</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">Are you sure you want to cancel this order? This action cannot be undone.</p>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 dark:bg-gray-800 w-full xl:w-96 flex justify-between items-center md:items-start px-4 py-6 md:p-6 xl:p-8 flex-col">
-                    <h3 class="text-xl dark:text-white font-semibold leading-5 text-gray-800">Customer</h3>
-                    <div class="flex flex-col md:flex-row xl:flex-col justify-start items-stretch h-full w-full md:space-x-6 lg:space-x-8 xl:space-x-0">
-                        <div class="flex flex-col justify-start items-start flex-shrink-0">
-                            <div class="flex justify-center w-full md:justify-start items-center space-x-4 py-8 border-b border-gray-200">
-                                <img src="https://i.ibb.co/5TSg7f6/Rectangle-18.png" alt="avatar" />
-                                <div class="flex justify-start items-start flex-col space-y-2">
-                                    <p class="text-base dark:text-white font-semibold leading-4 text-left text-gray-800">David Kent</p>
-                                    <p class="text-sm dark:text-gray-300 leading-5 text-gray-600">10 Previous Orders</p>
-                                </div>
-                            </div>
-    
-                            <div class="flex justify-center text-gray-800 dark:text-white md:justify-start items-center space-x-4 py-4 border-b border-gray-200 w-full">
-                                <img class="dark:hidden" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/order-summary-3-svg1.svg" alt="email">
-                                <img class="hidden dark:block" src="https://tuk-cdn.s3.amazonaws.com/can-uploader/order-summary-3-svg1dark.svg" alt="email">
-                                <p class="cursor-pointer text-sm leading-5 ">david89@gmail.com</p>
-                            </div>
-                        </div>
-                        <div class="flex justify-between xl:h-full items-stretch w-full flex-col mt-6 md:mt-0">
-                            <div class="flex justify-center md:justify-start xl:flex-col flex-col md:space-x-6 lg:space-x-8 xl:space-x-0 space-y-4 xl:space-y-12 md:space-y-0 md:flex-row items-center md:items-start">
-                                <div class="flex justify-center md:justify-start items-center md:items-start flex-col space-y-4 xl:mt-8">
-                                    <p class="text-base dark:text-white font-semibold leading-4 text-center md:text-left text-gray-800">Shipping Address</p>
-                                    <p class="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">180 North King Street, Northhampton MA 1060</p>
-                                </div>
-                                <div class="flex justify-center md:justify-start items-center md:items-start flex-col space-y-4">
-                                    <p class="text-base dark:text-white font-semibold leading-4 text-center md:text-left text-gray-800">Billing Address</p>
-                                    <p class="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">180 North King Street, Northhampton MA 1060</p>
-                                </div>
-                            </div>
-                            <div class="flex w-full justify-center items-center md:justify-start md:items-start">
-                                <button class="mt-6 md:mt-0 dark:border-white dark:hover:bg-gray-900 dark:bg-transparent dark:text-white py-5 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 border border-gray-800 font-medium w-96 2xl:w-full text-base font-medium leading-4 text-gray-800">Edit Details</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mt-5 sm:mt-6">
+                    <button id="confirm-cancel" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm">Yes, Cancel Order</button>
+                    <button id="close-modal" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">No, Keep Order</button>
                 </div>
             </div>
         </div>
-    
+    </div>
+
+    <script>
+        document.getElementById('cancel-order').addEventListener('click', function() {
+            document.getElementById('confirmation-modal').classList.remove('hidden');
+        });
+
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('confirmation-modal').classList.add('hidden');
+        });
+
+        document.getElementById('confirm-cancel').addEventListener('click', function() {
+            axios.post('../controllers/cancel_order.php', { order_id: <?= json_encode($order_id) ?> })
+                .then(function(response) {
+                    if (response.data.success) {
+                        window.location.href = 'order_history.php';
+                    } else {
+                        alert('Failed to cancel order.');
+                        document.getElementById('confirmation-modal').classList.add('hidden');
+                    }
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    alert('An error occurred.');
+                    document.getElementById('confirmation-modal').classList.add('hidden');
+                });
+        });
+    </script>
 </body>
 </html>
