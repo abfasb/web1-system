@@ -24,7 +24,6 @@ if (!$order) {
     exit;
 }
 
-// Fetch order items
 $sql = "SELECT oi.*, p.product_name, p.images
         FROM Order_Items oi
         JOIN Products p ON oi.product_id = p.product_id
@@ -98,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['complete_order'])) {
         </div>
     </div>
 
-    <!-- Modal -->
     <div id="confirmation-modal" class="hidden fixed z-10 inset-0 overflow-y-auto">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>

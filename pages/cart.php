@@ -253,6 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['place_order'])) {
     <!-- Left Column -->
     <div class="px-4 pt-8">
         <p class="text-xl font-medium">Order Summary</p>
+        <a href="./order_history.php" class =>Order</a>
         <p class="text-gray-400">Check your items. And select a suitable shipping method.</p>
         <div class="mt-8 space-y-3 rounded-lg border bg-white px-2 py-4 sm:px-6">
             <!-- Existing code for cart items -->

@@ -19,14 +19,6 @@ $productQuery = "SELECT Products.product_name, Order_Items.quantity, Order_Items
                  INNER JOIN Products ON Order_Items.product_id = Products.product_id
                  WHERE Order_Items.order_id = ?";
 
-function getProduct($productId, $connection) {
-    $sql = "SELECT * FROM Products WHERE product_id = ?";
-    $stmt = $connection->prepare($sql);
-    $stmt->execute([$productId]);
-    $product = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $product;
-}
-
 $productStmt = $connection->prepare($productQuery);
 $productStmt->execute([$orderId]);
 $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -97,17 +89,31 @@ $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
             border-bottom-right-radius: 0.5rem;
         }
 
-        .receipt-button {
+        .receipt-button, .print-button {
             background-color: #2d3748;
             color: #fff;
             padding: 0.75rem 2rem;
             border-radius: 0.5rem;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            margin-top: 1rem;
         }
 
-        .receipt-button:hover {
+        .receipt-button:hover, .print-button:hover {
             background-color: #1a202c;
+        }
+
+        @media print {
+            body {
+                background-color: #fff;
+                -webkit-print-color-adjust: exact;
+            }
+            .print-hidden {
+                display: none;
+            }
+            .receipt-card {
+                border: none;
+            }
         }
     </style>
 </head>
@@ -141,18 +147,18 @@ $products = $productStmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
                 <?php endforeach; ?>
             </div>
-            <div class="receipt-footer text-center">
-                <button class="receipt-button" onclick = "redirectOrder()">Check Order History</button>
+            <div class="receipt-footer text-center print-hidden">
+                <button class="receipt-button" onclick="redirectOrder()">Check Order History</button>
+                <button class="print-button" onclick="window.print()">Print Receipt</button>
             </div>
         </div>
     </div>
 
     <script>
         function redirectOrder() {
-            window.location.href= "order_receipt.php";
+            window.location.href = "order_receipt.php";
         }
     </script>
 </body>
 
 </html>
-
